@@ -1,0 +1,138 @@
+[
+  {
+    "_id": "excel-1",
+    "sku": "ARA-EXCEL-001",
+    "slug": "minty-green-dress",
+    "name": "MINTY GREEN DRESS",
+    "description": "MINTY GREEN DRESS by ARA by Shanaya",
+    "price": 8500,
+    "category": "Summer",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "images": [
+      "/excel-images/row4_col3.jpeg",
+      "/excel-images/row4_col4.jpeg"
+    ],
+    "featured": true
+  },
+  {
+    "_id": "excel-2",
+    "sku": "ARA-EXCEL-002",
+    "slug": "confetti-skirt",
+    "name": "CONFETTI SKIRT",
+    "description": "CONFETTI SKIRT by ARA by Shanaya",
+    "price": 9000,
+    "category": "Summer",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "images": [
+      "/excel-images/row6_col3.jpeg",
+      "/excel-images/row6_col4.jpeg"
+    ],
+    "featured": true
+  },
+  {
+    "_id": "excel-3",
+    "sku": "ARA-EXCEL-003",
+    "slug": "orange-and-blue-bustier-top",
+    "name": "ORANGE AND BLUE BUSTIER TOP",
+    "description": "ORANGE AND BLUE BUSTIER TOP by ARA by Shanaya",
+    "price": 6500,
+    "category": "Summer",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "images": [
+      "/excel-images/row8_col3.jpeg",
+      "/excel-images/row8_col4.jpeg",
+      "/excel-images/row8_col5.jpeg"
+    ],
+    "featured": true
+  },
+  {
+    "_id": "excel-4",
+    "sku": "ARA-EXCEL-004",
+    "slug": "bustier-dress-in-black-and-pink",
+    "name": "BUSTIER DRESS IN BLACK AND PINK",
+    "description": "BUSTIER DRESS IN BLACK AND PINK by ARA by Shanaya",
+    "price": 9000,
+    "category": "Summer",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "images": [
+      "/excel-images/row10_col3.jpeg",
+      "/excel-images/row10_col4.jpeg",
+      "/excel-images/row10_col5.jpeg"
+    ],
+    "featured": true
+  },
+  {
+    "_id": "excel-5",
+    "sku": "ARA-EXCEL-005",
+    "slug": "confetti-set",
+    "name": "CONFETTI SET",
+    "description": "CONFETTI SET by ARA by Shanaya",
+    "price": 11500,
+    "category": "Summer",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "images": [
+      "/excel-images/row12_col3.jpeg",
+      "/excel-images/row12_col4.jpeg"
+    ],
+    "featured": false
+  },
+  {
+    "_id": "excel-6",
+    "sku": "ARA-EXCEL-006",
+    "slug": "orange-and-blue-anti-fit-dress",
+    "name": "ORANGE AND BLUE ANTI-FIT DRESS",
+    "description": "ORANGE AND BLUE ANTI-FIT DRESS by ARA by Shanaya",
+    "price": 10500,
+    "category": "Summer",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "images": [
+      "/excel-images/row14_col3.jpeg",
+      "/excel-images/row14_col4.jpeg",
+      "/excel-images/row14_col5.jpeg"
+    ],
+    "featured": false
+  },
+  {
+    "_id": "excel-7",
+    "sku": "ARA-EXCEL-007",
+    "slug": "collage-blazer",
+    "name": "COLLAGE BLAZER",
+    "description": "COLLAGE BLAZER by ARA by Shanaya",
+    "price": 9000,
+    "category": "Summer",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "images": [
+      "/excel-images/row16_col3.jpeg",
+      "/excel-images/row16_col4.jpeg"
+    ],
+    "featured": false
+  }
+]

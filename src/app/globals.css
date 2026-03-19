@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+:root {
+  --ara-gold: #c6a15b;
+  --ara-ivory: #fffff0;
+  --ara-white: #ffffff;
+  --ara-text: #1b1b1b;
+  --ara-muted: #6d6d6d;
+  --ara-border: #ece4d6;
+  --shadow-soft: 0 18px 46px rgba(35, 28, 16, 0.08);
+}
+
+@theme inline {
+  --font-sans: var(--font-manrope);
+  --font-serif: var(--font-cormorant);
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  color: var(--ara-text);
+  background:
+    radial-gradient(circle at top right, rgba(198, 161, 91, 0.2), transparent 40%),
+    linear-gradient(180deg, #ffffff 0%, #fffcf4 100%);
+  font-family: var(--font-manrope), sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ara-container {
+  width: min(1220px, 92%);
+  margin-inline: auto;
+}
+
+.ara-gold-btn {
+  background: linear-gradient(120deg, #c6a15b, #ba9250);
+  color: #fff;
+  box-shadow: var(--shadow-soft);
+}
+
+.ara-gold-btn:hover {
+  filter: brightness(1.05);
+}
