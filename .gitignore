@@ -2,25 +2,26 @@
 node_modules/
 **/node_modules/
 
-# Next.js
+# Next.js build
 **/.next/
 **/out/
 
-# Uploads (product images — will use cloud storage in prod)
+# Excel uploads (temp)
 backend/public/uploads/excel/
+
+# Keep product images - they go to git for deployment
+# backend/public/uploads/images/ -- DO NOT IGNORE
 
 # Env files
 **/.env.local
 **/.env
+!**/.env.example
 
-# AI module cache
+# AI module runtime
 ai-module/uploads/
 ai-module/results/
 ai-module/model_cache/
-ai-module/__pycache__/
-ai-module/**/__pycache__/
-
-# Python
+**/__pycache__/
 *.pyc
 *.pyo
 
