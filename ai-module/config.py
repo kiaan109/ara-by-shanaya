@@ -9,20 +9,20 @@ MODEL_CACHE = BASE_DIR / "model_cache"
 for d in [UPLOAD_DIR, RESULT_DIR, MODEL_CACHE]:
     d.mkdir(parents=True, exist_ok=True)
 
-try:
-    import torch
-    DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-except ImportError:
-    DEVICE = "cpu"
+DEVICE = "cpu"
 
-# Stable Diffusion inpainting model for virtual try-on
-# When GPU available, uses full SD inpainting pipeline
-# When CPU only, uses lightweight fallback
-SD_MODEL_ID    = "runwayml/stable-diffusion-inpainting"
-CONTROLNET_ID  = "lllyasviel/sd-controlnet-openpose"
+SD_MODEL_ID    = ""
+CONTROLNET_ID  = ""
+MODEL_CACHE    = BASE_DIR / "model_cache"
 
 MAX_SIZE       = 768
 INFERENCE_STEPS = 30
 GUIDANCE_SCALE  = 7.5
 
-ALLOWED_ORIGINS = ["http://localhost:3000", "http://localhost:3001", "*"]
+ALLOWED_ORIGINS = [
+    os.getenv("FRONTEND_URL", "http://localhost:3000"),
+    os.getenv("ADMIN_URL",    "http://localhost:3001"),
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "*",
+]

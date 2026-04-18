@@ -1,0 +1,38 @@
+services:
+  # ── Node.js Backend ──────────────────────────────────────────────
+  - type: web
+    name: ara-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false        # set manually in Render dashboard
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: admin@arabyshanaya.com
+      - key: ADMIN_PASSWORD
+        sync: false        # set manually in Render dashboard
+      - key: FRONTEND_URL
+        sync: false        # your Vercel frontend URL
+      - key: ADMIN_URL
+        sync: false        # your Vercel admin URL
+
+  # ── Python AI Module ─────────────────────────────────────────────
+  - type: web
+    name: ara-ai
+    env: python
+    rootDir: ai-module
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: FRONTEND_URL
+        sync: false
