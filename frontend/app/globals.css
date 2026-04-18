@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold:        #8B6914;
+  --gold-light:  #C5A028;
+  --gold-pale:   #F5EDD6;
+  --cream:       #FDFAF4;
+  --white:       #FFFFFF;
+  --text-dark:   #1a1a1a;
+  --text-mid:    #555555;
+  --border:      #E8DFC8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: #FFFFFF;
+  color: #1a1a1a;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #f9f6f0; }
+::-webkit-scrollbar-thumb { background: #C5A028; border-radius: 3px; }
+
+@layer components {
+  .gold-text {
+    color: #8B6914;
+  }
+  .gold-border {
+    border: 1px solid rgba(139,105,20,0.3);
+  }
+  .luxury-card {
+    @apply bg-white rounded-sm;
+    border: 1px solid #E8DFC8;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  }
+  .btn-gold {
+    @apply inline-block px-8 py-3 text-sm font-medium tracking-widest uppercase
+           transition-all duration-300;
+    background: #8B6914;
+    color: #FFFFFF;
+    border-radius: 2px;
+  }
+  .btn-gold:hover {
+    background: #6d520f;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(139,105,20,0.25);
+  }
+  .btn-outline-gold {
+    @apply inline-block px-8 py-3 text-sm font-medium tracking-widest uppercase
+           transition-all duration-300;
+    border: 1.5px solid #8B6914;
+    color: #8B6914;
+    border-radius: 2px;
+  }
+  .btn-outline-gold:hover {
+    background: #8B6914;
+    color: #FFFFFF;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    @apply text-4xl md:text-5xl text-gray-900 mb-2;
+    font-weight: 400;
+  }
+  .section-subtitle {
+    color: #8B6914;
+    @apply text-xs tracking-[0.4em] uppercase mb-4 font-medium;
+  }
+  .input-field {
+    @apply w-full px-4 py-3 text-sm text-gray-800 bg-white rounded-sm
+           focus:outline-none transition-colors;
+    border: 1.5px solid #E8DFC8;
+  }
+  .input-field:focus {
+    border-color: #8B6914;
+  }
+  .input-field::placeholder {
+    color: #BBBBBB;
+  }
+}
+
+/* Divider ornament */
+.ornament-divider::before {
+  content: '✦';
+  display: block;
+  text-align: center;
+  color: #C5A028;
+  font-size: 14px;
+  margin: 0 12px;
+}

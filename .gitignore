@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Next.js
+**/.next/
+**/out/
+
+# Uploads (product images — will use cloud storage in prod)
+backend/public/uploads/excel/
+
+# Env files
+**/.env.local
+**/.env
+
+# AI module cache
+ai-module/uploads/
+ai-module/results/
+ai-module/model_cache/
+ai-module/__pycache__/
+ai-module/**/__pycache__/
+
+# Python
+*.pyc
+*.pyo
+
+# OS
+.DS_Store
+Thumbs.db

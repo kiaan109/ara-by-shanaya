@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120" width="320" height="120">
+  <defs>
+    <style>
+      .ara-main { font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', serif; fill: #8B6914; }
+      .by-text  { font-family: 'Palatino Linotype', Palatino, Georgia, serif; fill: #8B6914; font-style: italic; }
+    </style>
+  </defs>
+
+  <!-- Left floral ornament -->
+  <g transform="translate(22,60)" fill="#8B6914" opacity="0.92">
+    <circle cx="0" cy="0" r="3.5"/>
+    <ellipse cx="-10" cy="-4" rx="7" ry="3.5" transform="rotate(-30,-10,-4)"/>
+    <ellipse cx="-10" cy="4"  rx="7" ry="3.5" transform="rotate(30,-10,4)"/>
+    <ellipse cx="-18" cy="-10" rx="6" ry="2.8" transform="rotate(-55,-18,-10)"/>
+    <ellipse cx="-18" cy="10"  rx="6" ry="2.8" transform="rotate(55,-18,10)"/>
+    <ellipse cx="-22" cy="0"   rx="8" ry="2.5"/>
+    <ellipse cx="-14" cy="-17" rx="5" ry="2.2" transform="rotate(-75,-14,-17)"/>
+    <ellipse cx="-14" cy="17"  rx="5" ry="2.2" transform="rotate(75,-14,17)"/>
+    <circle cx="-26" cy="-7" r="2"/>
+    <circle cx="-26" cy="7"  r="2"/>
+    <circle cx="-10" cy="-15" r="1.8"/>
+    <circle cx="-10" cy="15"  r="1.8"/>
+    <!-- Outer petals -->
+    <ellipse cx="-28" cy="-14" rx="4" ry="1.8" transform="rotate(-60,-28,-14)"/>
+    <ellipse cx="-28" cy="14"  rx="4" ry="1.8" transform="rotate(60,-28,14)"/>
+    <ellipse cx="-30" cy="0"   rx="5" ry="1.5"/>
+    <circle cx="-5" cy="-22" r="1.5"/>
+    <circle cx="-5" cy="22"  r="1.5"/>
+    <!-- Fine details -->
+    <circle cx="-32" cy="-5" r="1.2"/>
+    <circle cx="-32" cy="5"  r="1.2"/>
+  </g>
+
+  <!-- Right floral ornament (mirror) -->
+  <g transform="translate(298,60) scale(-1,1)" fill="#8B6914" opacity="0.92">
+    <circle cx="0" cy="0" r="3.5"/>
+    <ellipse cx="-10" cy="-4" rx="7" ry="3.5" transform="rotate(-30,-10,-4)"/>
+    <ellipse cx="-10" cy="4"  rx="7" ry="3.5" transform="rotate(30,-10,4)"/>
+    <ellipse cx="-18" cy="-10" rx="6" ry="2.8" transform="rotate(-55,-18,-10)"/>
+    <ellipse cx="-18" cy="10"  rx="6" ry="2.8" transform="rotate(55,-18,10)"/>
+    <ellipse cx="-22" cy="0"   rx="8" ry="2.5"/>
+    <ellipse cx="-14" cy="-17" rx="5" ry="2.2" transform="rotate(-75,-14,-17)"/>
+    <ellipse cx="-14" cy="17"  rx="5" ry="2.2" transform="rotate(75,-14,17)"/>
+    <circle cx="-26" cy="-7" r="2"/>
+    <circle cx="-26" cy="7"  r="2"/>
+    <circle cx="-10" cy="-15" r="1.8"/>
+    <circle cx="-10" cy="15"  r="1.8"/>
+    <ellipse cx="-28" cy="-14" rx="4" ry="1.8" transform="rotate(-60,-28,-14)"/>
+    <ellipse cx="-28" cy="14"  rx="4" ry="1.8" transform="rotate(60,-28,14)"/>
+    <ellipse cx="-30" cy="0"   rx="5" ry="1.5"/>
+    <circle cx="-5" cy="-22" r="1.5"/>
+    <circle cx="-5" cy="22"  r="1.5"/>
+    <circle cx="-32" cy="-5" r="1.2"/>
+    <circle cx="-32" cy="5"  r="1.2"/>
+  </g>
+
+  <!-- ARA text -->
+  <text x="160" y="72" text-anchor="middle" class="ara-main"
+        font-size="58" font-weight="700" letter-spacing="6">ARA</text>
+
+  <!-- by Shanaya text -->
+  <text x="160" y="98" text-anchor="middle" class="by-text"
+        font-size="16" letter-spacing="1">by Shanaya</text>
+
+  <!-- Top thin decorative line -->
+  <line x1="58" y1="24" x2="262" y2="24" stroke="#8B6914" stroke-width="0.8" opacity="0.5"/>
+  <!-- Bottom thin decorative line -->
+  <line x1="58" y1="108" x2="262" y2="108" stroke="#8B6914" stroke-width="0.8" opacity="0.5"/>
+</svg>
