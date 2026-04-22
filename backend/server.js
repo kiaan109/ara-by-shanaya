@@ -11,16 +11,8 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
-// Middleware
-app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL || 'http://localhost:3000',
-    process.env.ADMIN_URL    || 'http://localhost:3001',
-    'http://localhost:3000',
-    'http://localhost:3001',
-  ],
-  credentials: true,
-}));
+// Middleware — allow all origins (JWT auth, no cookies)
+app.use(cors({ origin: true, credentials: true }));
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
