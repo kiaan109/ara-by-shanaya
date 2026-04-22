@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+const BASE = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://ara-backend-api.vercel.app';
 
 export const api = axios.create({ baseURL: BASE });
 

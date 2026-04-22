@@ -5,7 +5,7 @@ import { getProducts } from '@/lib/api';
 import { Product } from '@/components/ProductCard';
 import toast from 'react-hot-toast';
 
-const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://ara-backend-api.vercel.app';
 
 type Step = 'upload-person' | 'select-cloth' | 'generating' | 'result';
 

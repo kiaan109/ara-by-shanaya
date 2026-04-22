@@ -84,7 +84,7 @@ export default function LoginPage() {
         </form>
 
         <p className="text-center text-gray-700 text-xs mt-6">
-          Default: admin@arabyshanaya.com / Admin@1234
+          admin@arabyshanaya.com / Shanaya@2025
         </p>
       </motion.div>
     </div>
