@@ -9,7 +9,8 @@ const upload = multer({
   limits: { fileSize: 3 * 1024 * 1024 }, // 3 MB
 });
 
-const AILAB_KEY      = process.env.AILAB_API_KEY;
+// Trim any whitespace/newlines that Vercel may add to env vars
+const AILAB_KEY      = (process.env.AILAB_API_KEY || '').trim();
 const TRYON_URL      = 'https://www.ailabapi.com/api/portrait/editing/try-on-clothes';
 const POLL_URL       = 'https://www.ailabapi.com/api/common/query-async-task-result';
 const MAX_POLLS      = 24;   // 24 × 5s = 2 min max wait
