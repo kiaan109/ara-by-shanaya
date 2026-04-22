@@ -1,35 +1,31 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import ProductCard, { Product } from '@/components/ProductCard';
-import LoadingSpinner from '@/components/LoadingSpinner';
 import { getProducts } from '@/lib/api';
 
 const CATEGORIES = ['All', 'Saree', 'Lehenga', 'Kurti', 'Gown', 'Suit', 'Dupatta'];
+const SORT_OPTIONS = [
+  { label: 'Newest', value: '' },
+  { label: 'Price: Low to High', value: 'price_asc' },
+  { label: 'Price: High to Low', value: 'price_desc' },
+];
 
 export default function ProductsPage() {
-  const [products,  setProducts]  = useState<Product[]>([]);
-  const [loading,   setLoading]   = useState(true);
-  const [category,  setCategory]  = useState('All');
-  const [search,    setSearch]    = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [page,      setPage]      = useState(1);
+  const [products,   setProducts]   = useState<Product[]>([]);
+  const [loading,    setLoading]    = useState(true);
+  const [category,   setCategory]   = useState('All');
+  const [sort,       setSort]       = useState('');
+  const [page,       setPage]       = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 400);
-    return () => clearTimeout(timer);
-  }, [search]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [category, debouncedSearch]);
+  useEffect(() => { setPage(1); }, [category, sort]);
 
   useEffect(() => {
     setLoading(true);
-    const params: Record<string, string | number> = { page, limit: 9 };
+    const params: Record<string, string | number> = { page, limit: 12 };
     if (category !== 'All') params.category = category;
-    if (debouncedSearch) params.search = debouncedSearch;
+    if (sort === 'price_asc')  params.sort = 'price';
+    if (sort === 'price_desc') { params.sort = 'price'; params.order = 'desc'; }
 
     getProducts(params)
       .then((data) => {
@@ -38,100 +34,91 @@ export default function ProductsPage() {
       })
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
-  }, [category, debouncedSearch, page]);
+  }, [category, sort, page]);
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
+    <div className="min-h-screen bg-white pt-16">
       {/* Header */}
-      <section className="px-6 py-16 text-center border-b border-gold-500/10">
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="section-subtitle"
-        >
-          ARA Collection
-        </motion.p>
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="section-title"
-        >
-          Our Designs
-        </motion.h1>
+      <section className="px-6 pt-16 pb-10 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto">
+          <p className="section-label mb-3">ARA by Shanaya</p>
+          <h1
+            className="font-serif text-black"
+            style={{ fontSize: 'clamp(2rem, 5vw, 4rem)', fontWeight: 300, letterSpacing: '0.04em' }}
+          >
+            Collection
+          </h1>
+        </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-4 mb-12">
-          {/* Search */}
-          <div className="relative flex-1">
-            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gold-500/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Search designs..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-luxury-card gold-border pl-12 pr-4 py-3 text-sm text-white placeholder-gray-600 rounded-sm focus:outline-none focus:border-gold-500/60 transition-colors"
-            />
-          </div>
-
-          {/* Categories */}
-          <div className="flex gap-2 flex-wrap">
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        {/* Filter + Sort bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
+          {/* Category filters */}
+          <div className="flex items-center gap-1 flex-wrap">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setCategory(cat)}
-                className={`px-4 py-2 text-xs tracking-[0.2em] uppercase rounded-sm transition-all duration-300 ${
+                className={`font-sans text-xs tracking-widest uppercase px-3 py-2 transition-all duration-200 ${
                   category === cat
-                    ? 'bg-gold-500 text-black font-semibold'
-                    : 'gold-border text-gray-400 hover:border-gold-400 hover:text-gold-400'
+                    ? 'text-black underline underline-offset-4'
+                    : 'text-gray-400 hover:text-black'
                 }`}
               >
                 {cat}
               </button>
             ))}
           </div>
+
+          {/* Sort */}
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+            className="font-sans text-xs tracking-widest uppercase bg-white border border-gray-200 px-4 py-2 text-gray-700 focus:outline-none focus:border-black transition-colors cursor-pointer"
+            style={{ borderRadius: 0 }}
+          >
+            {SORT_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
         </div>
 
-        {/* Grid */}
+        {/* Product Grid */}
         {loading ? (
-          <LoadingSpinner message="Loading Collection" />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {Array(12).fill(0).map((_, i) => (
+              <div key={i} className="bg-gray-100 animate-pulse" style={{ aspectRatio: '3/4' }} />
+            ))}
+          </div>
         ) : products.length === 0 ? (
-          <div className="text-center py-24">
-            <p className="text-gray-600 text-4xl mb-4">◇</p>
-            <p className="text-gray-500">No designs found.</p>
+          <div className="text-center py-32">
+            <p className="font-sans font-light text-gray-400 text-sm mb-6">No products found.</p>
+            <button onClick={() => setCategory('All')} className="btn-outline">
+              Clear Filters
+            </button>
           </div>
         ) : (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`${category}-${debouncedSearch}-${page}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
-            >
-              {products.map((p, i) => (
-                <ProductCard key={p._id} product={p} index={i} />
-              ))}
-            </motion.div>
-          </AnimatePresence>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {products.map((p, i) => (
+              <ProductCard key={p._id} product={p} index={i} />
+            ))}
+          </div>
         )}
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center gap-3 mt-16">
+          <div className="flex justify-center items-center gap-2 mt-16">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
               <button
                 key={p}
                 onClick={() => setPage(p)}
-                className={`w-10 h-10 text-sm rounded-sm transition-all ${
+                className={`w-9 h-9 font-sans text-xs transition-all ${
                   page === p
-                    ? 'bg-gold-500 text-black font-semibold'
-                    : 'gold-border text-gray-400 hover:border-gold-400'
+                    ? 'bg-black text-white'
+                    : 'bg-white text-gray-500 border border-gray-200 hover:border-black hover:text-black'
                 }`}
+                style={{ borderRadius: 0 }}
               >
                 {p}
               </button>

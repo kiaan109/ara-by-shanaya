@@ -12,7 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <Toaster position="top-right" toastOptions={{
-          style: { background: '#1a1a1a', color: '#f5f5f5', border: '1px solid rgba(212,153,26,0.4)' },
+          style: { background: '#000', color: '#fff', borderRadius: '0', fontSize: '12px', letterSpacing: '0.05em' },
         }} />
         {children}
       </body>

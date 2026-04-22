@@ -6,23 +6,24 @@ import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: 'ARA by Shanaya',
-  description: 'Luxury summer fashion with AI-powered virtual try-on.',
-  keywords: 'ARA by Shanaya, luxury fashion, summer collection, AI try-on',
+  description: 'Summer 2025 Collection — Fashion with AI-powered virtual try-on.',
+  keywords: 'ARA by Shanaya, fashion, summer collection, AI try-on',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-white text-gray-900 antialiased">
+      <body className="bg-white text-gray-900 antialiased font-sans">
         <Toaster
           position="top-right"
           toastOptions={{
             style: {
-              background: '#fff',
-              color: '#1a1a1a',
-              border: '1px solid #E8DFC8',
-              borderRadius: '2px',
-              fontSize: '13px',
+              background: '#000',
+              color: '#fff',
+              borderRadius: '0',
+              fontSize: '12px',
+              letterSpacing: '0.05em',
+              fontFamily: 'Poppins, sans-serif',
             },
           }}
         />

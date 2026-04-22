@@ -1,7 +1,5 @@
 'use client';
-import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
 
@@ -10,127 +8,177 @@ const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 export default function CartPage() {
   const { items, removeItem, updateQuantity, total } = useCartStore();
   const cartTotal = total();
+  const shipping = cartTotal >= 999 ? 0 : 99;
+  const finalTotal = cartTotal + shipping;
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
-      <div className="max-w-5xl mx-auto px-6 py-12">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <p className="section-subtitle">Your Selections</p>
-          <h1 className="section-title mb-10">Shopping Cart</h1>
-        </motion.div>
+    <div className="min-h-screen bg-white pt-16">
+      <div className="max-w-5xl mx-auto px-6 py-16">
+        {/* Header */}
+        <div className="mb-12">
+          <p className="section-label mb-2">Your Selections</p>
+          <h1 className="heading-lg">Shopping Cart</h1>
+        </div>
 
         {items.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-24 flex flex-col items-center"
-          >
-            <p className="text-6xl text-gold-500/20 mb-6">◇</p>
-            <p className="text-gray-500 mb-8">Your cart is empty</p>
-            <Link href="/products" className="btn-gold">Explore Collection</Link>
-          </motion.div>
+          <div className="text-center py-28 flex flex-col items-center gap-6">
+            <div className="w-14 h-14 border border-gray-200 flex items-center justify-center">
+              <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                  d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
+              </svg>
+            </div>
+            <p className="font-sans font-light text-sm text-gray-400">Your cart is empty</p>
+            <Link href="/products" className="btn-primary">Shop Now</Link>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            {/* Items */}
-            <div className="lg:col-span-2 space-y-4">
-              <AnimatePresence>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+
+            {/* Cart Items */}
+            <div className="lg:col-span-2">
+              {/* Column headers (desktop) */}
+              <div className="hidden md:grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 pb-4 border-b border-gray-100 font-sans text-[10px] tracking-widest uppercase text-gray-400">
+                <span className="w-20" />
+                <span>Item</span>
+                <span className="text-right">Price</span>
+                <span className="text-center">Qty</span>
+                <span />
+              </div>
+
+              <div className="divide-y divide-gray-100">
                 {items.map((item) => {
-                  const imgSrc = item.image?.startsWith('http') ? item.image : item.image ? `${BACKEND}/${item.image}` : '';
+                  const imgSrc = item.image?.startsWith('http')
+                    ? item.image
+                    : item.image
+                    ? `${BACKEND}/${item.image}`
+                    : '';
+
                   return (
-                    <motion.div
-                      key={item._id}
-                      layout
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20, height: 0 }}
-                      className="luxury-card p-5 flex gap-5 items-center"
-                    >
+                    <div key={item._id} className="py-6 grid grid-cols-[80px_1fr] md:grid-cols-[80px_1fr_auto_auto_auto] gap-4 items-center">
                       {/* Image */}
                       <div
-                        className="w-24 h-28 rounded-sm flex-shrink-0 bg-luxury-dark"
+                        className="w-20 h-24 bg-gray-100 flex-shrink-0"
                         style={imgSrc ? { backgroundImage: `url(${imgSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
                       />
 
-                      {/* Info */}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-luxury text-lg text-white truncate">{item.name}</h3>
-                        {item.size  && <p className="text-gray-500 text-xs mt-1">Size: {item.size}</p>}
+                      {/* Name + size + mobile price */}
+                      <div className="min-w-0">
+                        <p className="font-sans text-sm font-normal text-black truncate">{item.name}</p>
+                        {item.size  && <p className="font-sans text-xs text-gray-400 mt-0.5">Size: {item.size}</p>}
                         {item.color && (
-                          <p className="text-gray-500 text-xs flex items-center gap-1 mt-0.5">
-                            Color: <span className="w-3 h-3 rounded-full inline-block border border-white/20" style={{ backgroundColor: item.color }} />
+                          <p className="font-sans text-xs text-gray-400 flex items-center gap-1 mt-0.5">
+                            Color:
+                            <span
+                              className="w-3 h-3 inline-block border border-gray-200"
+                              style={{ backgroundColor: item.color }}
+                            />
                           </p>
                         )}
-                        <p className="text-gold-400 font-semibold mt-2">₹{item.price.toLocaleString('en-IN')}</p>
+                        {/* Mobile: price + qty inline */}
+                        <div className="flex items-center gap-4 mt-3 md:hidden">
+                          <span className="font-sans text-sm font-medium text-black">
+                            ₹{item.price.toLocaleString('en-IN')}
+                          </span>
+                          <div className="flex items-center border border-gray-200">
+                            <button
+                              onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                              className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-black transition-colors"
+                            >
+                              −
+                            </button>
+                            <span className="font-sans text-sm w-6 text-center">{item.quantity}</span>
+                            <button
+                              onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                              className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-black transition-colors"
+                            >
+                              +
+                            </button>
+                          </div>
+                          <button
+                            onClick={() => { removeItem(item._id); toast.success('Removed'); }}
+                            className="text-gray-300 hover:text-red-500 transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                                d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
 
-                      {/* Qty */}
-                      <div className="flex items-center gap-3">
+                      {/* Desktop: Price */}
+                      <span className="hidden md:block font-sans text-sm font-medium text-black text-right">
+                        ₹{item.price.toLocaleString('en-IN')}
+                      </span>
+
+                      {/* Desktop: Qty */}
+                      <div className="hidden md:flex items-center border border-gray-200">
                         <button
                           onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                          className="w-8 h-8 gold-border rounded-sm text-gold-400 hover:bg-gold-500 hover:text-black transition-all flex items-center justify-center"
+                          className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-black transition-colors font-sans text-sm"
                         >
                           −
                         </button>
-                        <span className="text-white w-6 text-center">{item.quantity}</span>
+                        <span className="font-sans text-sm w-6 text-center">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                          className="w-8 h-8 gold-border rounded-sm text-gold-400 hover:bg-gold-500 hover:text-black transition-all flex items-center justify-center"
+                          className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-black transition-colors font-sans text-sm"
                         >
                           +
                         </button>
                       </div>
 
-                      {/* Remove */}
+                      {/* Desktop: Remove */}
                       <button
-                        onClick={() => { removeItem(item._id); toast.success('Removed from cart'); }}
-                        className="text-gray-600 hover:text-red-400 transition-colors ml-2"
+                        onClick={() => { removeItem(item._id); toast.success('Removed'); }}
+                        className="hidden md:flex text-gray-300 hover:text-red-500 transition-colors"
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
-                    </motion.div>
+                    </div>
                   );
                 })}
-              </AnimatePresence>
+              </div>
             </div>
 
-            {/* Summary */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="luxury-card p-6 h-fit sticky top-28"
-            >
-              <h2 className="font-luxury text-xl text-white mb-6">Order Summary</h2>
+            {/* Order Summary */}
+            <div className="h-fit sticky top-24 bg-gray-50 p-8">
+              <h2 className="font-sans text-sm tracking-widest uppercase text-black mb-6">Order Summary</h2>
               <div className="space-y-3 mb-6">
-                <div className="flex justify-between text-sm text-gray-400">
-                  <span>Subtotal ({items.length} items)</span>
+                <div className="flex justify-between font-sans text-sm text-gray-500">
+                  <span>Subtotal</span>
                   <span>₹{cartTotal.toLocaleString('en-IN')}</span>
                 </div>
-                <div className="flex justify-between text-sm text-gray-400">
+                <div className="flex justify-between font-sans text-sm text-gray-500">
                   <span>Shipping</span>
-                  <span className={cartTotal >= 5000 ? 'text-green-400' : 'text-gray-400'}>
-                    {cartTotal >= 5000 ? 'Free' : '₹250'}
+                  <span className={shipping === 0 ? 'text-green-600' : ''}>
+                    {shipping === 0 ? 'Free' : `₹${shipping}`}
                   </span>
                 </div>
-                {cartTotal < 5000 && (
-                  <p className="text-xs text-gold-500/60">Add ₹{(5000 - cartTotal).toLocaleString('en-IN')} more for free shipping</p>
+                {cartTotal < 999 && (
+                  <p className="font-sans text-xs text-gray-400">
+                    Add ₹{(999 - cartTotal).toLocaleString('en-IN')} more for free shipping
+                  </p>
                 )}
               </div>
-              <div className="border-t border-gold-500/20 pt-4 mb-6">
-                <div className="flex justify-between text-white font-semibold">
+              <div className="border-t border-gray-200 pt-4 mb-6">
+                <div className="flex justify-between font-sans text-sm font-medium text-black">
                   <span>Total</span>
-                  <span className="text-gold-400">₹{(cartTotal + (cartTotal >= 5000 ? 0 : 250)).toLocaleString('en-IN')}</span>
+                  <span>₹{finalTotal.toLocaleString('en-IN')}</span>
                 </div>
               </div>
-              <Link href="/checkout" className="btn-gold w-full text-center block">
-                Proceed to Checkout
+              <Link href="/checkout" className="btn-primary block w-full text-center">
+                Checkout
               </Link>
-              <Link href="/products" className="block text-center text-gray-600 text-xs mt-4 hover:text-gold-400 transition-colors">
+              <Link
+                href="/products"
+                className="block text-center font-sans text-xs tracking-widest uppercase text-gray-400 mt-4 hover:text-black transition-colors"
+              >
                 Continue Shopping
               </Link>
-            </motion.div>
+            </div>
           </div>
         )}
       </div>
