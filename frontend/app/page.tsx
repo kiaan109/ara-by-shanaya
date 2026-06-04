@@ -80,7 +80,11 @@ export default function HomePage() {
     return () => obs.disconnect();
   }, [products]);
 
-  const HERO_IMGS = ['/lookbook/page-01.jpg', '/lookbook/page-04.jpg', '/lookbook/page-09.jpg'];
+  const HERO_IMGS = [
+  '/products/dark-cloud-corset-maxi.jpg',
+  '/products/horizon-scuba-maxi-cutout.jpg',
+  '/products/waves-sun-dress.jpg',
+];
 
   return (
     <div className="overflow-x-hidden">

@@ -4,12 +4,12 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const PRODUCTS = [
-  { id: 'dark-cloud-corset-maxi',       name: 'Dark Cloud Corset Maxi',    img: '/products/dark-cloud-corset-maxi.jpg',       price: '₹15,500' },
-  { id: 'horizon-scuba-maxi-cutout',    name: 'Horizon Scuba Maxi',        img: '/products/horizon-scuba-maxi-cutout.jpg',    price: '₹15,500' },
-  { id: 'beach-mini-balloon-dress',     name: 'Beach Mini Balloon Dress',  img: '/products/beach-mini-balloon-dress.jpg',     price: '₹8,500'  },
-  { id: 'waves-sun-dress',              name: 'Waves Sun Dress',           img: '/products/waves-sun-dress.jpg',              price: '₹7,500'  },
-  { id: 'pink-skies-corset-top',        name: 'Pink Skies Corset Top',     img: '/products/pink-skies-corset-top.jpg',        price: '₹10,500' },
-  { id: 'orange-vista-scuba-maxi',      name: 'Orange Vista Scuba Maxi',   img: '/products/orange-vista-scuba-maxi.jpg',      price: '₹15,500' },
+  { id: 'dark-cloud-corset-maxi',    name: 'Dark Cloud Corset Maxi',  img: '/products/dark-cloud-corset-maxi.jpg',    price: '₹15,500' },
+  { id: 'horizon-scuba-maxi-cutout', name: 'Horizon Scuba Maxi',      img: '/products/horizon-scuba-maxi-cutout.jpg', price: '₹15,500' },
+  { id: 'orange-vista-scuba-maxi',   name: 'Orange Vista Maxi',       img: '/products/orange-vista-scuba-maxi.jpg',   price: '₹15,500' },
+  { id: 'beach-mini-balloon-dress',  name: 'Beach Balloon Dress',     img: '/products/beach-mini-balloon-dress.jpg',  price: '₹8,500'  },
+  { id: 'waves-sun-dress',           name: 'Waves Sun Dress',         img: '/products/waves-sun-dress.jpg',           price: '₹7,500'  },
+  { id: 'pink-skies-corset-top',     name: 'Pink Skies Corset',       img: '/products/pink-skies-corset-top.jpg',     price: '₹10,500' },
 ];
 
 type Step = 'select' | 'upload' | 'processing' | 'result';
