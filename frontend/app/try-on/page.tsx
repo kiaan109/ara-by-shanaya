@@ -1,375 +1,322 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getProducts } from '@/lib/api';
-import { Product } from '@/components/ProductCard';
-import toast from 'react-hot-toast';
 
-const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://ara-backend-api.vercel.app';
+const PRODUCTS = [
+  { id: 'dark-cloud-corset-maxi',       name: 'Dark Cloud Corset Maxi',    img: '/products/dark-cloud-corset-maxi.jpg',       price: '₹15,500' },
+  { id: 'horizon-scuba-maxi-cutout',    name: 'Horizon Scuba Maxi',        img: '/products/horizon-scuba-maxi-cutout.jpg',    price: '₹15,500' },
+  { id: 'beach-mini-balloon-dress',     name: 'Beach Mini Balloon Dress',  img: '/products/beach-mini-balloon-dress.jpg',     price: '₹8,500'  },
+  { id: 'waves-sun-dress',              name: 'Waves Sun Dress',           img: '/products/waves-sun-dress.jpg',              price: '₹7,500'  },
+  { id: 'pink-skies-corset-top',        name: 'Pink Skies Corset Top',     img: '/products/pink-skies-corset-top.jpg',        price: '₹10,500' },
+  { id: 'orange-vista-scuba-maxi',      name: 'Orange Vista Scuba Maxi',   img: '/products/orange-vista-scuba-maxi.jpg',      price: '₹15,500' },
+];
 
-type Step = 'upload-person' | 'select-cloth' | 'generating' | 'result';
+type Step = 'select' | 'upload' | 'processing' | 'result';
+
+const ease = [0.25, 0.1, 0.25, 1] as const;
 
 export default function TryOnPage() {
-  const [step,           setStep]          = useState<Step>('upload-person');
-  const [personFile,     setPersonFile]    = useState<File | null>(null);
-  const [personPreview,  setPersonPreview] = useState('');
-  const [clothPreview,   setClothPreview]  = useState('');
-  const [resultUrl,      setResultUrl]     = useState('');
-  const [uploading,      setUploading]     = useState(false);
-  const [products,       setProducts]      = useState<Product[]>([]);
-  const [clothesType,    setClothesType]   = useState<'upper_body'|'lower_body'|'full_body'>('upper_body');
-  const [useWebcam,      setUseWebcam]     = useState(false);
-  const videoRef  = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
+  const [step,       setStep]       = useState<Step>('select');
+  const [selected,   setSelected]   = useState<typeof PRODUCTS[0] | null>(null);
+  const [userPhoto,  setUserPhoto]  = useState<string | null>(null);
+  const [resultUrl,  setResultUrl]  = useState<string | null>(null);
+  const [progress,   setProgress]   = useState(0);
+  const [error,      setError]      = useState<string | null>(null);
+  const fileRef  = useRef<HTMLInputElement>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => {
-    getProducts({ limit: 20 }).then((d) => setProducts(d.products || d)).catch(() => {});
-  }, []);
-
-  /* ── Webcam ─────────────────────────────────────────────── */
-  const stopWebcam = () => {
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    streamRef.current = null;
-    setUseWebcam(false);
+  const handleSelect = (p: typeof PRODUCTS[0]) => {
+    setSelected(p);
+    setStep('upload');
   };
 
-  const startWebcam = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-      streamRef.current = stream;
-      if (videoRef.current) videoRef.current.srcObject = stream;
-      setUseWebcam(true);
-    } catch {
-      toast.error('Cannot access camera. Please allow camera permission.');
-    }
-  };
-
-  const captureWebcam = () => {
-    if (!videoRef.current || !canvasRef.current) return;
-    const ctx = canvasRef.current.getContext('2d');
-    canvasRef.current.width  = videoRef.current.videoWidth;
-    canvasRef.current.height = videoRef.current.videoHeight;
-    ctx?.drawImage(videoRef.current, 0, 0);
-    canvasRef.current.toBlob((blob) => {
-      if (!blob) return;
-      const file = new File([blob], 'webcam.jpg', { type: 'image/jpeg' });
-      handlePersonFile(file);
-      stopWebcam();
-    }, 'image/jpeg', 0.9);
-  };
-
-  /* ── Person photo ────────────────────────────────────────── */
-  const handlePersonFile = (file: File) => {
-    setPersonFile(file);
-    setPersonPreview(URL.createObjectURL(file));
-    toast.success('Photo ready!');
-    setStep('select-cloth');
-  };
-
-  /* ── Try-on generation ───────────────────────────────────── */
-  const runTryOn = async (clothFile: File) => {
-    if (!personFile) { toast.error('Upload your photo first'); return; }
-
-    setStep('generating');
-    setUploading(true);
-    try {
-      const form = new FormData();
-      form.append('person_image',  personFile);
-      form.append('clothes_image', clothFile);
-      form.append('clothes_type',  clothesType);
-
-      const res = await fetch(`${BACKEND}/api/tryon`, {
-        method: 'POST',
-        body:   form,
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Try-on failed');
-
-      setResultUrl(data.image_url);
-      setStep('result');
-      toast.success('Try-on ready! ✨');
-    } catch (err: any) {
-      toast.error(err.message || 'Generation failed. Please try again.');
-      setStep('select-cloth');
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  /* ── Select from catalogue ───────────────────────────────── */
-  const handleClothSelect = async (product: Product) => {
-    const imgUrl = product.images?.[0]
-      ? (product.images[0].startsWith('http') ? product.images[0] : `${BACKEND}/${product.images[0]}`)
-      : '';
-    if (!imgUrl) { toast.error('No image for this product'); return; }
-
-    setClothPreview(imgUrl);
-    try {
-      const resp = await fetch(imgUrl);
-      const blob = await resp.blob();
-      const file = new File([blob], 'cloth.jpg', { type: blob.type });
-      await runTryOn(file);
-    } catch {
-      toast.error('Could not load clothing image');
-    }
-  };
-
-  /* ── Upload custom cloth ─────────────────────────────────── */
-  const handleClothFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    setClothPreview(URL.createObjectURL(file));
-    await runTryOn(file);
+    if (!file || !selected) return;
+
+    setError(null);
+    setUserPhoto(URL.createObjectURL(file));
+    setStep('processing');
+    setProgress(0);
+
+    // Fake progress bar advancing to ~85% while API runs
+    timerRef.current = setInterval(() => {
+      setProgress(p => {
+        if (p >= 85) { clearInterval(timerRef.current!); return 85; }
+        return p + Math.random() * 3;
+      });
+    }, 700);
+
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      const base64 = ev.target?.result as string;
+      try {
+        const res  = await fetch('/api/try-on', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userPhotoBase64: base64, productId: selected.id }),
+        });
+        const data = await res.json();
+        clearInterval(timerRef.current!);
+
+        if (data.output) {
+          setProgress(100);
+          setTimeout(() => { setResultUrl(data.output); setStep('result'); }, 400);
+        } else {
+          setError(data.error || 'AI generation failed. Please try again.');
+          setStep('upload');
+          setProgress(0);
+        }
+      } catch {
+        clearInterval(timerRef.current!);
+        setError('Could not reach the AI service. Please try again.');
+        setStep('upload');
+        setProgress(0);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
-  const reset = () => {
-    setStep('upload-person');
-    setPersonFile(null); setPersonPreview('');
-    setClothPreview(''); setResultUrl('');
-    stopWebcam();
+  const handleReset = () => {
+    clearInterval(timerRef.current!);
+    setStep('select'); setSelected(null); setUserPhoto(null);
+    setResultUrl(null); setProgress(0); setError(null);
   };
+
+  const waMsg = encodeURIComponent(
+    selected
+      ? `Hi! I tried on the "${selected.name}" using the ARA Virtual Try-On and love it! Can you help me order? 🌸`
+      : `Hi! I'm interested in ARA Summer 2025 and need styling advice.`
+  );
+
+  const stepIdx = step === 'select' ? 0 : step === 'upload' ? 1 : 2;
 
   return (
-    <div className="min-h-screen pt-24 pb-20 bg-white">
-      <div className="max-w-6xl mx-auto px-6 py-12">
+    <div className="min-h-screen bg-white pb-20">
 
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
-          <p className="section-subtitle">Powered by AILab AI</p>
-          <h1 className="section-title">Virtual Try-On</h1>
-          <p className="text-gray-500 max-w-lg mx-auto mt-4 text-sm leading-relaxed">
-            Upload your photo, select a garment, and see a photorealistic AI result in seconds.
-          </p>
-        </motion.div>
-
-        {/* Progress steps */}
-        <div className="flex items-center justify-center gap-4 mb-12">
-          {[
-            { id: 'upload-person', label: 'Your Photo' },
-            { id: 'select-cloth',  label: 'Clothing' },
-            { id: 'generating',    label: 'Generating' },
-            { id: 'result',        label: 'Result' },
-          ].map((s, i) => {
-            const steps  = ['upload-person', 'select-cloth', 'generating', 'result'];
-            const active = steps.indexOf(step) >= i;
-            return (
-              <div key={s.id} className="flex items-center gap-4">
-                <div className={`flex flex-col items-center gap-1 transition-all ${active ? 'opacity-100' : 'opacity-30'}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border transition-all ${
-                    step === s.id
-                      ? 'bg-amber-600 text-white border-amber-600'
-                      : active
-                        ? 'bg-amber-100 text-amber-600 border-amber-400'
-                        : 'bg-gray-100 text-gray-400 border-gray-200'
-                  }`}>
-                    {steps.indexOf(step) > i ? '✓' : i + 1}
-                  </div>
-                  <span className="text-xs text-gray-500 hidden sm:block">{s.label}</span>
-                </div>
-                {i < 3 && <div className={`w-12 h-px transition-all ${active && steps.indexOf(step) > i ? 'bg-amber-400' : 'bg-gray-200'}`} />}
-              </div>
-            );
-          })}
+      {/* ── Header ── */}
+      <div className="px-5 md:px-14 pt-10 pb-8 border-b border-[#e5e5e5]">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <p className="text-[10px] tracking-[0.4em] uppercase text-[#767676] mb-1">Powered by Fashn AI</p>
+            <h1 className="text-[26px] font-light tracking-[-0.02em]">Virtual Try-On</h1>
+          </div>
+          {step !== 'select' && (
+            <button onClick={handleReset}
+              className="text-[10px] tracking-[0.2em] uppercase text-[#767676] hover:text-black transition-colors underline underline-offset-2">
+              Start Over
+            </button>
+          )}
         </div>
 
+        {/* Step indicator */}
+        <div className="flex items-center gap-0 max-w-xs">
+          {['Choose Style', 'Upload Photo', 'Your Look'].map((label, i) => (
+            <div key={i} className="flex items-center">
+              <div className="flex flex-col items-center">
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] transition-all duration-300 ${
+                  i <= stepIdx ? 'bg-black text-white' : 'bg-[#e5e5e5] text-[#999]'
+                }`}>{i + 1}</div>
+                <span className="text-[9px] tracking-[0.1em] uppercase mt-1 text-[#767676] whitespace-nowrap">{label}</span>
+              </div>
+              {i < 2 && <div className={`h-px w-12 mb-4 mx-2 transition-all duration-500 ${i < stepIdx ? 'bg-black' : 'bg-[#e5e5e5]'}`} />}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Content ── */}
+      <div className="px-5 md:px-14 py-10">
         <AnimatePresence mode="wait">
 
-          {/* ── STEP 1: Upload Person ── */}
-          {step === 'upload-person' && (
-            <motion.div key="person" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }} className="max-w-lg mx-auto">
-              <div className="border border-gray-200 rounded-sm p-8 bg-white shadow-sm">
-                <h2 className="text-xl font-medium text-gray-900 mb-2 text-center">Upload Your Photo</h2>
-                <p className="text-gray-400 text-sm text-center mb-8">
-                  Full-body, front-facing photo gives the best results.
-                </p>
-
-                {/* Clothes type selector */}
-                <div className="mb-6">
-                  <p className="text-xs text-gray-500 mb-2 text-center uppercase tracking-widest">What are you trying on?</p>
-                  <div className="flex gap-2 justify-center">
-                    {(['upper_body','lower_body','full_body'] as const).map((t) => (
-                      <button
-                        key={t}
-                        onClick={() => setClothesType(t)}
-                        className={`px-3 py-1.5 text-xs rounded-sm border transition-all ${
-                          clothesType === t
-                            ? 'bg-amber-700 text-white border-amber-700'
-                            : 'border-gray-200 text-gray-500 hover:border-amber-400'
-                        }`}
-                      >
-                        {t === 'upper_body' ? 'Top / Shirt' : t === 'lower_body' ? 'Skirt / Pants' : 'Full Outfit'}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {!useWebcam ? (
-                  <div className="space-y-4">
-                    <label className="block border-2 border-dashed border-gray-200 hover:border-amber-400 rounded p-12 text-center cursor-pointer transition-all group">
-                      <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePersonFile(f); }} className="hidden" />
-                      <div className="text-3xl text-gray-300 group-hover:text-amber-400 transition-colors mb-3">↑</div>
-                      <p className="text-gray-400 text-sm">Click to upload or drag & drop</p>
-                      <p className="text-gray-300 text-xs mt-1">JPG, PNG up to 3MB</p>
-                    </label>
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1 h-px bg-gray-100" />
-                      <span className="text-gray-300 text-xs">or</span>
-                      <div className="flex-1 h-px bg-gray-100" />
+          {/* Step 1 — Select garment */}
+          {step === 'select' && (
+            <motion.div key="select"
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.35, ease }}>
+              <p className="text-[12px] text-[#767676] mb-8 max-w-md leading-relaxed">
+                Choose the piece you want to try on. Our AI places it on your photo in seconds.
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {PRODUCTS.map(p => (
+                  <button key={p.id} onClick={() => handleSelect(p)}
+                    className="group relative overflow-hidden text-left focus:outline-none">
+                    <div className="relative overflow-hidden bg-white border border-[#f0f0f0]" style={{ aspectRatio: '3/4' }}>
+                      <img src={p.img} alt={p.name}
+                        className="w-full h-full object-contain transition-transform duration-600 group-hover:scale-[1.03]"
+                        style={{ display: 'block' }} />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-all duration-300 flex items-center justify-center">
+                        <span className="bg-white text-black text-[9px] tracking-[0.22em] uppercase px-4 py-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          Select
+                        </span>
+                      </div>
                     </div>
-                    <button onClick={startWebcam} className="w-full py-2.5 text-sm border border-gray-200 text-gray-600 rounded-sm hover:border-amber-400 transition-colors">
-                      Use Webcam
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="rounded overflow-hidden bg-gray-50">
-                      <video ref={videoRef} autoPlay playsInline className="w-full rounded" />
-                      <canvas ref={canvasRef} className="hidden" />
+                    <div className="mt-2">
+                      <p className="text-[12px] leading-tight">{p.name}</p>
+                      <p className="text-[11px] text-[#767676] mt-0.5">{p.price}</p>
                     </div>
-                    <div className="flex gap-3">
-                      <button onClick={captureWebcam} className="flex-1 py-2.5 text-sm bg-amber-700 text-white rounded-sm hover:bg-amber-800 transition-colors">Capture</button>
-                      <button onClick={stopWebcam} className="py-2.5 px-4 text-sm border border-gray-200 text-gray-600 rounded-sm hover:bg-gray-50 transition-colors">Cancel</button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          )}
-
-          {/* ── STEP 2: Select Clothing ── */}
-          {step === 'select-cloth' && (
-            <motion.div key="cloth" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }}>
-              <div className="flex flex-col lg:flex-row gap-8">
-                {/* Person preview */}
-                <div className="lg:w-56 flex-shrink-0">
-                  <div className="border border-gray-200 rounded-sm p-4 bg-white text-center shadow-sm">
-                    <p className="text-xs text-gray-400 tracking-widest uppercase mb-3">Your Photo</p>
-                    {personPreview && <img src={personPreview} alt="Person" className="w-full rounded object-cover max-h-72" />}
-                    <button onClick={reset} className="mt-3 text-xs text-gray-400 hover:text-amber-600 transition-colors">Change photo</button>
-                  </div>
-                </div>
-
-                {/* Clothing selection */}
-                <div className="flex-1">
-                  <h2 className="text-xl font-medium text-gray-900 mb-6">Select a Garment</h2>
-
-                  {/* Upload custom cloth */}
-                  <label className="flex items-center gap-4 p-4 border border-dashed border-gray-200 hover:border-amber-400 rounded-sm cursor-pointer transition-all mb-6 group">
-                    <input type="file" accept="image/*" onChange={handleClothFileChange} className="hidden" disabled={uploading} />
-                    <div className="w-12 h-12 rounded bg-gray-50 flex items-center justify-center text-gray-300 group-hover:text-amber-400 transition-colors text-2xl">↑</div>
-                    <div>
-                      <p className="text-gray-700 text-sm font-medium">Upload your own clothing image</p>
-                      <p className="text-gray-400 text-xs">White/plain background works best</p>
-                    </div>
-                  </label>
-
-                  {uploading && (
-                    <div className="text-center py-12">
-                      <div className="inline-block w-8 h-8 border-2 border-t-amber-600 border-amber-200 rounded-full animate-spin" />
-                      <p className="text-amber-700 text-sm mt-3">Generating your try-on... (~30 seconds)</p>
-                    </div>
-                  )}
-
-                  {!uploading && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                      {products.map((p) => {
-                        const img = p.images?.[0]
-                          ? (p.images[0].startsWith('http') ? p.images[0] : `${BACKEND}/${p.images[0]}`)
-                          : '';
-                        return (
-                          <button
-                            key={p._id}
-                            onClick={() => handleClothSelect(p)}
-                            className="border border-gray-200 rounded-sm p-3 text-left hover:border-amber-400 hover:shadow-sm transition-all group bg-white"
-                          >
-                            <div
-                              className="w-full h-32 bg-gray-50 rounded-sm mb-2 bg-cover bg-center"
-                              style={img ? { backgroundImage: `url(${img})` } : {}}
-                            />
-                            <p className="text-gray-700 text-xs truncate group-hover:text-amber-700 transition-colors font-medium">{p.name}</p>
-                            <p className="text-amber-600 text-xs">₹{p.price.toLocaleString('en-IN')}</p>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* ── STEP 3: Generating ── */}
-          {step === 'generating' && (
-            <motion.div key="generating" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="flex flex-col items-center justify-center py-24 gap-8">
-              <div className="relative w-20 h-20">
-                <motion.div className="absolute inset-0 border-2 border-amber-200 rounded-full" />
-                <motion.div className="absolute inset-0 border-t-2 border-amber-600 rounded-full"
-                  animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }} />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-amber-600 text-xl">✦</span>
-                </div>
-              </div>
-              <div className="text-center">
-                <h2 className="text-xl font-medium text-gray-900 mb-3">Generating Your Try-On</h2>
-                <p className="text-gray-400 text-sm">AILab AI is processing your image…</p>
-                <p className="text-gray-300 text-xs mt-2">This takes about 30–60 seconds</p>
-              </div>
-              <div className="flex flex-col items-center gap-2 w-64">
-                {['Uploading images', 'Detecting body pose', 'Fitting garment', 'Finalising result'].map((msg, i) => (
-                  <motion.div key={msg} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 8 }}
-                    className="flex items-center gap-3 text-xs text-gray-400 w-full">
-                    <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, delay: i * 0.3 }}
-                      className="w-3 h-3 border border-amber-200 border-t-amber-600 rounded-full flex-shrink-0" />
-                    {msg}
-                  </motion.div>
+                  </button>
                 ))}
               </div>
             </motion.div>
           )}
 
-          {/* ── STEP 4: Result ── */}
-          {step === 'result' && (
-            <motion.div key="result" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="max-w-4xl mx-auto">
-              <h2 className="text-2xl font-light text-gray-900 text-center mb-10">Your AI Try-On Result</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-                {[
-                  { label: 'You',       src: personPreview },
-                  { label: 'Clothing',  src: clothPreview },
-                  { label: 'AI Result', src: resultUrl, highlight: true },
-                ].map(({ label, src, highlight }) => (
-                  <div key={label} className={`border rounded-sm overflow-hidden bg-white shadow-sm ${highlight ? 'border-amber-400 shadow-amber-100' : 'border-gray-200'}`}>
-                    <div className="relative">
-                      {highlight && (
-                        <div className="absolute top-2 right-2 z-10 bg-amber-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-sm tracking-wider">
-                          AI RESULT
-                        </div>
-                      )}
-                      {src
-                        ? <img src={src} alt={label} className="w-full h-72 object-cover" />
-                        : <div className="w-full h-72 bg-gray-50 flex items-center justify-center"><span className="text-gray-300 text-xs">No image</span></div>
-                      }
-                    </div>
-                    <p className="text-center text-xs text-gray-400 py-3 tracking-widest uppercase">{label}</p>
+          {/* Step 2 — Upload photo */}
+          {step === 'upload' && (
+            <motion.div key="upload"
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.35, ease }}
+              className="max-w-lg">
+
+              {selected && (
+                <div className="flex items-center gap-4 mb-8 p-4 bg-[#f9f9f9]">
+                  <img src={selected.img} alt={selected.name}
+                    className="w-14 flex-shrink-0 object-contain bg-white"
+                    style={{ aspectRatio: '3/4', display: 'block' }} />
+                  <div>
+                    <p className="text-[10px] tracking-[0.2em] uppercase text-[#767676] mb-0.5">Selected Style</p>
+                    <p className="text-[13px]">{selected.name}</p>
+                    <p className="text-[12px] text-[#767676]">{selected.price}</p>
+                  </div>
+                  <button onClick={() => setStep('select')}
+                    className="ml-auto text-[10px] tracking-[0.15em] uppercase text-[#767676] hover:text-black underline underline-offset-2 transition-colors">
+                    Change
+                  </button>
+                </div>
+              )}
+
+              {error && (
+                <div className="mb-6 px-4 py-3 bg-red-50 border border-red-200 text-[12px] text-red-700">
+                  {error}
+                </div>
+              )}
+
+              <p className="text-[12px] text-[#767676] mb-6 leading-relaxed">
+                Upload a front-facing full-body photo for best results. A plain background works best.
+              </p>
+
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+              <button onClick={() => fileRef.current?.click()}
+                className="w-full border border-dashed border-[#ccc] hover:border-black transition-colors duration-200 py-16 flex flex-col items-center gap-3 group">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round"
+                  className="text-[#ccc] group-hover:text-black transition-colors duration-200">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                </svg>
+                <div className="text-center">
+                  <p className="text-[12px] text-[#767676] group-hover:text-black transition-colors">Upload your photo</p>
+                  <p className="text-[10px] text-[#aaa] mt-0.5">JPG or PNG · Any size</p>
+                </div>
+              </button>
+
+              <div className="mt-7 space-y-2">
+                {['Front-facing, full-body photo works best', 'Plain or simple background preferred', 'Good lighting helps the AI'].map(t => (
+                  <div key={t} className="flex items-center gap-2">
+                    <div className="w-1 h-1 rounded-full bg-[#ccc] flex-shrink-0" />
+                    <p className="text-[11px] text-[#999]">{t}</p>
                   </div>
                 ))}
               </div>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href={resultUrl} target="_blank" rel="noopener noreferrer"
-                  className="px-8 py-3 bg-amber-700 text-white text-sm font-medium rounded-sm hover:bg-amber-800 transition-colors text-center">
-                  Download Result
-                </a>
-                <button onClick={reset}
-                  className="px-8 py-3 border border-gray-200 text-gray-600 text-sm font-medium rounded-sm hover:border-amber-400 transition-colors">
-                  Try Another
-                </button>
+            </motion.div>
+          )}
+
+          {/* Processing */}
+          {step === 'processing' && (
+            <motion.div key="processing"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="flex flex-col items-center justify-center py-24 gap-6">
+
+              {userPhoto && (
+                <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-[#e5e5e5] flex-shrink-0">
+                  <img src={userPhoto} alt="Your photo" className="w-full h-full object-cover object-top" style={{ display: 'block' }} />
+                </div>
+              )}
+
+              <div className="w-full max-w-xs">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[11px] tracking-[0.2em] uppercase text-[#767676]">Generating your look</p>
+                  <p className="text-[11px] text-[#aaa]">{Math.round(progress)}%</p>
+                </div>
+                <div className="w-full h-px bg-[#e5e5e5] overflow-hidden">
+                  <motion.div className="h-full bg-black" style={{ width: `${progress}%` }} transition={{ duration: 0.4 }} />
+                </div>
+              </div>
+
+              <p className="text-[11px] text-[#aaa] text-center max-w-xs leading-relaxed">
+                The AI is placing the garment on your photo.<br />This takes 10–20 seconds.
+              </p>
+              <div className="w-4 h-4 border border-black border-t-transparent rounded-full animate-spin" />
+            </motion.div>
+          )}
+
+          {/* Result */}
+          {step === 'result' && resultUrl && selected && (
+            <motion.div key="result"
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease }}
+              className="max-w-2xl">
+
+              <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-8">
+
+                {/* AI result */}
+                <div>
+                  <div className="relative overflow-hidden bg-[#f5f5f5]">
+                    <img src={resultUrl} alt="AI Try-On Result" className="w-full object-cover" style={{ display: 'block' }} />
+                    <div className="absolute top-3 left-3 bg-black text-white text-[9px] tracking-[0.2em] uppercase px-2.5 py-1.5">
+                      AI Try-On
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-[#aaa] mt-2 text-center tracking-[0.1em]">Generated by Fashn AI · Results may vary</p>
+                </div>
+
+                {/* Sidebar */}
+                <div className="flex flex-col gap-5">
+                  <div className="p-5 bg-[#f9f9f9]">
+                    <img src={selected.img} alt={selected.name} className="w-full mb-4 object-contain bg-white"
+                      style={{ aspectRatio: '3/4', display: 'block' }} />
+                    <p className="text-[10px] tracking-[0.25em] uppercase text-[#767676] mb-0.5">You tried on</p>
+                    <p className="text-[14px] font-light mb-0.5">{selected.name}</p>
+                    <p className="text-[13px] text-[#767676] mb-5">{selected.price}</p>
+                    <Link href={`/shop/${selected.id}`}
+                      className="block w-full bg-black text-white text-[10px] tracking-[0.22em] uppercase py-3.5 text-center hover:opacity-75 transition-opacity">
+                      Add to Bag
+                    </Link>
+                  </div>
+
+                  <a href={`https://wa.me/918980008826?text=${waMsg}`} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 border border-[#e5e5e5] py-3.5 text-[10px] tracking-[0.2em] uppercase hover:border-black transition-all">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    Get Styled on WhatsApp
+                  </a>
+
+                  <button onClick={() => { setStep('upload'); setResultUrl(null); }}
+                    className="text-[10px] tracking-[0.2em] uppercase text-[#767676] hover:text-black transition-colors underline underline-offset-2">
+                    Try a Different Photo
+                  </button>
+                  <button onClick={handleReset}
+                    className="text-[10px] tracking-[0.2em] uppercase text-[#767676] hover:text-black transition-colors underline underline-offset-2">
+                    Try a Different Style
+                  </button>
+                </div>
               </div>
             </motion.div>
           )}
 
         </AnimatePresence>
+      </div>
+
+      {/* ── Bottom bar ── */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#e5e5e5] px-5 md:px-14 py-4 flex items-center justify-between z-20">
+        <p className="text-[10px] text-[#aaa] tracking-[0.1em]">ARA Virtual Try-On · Powered by Fashn AI</p>
+        <a href={`https://wa.me/918980008826?text=${waMsg}`} target="_blank" rel="noopener noreferrer"
+          className="text-[10px] tracking-[0.2em] uppercase hover:opacity-60 transition-opacity flex items-center gap-2">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          Talk to a Stylist
+        </a>
       </div>
     </div>
   );

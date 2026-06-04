@@ -11,9 +11,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, [router]);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-[#f9f9f9]">
       <AdminNav />
-      <main className="flex-1 p-8 overflow-auto">{children}</main>
+      <main className="flex-1 p-8 overflow-auto min-w-0">{children}</main>
     </div>
   );
 }

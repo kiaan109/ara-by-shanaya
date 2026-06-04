@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://ara-backend-api.vercel.app';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 const AI_URL      = process.env.NEXT_PUBLIC_AI_URL      || 'https://ara-backend-api.vercel.app';
 
 export const api = axios.create({

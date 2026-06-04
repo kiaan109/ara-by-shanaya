@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import ProductCard, { Product } from '@/components/ProductCard';
 import { getProducts } from '@/lib/api';
 
-const CATEGORIES = ['All', 'Saree', 'Lehenga', 'Kurti', 'Gown', 'Suit', 'Dupatta'];
+const CATEGORIES = ['All', 'Dress', 'Top', 'Skirt', 'Set', 'Blazer'];
 const SORT_OPTIONS = [
   { label: 'Newest', value: '' },
   { label: 'Price: Low to High', value: 'price_asc' },
