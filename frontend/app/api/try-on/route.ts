@@ -33,10 +33,12 @@ export async function POST(req: NextRequest) {
   const personBuffer = Buffer.from(b64Clean, 'base64');
 
   // Build multipart form — Pro endpoint uses top_garment / bottom_garment
-  const garmentBlob = new Blob([garmentBuffer], { type: 'image/jpeg' });
+  // Use Uint8Array to satisfy TypeScript strict BlobPart type across Node versions
+  const garmentBlob = new Blob([new Uint8Array(garmentBuffer)], { type: 'image/jpeg' });
+  const personBlob  = new Blob([new Uint8Array(personBuffer)],  { type: 'image/jpeg' });
   const form = new FormData();
   form.append('task_type',    'async');
-  form.append('person_image', new Blob([personBuffer], { type: 'image/jpeg' }), 'person.jpg');
+  form.append('person_image', personBlob, 'person.jpg');
   form.append('resolution',   '1280');       // highest quality output
   form.append('restore_face', 'true');       // preserve the person's face
 
