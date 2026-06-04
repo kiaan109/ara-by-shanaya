@@ -1,10 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { put, head, del } from '@vercel/blob';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+const ORDERS_BLOB = 'ara-orders.json';
+
+// Helper: fetch current orders list from blob
+async function readOrders(): Promise<any[]> {
+  try {
+    const res = await fetch(
+      `https://public.blob.vercel-storage.com/${ORDERS_BLOB}?t=${Date.now()}`,
+      { cache: 'no-store' }
+    );
+    if (!res.ok) return [];
+    return await res.json();
+  } catch {
+    return [];
+  }
+}
+
+// Helper: write orders list back to blob
+async function writeOrders(orders: any[]) {
+  const blob = new Blob([JSON.stringify(orders)], { type: 'application/json' });
+  await put(ORDERS_BLOB, blob, { access: 'public', addRandomSuffix: false });
+}
 
 // POST /api/orders — customer places an order
 export async function POST(req: NextRequest) {
@@ -15,37 +32,29 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  const { data, error } = await supabase
-    .from('orders')
-    .insert({
-      product_id:    productId,
-      product_name:  productName,
-      product_price: productPrice,
-      product_image: productImage || '',
-      size:          size || '',
-      color:         color || '',
-      customer_name: customerName || 'Unknown',
-      customer_phone:customerPhone || '',
-      status:        'pending',
-    })
-    .select()
-    .single();
+  const order = {
+    id:            crypto.randomUUID(),
+    created_at:    new Date().toISOString(),
+    product_id:    productId,
+    product_name:  productName,
+    product_price: productPrice || 0,
+    product_image: productImage || '',
+    size:          size  || '',
+    color:         color || '',
+    customer_name: customerName  || 'Customer',
+    customer_phone:customerPhone || '',
+    status:        'pending',
+  };
 
-  if (error) {
-    console.error('[orders] insert error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+  const orders = await readOrders();
+  orders.unshift(order); // newest first
+  await writeOrders(orders);
 
-  return NextResponse.json({ order: data });
+  return NextResponse.json({ order });
 }
 
 // GET /api/orders — admin fetch all orders
 export async function GET() {
-  const { data, error } = await supabase
-    .from('orders')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ orders: data || [], total: data?.length || 0 });
+  const orders = await readOrders();
+  return NextResponse.json({ orders, total: orders.length });
 }

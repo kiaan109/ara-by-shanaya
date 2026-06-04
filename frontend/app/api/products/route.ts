@@ -1,43 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { localProducts } from '@/lib/localProducts';
-import { createClient } from '@supabase/supabase-js';
 
-// Merge local hardcoded products with any admin-uploaded products from Supabase
+const PRODUCTS_BLOB = 'ara-admin-products.json';
+
+// Merge local + admin-uploaded products
 async function getAllProducts() {
   const all = [...localProducts] as any[];
-
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    const res = await fetch(
+      `https://public.blob.vercel-storage.com/${PRODUCTS_BLOB}?t=${Date.now()}`,
+      { cache: 'no-store' }
     );
-    const { data } = await supabase
-      .from('admin_products')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (data?.length) {
-      // Map Supabase column names to our product shape
-      const mapped = data.map((p: any) => ({
-        _id: p._id || p.id,
-        name: p.name, price: p.price,
-        description: p.description || '',
-        category: p.category || 'Other',
-        collection: p.collection || 'Custom',
-        images: p.images || [],
-        colors: p.colors || [],
-        sizes: p.sizes || ['XS','S','M','L','XL'],
-        inStock: p.in_stock ?? true,
-        featured: p.featured ?? false,
-        stock: p.stock || 10,
-        createdAt: p.created_at,
-      }));
-      all.push(...mapped);
+    if (res.ok) {
+      const adminProducts = await res.json();
+      all.push(...(adminProducts || []));
     }
-  } catch {
-    // Supabase not configured — just use local products
-  }
-
+  } catch { /* no admin products yet */ }
   return all;
 }
 

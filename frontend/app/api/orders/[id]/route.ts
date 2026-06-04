@@ -1,28 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { put } from '@vercel/blob';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+const ORDERS_BLOB = 'ara-orders.json';
+
+async function readOrders(): Promise<any[]> {
+  try {
+    const res = await fetch(
+      `https://public.blob.vercel-storage.com/${ORDERS_BLOB}?t=${Date.now()}`,
+      { cache: 'no-store' }
+    );
+    if (!res.ok) return [];
+    return await res.json();
+  } catch { return []; }
+}
+
+async function writeOrders(orders: any[]) {
+  const blob = new Blob([JSON.stringify(orders)], { type: 'application/json' });
+  await put(ORDERS_BLOB, blob, { access: 'public', addRandomSuffix: false });
+}
 
 // PATCH /api/orders/[id] — update order status
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   const { status } = await req.json();
-  const { data, error } = await supabase
-    .from('orders')
-    .update({ status })
-    .eq('id', params.id)
-    .select()
-    .single();
-
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ order: data });
+  const orders = await readOrders();
+  const updated = orders.map((o: any) => o.id === params.id ? { ...o, status } : o);
+  await writeOrders(updated);
+  return NextResponse.json({ ok: true });
 }
 
 // DELETE /api/orders/[id]
 export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
-  const { error } = await supabase.from('orders').delete().eq('id', params.id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  const orders = await readOrders();
+  await writeOrders(orders.filter((o: any) => o.id !== params.id));
   return NextResponse.json({ ok: true });
 }
