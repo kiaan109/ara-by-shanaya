@@ -3,25 +3,26 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev":   "next dev -p 3002",
+    "dev": "next dev -p 3002",
     "build": "next build",
     "start": "next start -p 3002"
   },
   "dependencies": {
-    "next":       "14.2.5",
-    "react":      "^18.3.1",
-    "react-dom":  "^18.3.1",
-    "axios":      "^1.7.3",
-    "framer-motion": "^11.3.24",
-    "react-hot-toast": "^2.4.1",
-    "tailwindcss": "^3.4.7",
+    "@supabase/supabase-js": "^2.107.0",
     "autoprefixer": "^10.4.19",
-    "postcss":    "^8.4.41"
+    "axios": "^1.7.3",
+    "framer-motion": "^11.3.24",
+    "next": "14.2.5",
+    "postcss": "^8.4.41",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.4.1",
+    "tailwindcss": "^3.4.7"
   },
   "devDependencies": {
-    "@types/node":     "^20.14.0",
-    "@types/react":    "^18.3.3",
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "typescript":      "^5.5.4"
+    "typescript": "^5.5.4"
   }
 }

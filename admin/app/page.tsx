@@ -1,8 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { login } from '@/lib/api';
-import toast from 'react-hot-toast';
+
+// Simple hardcoded admin credentials — no backend required
+const ADMIN_EMAIL    = 'admin@arabyshanaya.com';
+const ADMIN_PASSWORD = 'ARA@2026';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -17,23 +19,21 @@ export default function LoginPage() {
     }
   }, [router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    if (!email || !password) { setError('Enter your email and password'); return; }
     setLoading(true);
-    try {
-      const data = await login(email, password);
-      localStorage.setItem('ara_admin_token', data.token);
-      localStorage.setItem('ara_admin_user',  JSON.stringify(data.admin));
-      toast.success(`Welcome back, ${data.admin.name}!`);
-      router.push('/dashboard');
-    } catch (err: any) {
-      const msg = err.response?.data?.error || err.message || 'Login failed';
-      setError(msg);
-    } finally {
-      setLoading(false);
-    }
+
+    setTimeout(() => {
+      if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+        localStorage.setItem('ara_admin_token', 'ara-admin-authenticated-2026');
+        localStorage.setItem('ara_admin_user', JSON.stringify({ name: 'Shanaya', email: ADMIN_EMAIL }));
+        router.push('/dashboard');
+      } else {
+        setError('Incorrect email or password');
+        setLoading(false);
+      }
+    }, 600);
   };
 
   return (
@@ -102,7 +102,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center text-gray-400 text-[10px] mt-6 tracking-wider">
-          ARA by Shanaya © 2025
+          ARA by Shanaya © 2026
         </p>
       </div>
     </div>
