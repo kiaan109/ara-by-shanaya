@@ -28,8 +28,12 @@ export async function GET(req: NextRequest) {
   const limit    = parseInt(searchParams.get('limit') || '20');
   const page     = parseInt(searchParams.get('page')  || '1');
 
+  const collection = searchParams.get('collection');
   let filtered = await getAllProducts();
 
+  if (collection && collection !== 'All') {
+    filtered = filtered.filter(p => p.collection === collection);
+  }
   if (category && category !== 'All') {
     filtered = filtered.filter(p => p.category === category);
   }

@@ -1,16 +1,28 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 
+const COLLECTIONS = [
+  { name: 'Dark Cloud',   color: '#6b21a8' },
+  { name: 'Horizon',      color: '#c2410c' },
+  { name: 'Ocean',        color: '#0e7490' },
+  { name: 'Beach',        color: '#a16207' },
+  { name: 'Waves',        color: '#0369a1' },
+  { name: 'Pink Skies',   color: '#be185d' },
+  { name: 'Orange Vista', color: '#c2410c' },
+];
+
 export default function Navbar() {
-  const [scrolled,   setScrolled]   = useState(false);
-  const [menuOpen,   setMenuOpen]   = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [query,      setQuery]      = useState('');
+  const [scrolled,        setScrolled]        = useState(false);
+  const [menuOpen,        setMenuOpen]         = useState(false);
+  const [searchOpen,      setSearchOpen]       = useState(false);
+  const [collectionsOpen, setCollectionsOpen]  = useState(false);
+  const [query,           setQuery]            = useState('');
+  const collectionsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   const cartCount     = useCartStore(s => s.items.reduce((a, i) => a + i.quantity, 0));
@@ -52,25 +64,67 @@ export default function Navbar() {
             </button>
             {/* Desktop links */}
             <div className="hidden lg:flex items-center gap-7">
-              {[
-                { href: '/shop',                label: 'Shop' },
-                { href: '/shop?category=Dress', label: 'Dresses' },
-                { href: '/shop?category=Top',   label: 'Tops' },
-              ].map(({ href, label }) => (
-                <Link key={label} href={href}
-                  className="nav-link text-[11px] tracking-[0.18em] uppercase text-[#444] hover:text-black transition-colors whitespace-nowrap">
-                  {label}
-                </Link>
-              ))}
+              <Link href="/shop"
+                className="nav-link text-[11px] tracking-[0.18em] uppercase text-[#444] hover:text-black transition-colors whitespace-nowrap">
+                Shop
+              </Link>
+
+              {/* Collections dropdown */}
+              <div
+                ref={collectionsRef}
+                className="relative"
+                onMouseEnter={() => setCollectionsOpen(true)}
+                onMouseLeave={() => setCollectionsOpen(false)}
+              >
+                <button className="nav-link text-[11px] tracking-[0.18em] uppercase text-[#444] hover:text-black transition-colors whitespace-nowrap flex items-center gap-1">
+                  Collections
+                  <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor"
+                    style={{ transform: collectionsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                    <path d="M0 2l4 4 4-4H0z"/>
+                  </svg>
+                </button>
+                <AnimatePresence>
+                  {collectionsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.18 }}
+                      className="absolute top-full left-1/2 -translate-x-1/2 pt-3 z-50"
+                    >
+                      <div className="bg-white border border-[#f0f0f0] shadow-lg min-w-[180px] py-2">
+                        {COLLECTIONS.map(({ name, color }) => (
+                          <Link
+                            key={name}
+                            href={`/shop?collection=${encodeURIComponent(name)}`}
+                            onClick={() => setCollectionsOpen(false)}
+                            className="flex items-center gap-3 px-5 py-2.5 text-[10px] tracking-[0.15em] uppercase text-[#444] hover:text-black hover:bg-[#f9f9f9] transition-colors whitespace-nowrap"
+                          >
+                            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+                            {name}
+                          </Link>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <Link href="/shop?category=Dress"
+                className="nav-link text-[11px] tracking-[0.18em] uppercase text-[#444] hover:text-black transition-colors whitespace-nowrap">
+                Dresses
+              </Link>
+              <Link href="/shop?category=Top"
+                className="nav-link text-[11px] tracking-[0.18em] uppercase text-[#444] hover:text-black transition-colors whitespace-nowrap">
+                Tops
+              </Link>
             </div>
           </div>
 
           {/* ── Column 2: Brand (always centred) ── */}
           <div className="flex justify-center">
-            <Link href="/" className="whitespace-nowrap">
-              <span className="font-display text-[17px] md:text-[19px] tracking-[0.22em] uppercase font-light leading-none">
-                ARA&nbsp;<span className="text-[#C5A059]">by</span>&nbsp;SHANAYA
-              </span>
+            <Link href="/" className="hover:opacity-80 transition-opacity duration-200">
+              <img src="/logo.svg" alt="ARA by Shanaya" className="h-10 w-auto" style={{ minWidth: '110px' }} />
             </Link>
           </div>
 
@@ -80,6 +134,7 @@ export default function Navbar() {
             <div className="hidden lg:flex items-center gap-7 mr-3">
               {[
                 { href: '/shop?category=Skirt', label: 'Skirts' },
+                { href: '/shop?category=Pants', label: 'Pants' },
                 { href: '/try-on',              label: 'AI Try-On' },
               ].map(({ href, label }) => (
                 <Link key={label} href={href}
@@ -169,29 +224,60 @@ export default function Navbar() {
                 </button>
               </div>
 
-              <nav className="flex-1 px-6 py-8 flex flex-col overflow-y-auto">
+              <nav className="flex-1 px-6 py-6 flex flex-col overflow-y-auto">
+                {/* Shop by type */}
                 {[
-                  { href: '/shop',                   label: 'Shop All' },
-                  { href: '/shop?category=Dress',    label: 'Dresses' },
-                  { href: '/shop?category=Top',      label: 'Tops' },
-                  { href: '/shop?category=Skirt',    label: 'Skirts' },
-                  { href: '/shop?category=Pants',    label: 'Pants' },
-                  { href: '/try-on',                 label: 'AI Try-On' },
-                  { href: '/wishlist',               label: 'Wishlist' },
-                  { href: '/account',                label: 'Account' },
+                  { href: '/shop',                label: 'Shop All' },
+                  { href: '/shop?category=Dress', label: 'Dresses' },
+                  { href: '/shop?category=Top',   label: 'Tops' },
+                  { href: '/shop?category=Skirt', label: 'Skirts' },
+                  { href: '/shop?category=Pants', label: 'Pants' },
                 ].map(({ href, label }, i) => (
                   <motion.div key={href}
-                    initial={{ opacity: 0, x: -16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.07 + i * 0.055 }}>
+                    initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.06 + i * 0.05 }}>
                     <Link href={href} onClick={() => setMenuOpen(false)}
-                      className="flex items-center justify-between py-5 border-b border-black/5
-                        font-display text-[22px] italic font-light hover:text-[#C5A059] transition-colors group">
+                      className="flex items-center justify-between py-4 border-b border-black/5
+                        font-display text-[20px] italic font-light hover:text-[#C5A059] transition-colors group">
                       {label}
-                      <span className="material-symbols-outlined text-[16px] opacity-20
-                        group-hover:opacity-100 group-hover:text-[#C5A059] transition-all">
-                        arrow_forward
-                      </span>
+                      <span className="material-symbols-outlined text-[15px] opacity-20 group-hover:opacity-100 group-hover:text-[#C5A059] transition-all">arrow_forward</span>
+                    </Link>
+                  </motion.div>
+                ))}
+
+                {/* Collections */}
+                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
+                  className="font-sans text-[8px] tracking-[0.45em] uppercase text-[#C5A059] mt-6 mb-2">
+                  Collections
+                </motion.p>
+                {COLLECTIONS.map(({ name, color }, i) => (
+                  <motion.div key={name}
+                    initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.38 + i * 0.04 }}>
+                    <Link href={`/shop?collection=${encodeURIComponent(name)}`} onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-3 py-3 border-b border-black/5
+                        font-sans text-[11px] tracking-[0.15em] uppercase text-[#444] hover:text-black transition-colors group">
+                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+                      {name}
+                      <span className="ml-auto material-symbols-outlined text-[13px] opacity-0 group-hover:opacity-60 transition-all">arrow_forward</span>
+                    </Link>
+                  </motion.div>
+                ))}
+
+                {/* Extras */}
+                {[
+                  { href: '/try-on',   label: 'AI Try-On' },
+                  { href: '/wishlist', label: 'Wishlist' },
+                  { href: '/account',  label: 'Account' },
+                ].map(({ href, label }, i) => (
+                  <motion.div key={href}
+                    initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.68 + i * 0.04 }}>
+                    <Link href={href} onClick={() => setMenuOpen(false)}
+                      className="flex items-center justify-between py-4 border-b border-black/5
+                        font-display text-[18px] italic font-light hover:text-[#C5A059] transition-colors group">
+                      {label}
+                      <span className="material-symbols-outlined text-[14px] opacity-20 group-hover:opacity-100 group-hover:text-[#C5A059] transition-all">arrow_forward</span>
                     </Link>
                   </motion.div>
                 ))}

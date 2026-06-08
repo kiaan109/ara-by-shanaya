@@ -148,15 +148,10 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
         </div>
 
-        {/* Info */}
-        <div className="mt-2.5">
-          <p
-            className="text-[12px] text-black leading-tight transition-opacity duration-200"
-            style={{ opacity: hovered ? 0.7 : 1 }}
-          >
-            {product.name}
-          </p>
-          <p className="text-[12px] text-[#767676] mt-0.5">₹{product.price.toLocaleString('en-IN')}</p>
+        {/* Info — always visible */}
+        <div className="mt-2">
+          <p className="text-[11px] text-black leading-tight truncate">{product.name}</p>
+          <p className="text-[11px] text-[#C5A059] mt-0.5">₹{product.price.toLocaleString('en-IN')}</p>
         </div>
       </div>
     </Link>

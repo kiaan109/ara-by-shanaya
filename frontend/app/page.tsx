@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard, { Product } from '@/components/ProductCard';
+import { ContainerScroll } from '@/components/ui/container-scroll-animation';
+import DisplayCards from '@/components/ui/display-cards';
 
 // Full lookbook spreads — shown at FULL height, never cropped
 const COLLECTIONS = [
@@ -49,6 +51,104 @@ const COLLECTIONS = [
     color: 'from-orange-800/50',
   },
 ];
+
+const LOOKBOOK_PAGES = Array.from({ length: 27 }, (_, i) =>
+  `/lookbook/page-${String(i + 1).padStart(2, '0')}.jpg`
+);
+
+function LookbookSlideshow() {
+  const [idx, setIdx] = useState(0);
+  const [dir, setDir] = useState(1);
+  const timerRef = typeof window !== 'undefined' ? { current: null as ReturnType<typeof setInterval> | null } : { current: null };
+
+  const goTo = (newIdx: number) => {
+    setDir(newIdx > idx ? 1 : -1);
+    setIdx(newIdx);
+  };
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setDir(1);
+      setIdx(i => (i + 1) % LOOKBOOK_PAGES.length);
+    }, 3800);
+    return () => clearInterval(t);
+  }, []);
+
+  return (
+    <div className="relative w-full h-full overflow-hidden bg-[#111]">
+      {/* Book page slide animation */}
+      <AnimatePresence initial={false} custom={dir} mode="popLayout">
+        <motion.div
+          key={idx}
+          custom={dir}
+          variants={{
+            initial: (d: number) => ({ x: d > 0 ? '100%' : '-100%', opacity: 0.6 }),
+            animate: { x: 0, opacity: 1 },
+            exit:    (d: number) => ({ x: d > 0 ? '-6%' : '6%', opacity: 0, scale: 0.97 }),
+          }}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-0"
+        >
+          <img
+            src={LOOKBOOK_PAGES[idx]}
+            alt={`Lookbook page ${idx + 1}`}
+            loading={idx < 3 ? 'eager' : 'lazy'}
+            className="w-full h-full object-contain"
+            style={{ display: 'block' }}
+          />
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Prev / Next arrows */}
+      <button
+        onClick={() => goTo((idx - 1 + LOOKBOOK_PAGES.length) % LOOKBOOK_PAGES.length)}
+        className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center
+          text-white/30 hover:text-white/80 transition-colors select-none text-3xl font-extralight"
+        aria-label="Previous page"
+      >‹</button>
+      <button
+        onClick={() => goTo((idx + 1) % LOOKBOOK_PAGES.length)}
+        className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center
+          text-white/30 hover:text-white/80 transition-colors select-none text-3xl font-extralight"
+        aria-label="Next page"
+      >›</button>
+
+      {/* Collection label */}
+      {(() => {
+        const col = COLLECTIONS.find(c =>
+          c.pages.includes(LOOKBOOK_PAGES[idx])
+        );
+        const isFirst = col && col.pages[0] === LOOKBOOK_PAGES[idx];
+        return isFirst && col ? (
+          <div className="absolute top-5 left-5 z-10 pointer-events-none">
+            <p className="font-sans text-[8px] tracking-[0.45em] uppercase text-[#C5A059] mb-1">Collection</p>
+            <p className="font-display text-[18px] italic text-white leading-none">{col.name}</p>
+          </div>
+        ) : null;
+      })()}
+
+      {/* Page counter */}
+      <div className="absolute bottom-4 right-5 font-sans text-[9px] tracking-[0.3em] text-white/40 select-none z-10">
+        {String(idx + 1).padStart(2, '0')} / {String(LOOKBOOK_PAGES.length).padStart(2, '0')}
+      </div>
+
+      {/* Progress line-dots */}
+      <div className="absolute bottom-4 left-5 flex gap-1.5 z-10">
+        {LOOKBOOK_PAGES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i)}
+            className="transition-all duration-300 bg-white"
+            style={{ height: '1.5px', width: i === idx ? '22px' : '6px', opacity: i === idx ? 0.9 : 0.2 }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -97,13 +197,8 @@ export default function HomePage() {
           <div key={i} className="absolute inset-0 transition-opacity duration-[1800ms]"
             style={{ opacity: i === heroPage ? 1 : 0 }}>
             <img src={src} alt="ARA by Shanaya SS '26"
-              className="w-full h-full object-cover"
-              style={{
-                objectPosition: 'center top',
-                transform: i === heroPage ? 'scale(1.06)' : 'scale(1)',
-                transition: 'transform 10s ease',
-                display: 'block',
-              }} />
+              className="w-full h-full object-contain"
+              style={{ display: 'block' }} />
           </div>
         ))}
 
@@ -168,58 +263,26 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          THE LOOKBOOK — Full spreads, each collection
+          SCROLL REVEAL — 3-D scroll animation
       ═══════════════════════════════════════════════════════════════ */}
-      {COLLECTIONS.map(({ pages, name, desc, color }, ci) => (
-        <section key={name} className={`reveal ${ci % 2 === 0 ? 'bg-[#f9f9f9]' : 'bg-white'}`}>
-
-          {/* Collection header */}
-          <div className="max-w-[1440px] mx-auto px-6 md:px-16 pt-20 pb-10 flex items-end justify-between">
-            <div>
-              <p className="font-sans text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-2">
-                Collection 0{ci + 1}
+      <section className="bg-[#0d0d0d]">
+        <ContainerScroll
+          titleComponent={
+            <div className="flex flex-col items-center gap-4 pb-4">
+              <img src="/logo.svg" alt="ARA by Shanaya" className="h-16 w-auto" style={{ filter: 'brightness(0) invert(1)' }} />
+              <p className="font-sans text-[10px] tracking-[0.5em] uppercase text-[#C5A059]">
+                Spring Summer &apos;26
               </p>
-              <h2 className="font-display font-light text-[40px] md:text-[56px] italic leading-none">{name}</h2>
-              <p className="font-sans text-[14px] text-[#767676] mt-3 italic">{desc}</p>
+              <h2 className="font-display font-light italic text-white leading-none"
+                style={{ fontSize: 'clamp(2rem, 5vw, 4rem)' }}>
+                The Lookbook
+              </h2>
             </div>
-            <Link href={`/shop?search=${encodeURIComponent(name)}`}
-              className="hidden md:flex items-center gap-2 font-sans text-[11px] tracking-[0.25em] uppercase
-                border-b border-[#C5A059] pb-1 text-[#C5A059] hover:opacity-70 transition-opacity whitespace-nowrap">
-              Shop {name}
-              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </Link>
-          </div>
-
-          {/* Full-width lookbook spreads — shown at full natural height */}
-          <div className="grid grid-cols-1 md:grid-cols-2">
-            {pages.map((src, pi) => (
-              <Link key={pi} href={`/shop?search=${encodeURIComponent(name)}`}
-                className="group relative overflow-hidden block bg-[#f0f0f0]">
-                <img src={src} alt={`${name} look ${pi + 1}`}
-                  className="w-full transition-transform duration-[1400ms] group-hover:scale-[1.03]"
-                  style={{ display: 'block' }} />
-                <div className={`absolute inset-0 bg-gradient-to-t ${color} to-transparent
-                  opacity-0 group-hover:opacity-100 transition-opacity duration-700
-                  flex items-end justify-start p-8`}>
-                  <span className="font-display text-[20px] italic text-white">
-                    View Look →
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-
-          {/* Mobile shop link */}
-          <div className="md:hidden px-6 pb-10 pt-5">
-            <Link href={`/shop?search=${encodeURIComponent(name)}`}
-              className="flex items-center gap-2 font-sans text-[11px] tracking-[0.25em] uppercase
-                border-b border-[#C5A059] pb-1 text-[#C5A059] w-fit">
-              Shop {name}
-              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </Link>
-          </div>
-        </section>
-      ))}
+          }
+        >
+          <LookbookSlideshow />
+        </ContainerScroll>
+      </section>
 
       {/* ═══════════════════════════════════════════════════════════════
           AI TRY-ON SECTION
@@ -254,6 +317,47 @@ export default function HomePage() {
               <p className="font-display text-[18px] italic">Scuba Corset Dress</p>
               <p className="font-sans text-[13px] text-white/55 mt-0.5">₹15,500</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          DISPLAY CARDS — stacked editorial showcase
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="bg-[#f9f9f9] py-28 reveal overflow-hidden">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-16">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-20">
+
+            {/* Left: text */}
+            <div className="flex-shrink-0 max-w-md">
+              <p className="font-sans text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-3">
+                Stand-Out Pieces
+              </p>
+              <h2 className="font-display font-light italic leading-tight mb-5"
+                style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}>
+                Pieces that<br />stop traffic.
+              </h2>
+              <p className="font-sans text-[14px] text-[#767676] leading-relaxed mb-8">
+                Bold silhouettes, vivid colour, and a confidence that needs no introduction.
+                Hover each card to reveal the look.
+              </p>
+              <Link href="/shop"
+                className="gold-btn inline-flex items-center gap-2 px-9 py-4 text-white font-sans text-[10px] tracking-[0.25em] uppercase">
+                Shop All
+              </Link>
+            </div>
+
+            {/* Right: stacked display cards */}
+            <div className="flex-1 flex justify-center lg:justify-end pr-0 lg:pr-24">
+              <DisplayCards
+                products={[
+                  { src: '/products/dark-cloud-corset-maxi.jpg',      name: 'Dark Cloud Corset Maxi',  price: 18500, href: '/shop/dark-cloud-corset-maxi' },
+                  { src: '/products/horizon-scuba-maxi-cutout.jpg',   name: 'Horizon Scuba Maxi',      price: 15500, href: '/shop/horizon-scuba-maxi-cutout' },
+                  { src: '/products/waves-sun-dress.jpg',             name: 'Waves Sun Dress',         price: 12500, href: '/shop/waves-sun-dress' },
+                ]}
+              />
+            </div>
+
           </div>
         </div>
       </section>
