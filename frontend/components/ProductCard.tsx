@@ -130,18 +130,11 @@ export default function ProductCard({ product }: { product: Product }) {
             style={{ opacity: hovered ? 0.08 : 0 }}
           />
 
-          {/* Add to bag — slides up from bottom */}
-          <div
-            className="absolute bottom-0 left-0 right-0 p-2.5"
-            style={{
-              opacity: hovered ? 1 : 0,
-              transform: hovered ? 'translateY(0)' : 'translateY(6px)',
-              transition: 'opacity 0.3s ease, transform 0.3s ease',
-            }}
-          >
+          {/* Add to bag — always visible on mobile, hover-reveal on desktop */}
+          <div className="absolute bottom-0 left-0 right-0 p-2 md:p-2.5 md:opacity-0 md:translate-y-1.5 md:group-hover:opacity-100 md:group-hover:translate-y-0 md:transition-all md:duration-300">
             <button
               onClick={handleAdd}
-              className="w-full bg-white text-black text-[10px] tracking-[0.2em] uppercase py-3.5 hover:bg-black hover:text-white transition-colors duration-200"
+              className="w-full bg-white text-black text-[9px] md:text-[10px] tracking-[0.18em] md:tracking-[0.2em] uppercase py-3 md:py-3.5 hover:bg-black hover:text-white transition-colors duration-200"
             >
               Add to Bag
             </button>

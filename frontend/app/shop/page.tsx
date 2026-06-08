@@ -68,14 +68,14 @@ function ShopContent() {
   const activeLabel = collection || typeLabel || (search ? `"${search}"` : 'All Products');
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-[64px]">
 
       {/* ── Collection filter bar ─────────────────────────────────── */}
-      <div className="border-b border-[#e5e5e5] overflow-x-auto bg-white sticky top-[64px] z-40">
-        <div className="max-w-[1440px] mx-auto px-5 md:px-10 flex items-center">
+      <div className="border-b border-[#e5e5e5] overflow-x-auto bg-white sticky top-[64px] z-40 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="max-w-[1440px] mx-auto px-3 md:px-10 flex items-center min-w-max md:min-w-0">
           <button
             onClick={() => { setCollection(''); setTypeFilter(''); setPage(1); router.replace('/shop'); }}
-            className={`px-5 py-4 font-sans text-[10px] tracking-[0.2em] uppercase whitespace-nowrap transition-all border-b-2 ${
+            className={`px-3 md:px-5 py-3.5 md:py-4 font-sans text-[9px] md:text-[10px] tracking-[0.18em] md:tracking-[0.2em] uppercase whitespace-nowrap transition-all border-b-2 ${
               !collection && !typeFilter && !search
                 ? 'border-black text-black'
                 : 'border-transparent text-[#767676] hover:text-black'
@@ -85,12 +85,12 @@ function ShopContent() {
           </button>
 
           {/* Collection tabs */}
-          <span className="w-px h-4 bg-[#e5e5e5] mx-1" />
+          <span className="w-px h-3.5 bg-[#e5e5e5] mx-0.5 md:mx-1" />
           {COLLECTIONS.map(c => (
             <button
               key={c}
               onClick={() => { setCollection(c === collection ? '' : c); setTypeFilter(''); setPage(1); }}
-              className={`px-4 py-4 font-sans text-[10px] tracking-[0.15em] uppercase whitespace-nowrap transition-all border-b-2 ${
+              className={`px-3 md:px-4 py-3.5 md:py-4 font-sans text-[9px] md:text-[10px] tracking-[0.12em] md:tracking-[0.15em] uppercase whitespace-nowrap transition-all border-b-2 ${
                 collection === c ? 'border-[#C5A059] text-black' : 'border-transparent text-[#767676] hover:text-black'
               }`}
             >
@@ -99,12 +99,12 @@ function ShopContent() {
           ))}
 
           {/* Type tabs */}
-          <span className="w-px h-4 bg-[#e5e5e5] mx-1" />
+          <span className="w-px h-3.5 bg-[#e5e5e5] mx-0.5 md:mx-1" />
           {TYPES.map(({ value, label }) => (
             <button
               key={value}
               onClick={() => { setTypeFilter(value === typeFilter ? '' : value); setPage(1); }}
-              className={`px-4 py-4 font-sans text-[10px] tracking-[0.15em] uppercase whitespace-nowrap transition-all border-b-2 ${
+              className={`px-3 md:px-4 py-3.5 md:py-4 font-sans text-[9px] md:text-[10px] tracking-[0.12em] md:tracking-[0.15em] uppercase whitespace-nowrap transition-all border-b-2 ${
                 typeFilter === value ? 'border-black text-black' : 'border-transparent text-[#767676] hover:text-black'
               }`}
             >
@@ -114,13 +114,13 @@ function ShopContent() {
         </div>
       </div>
 
-      <div className="max-w-[1440px] mx-auto px-5 md:px-10 py-8">
+      <div className="max-w-[1440px] mx-auto px-4 md:px-10 lg:px-16 py-6 md:py-8">
 
         {/* ── Header ── */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-5 md:mb-6">
           <div>
-            <h1 className="font-display italic text-[22px] font-light leading-none">{activeLabel}</h1>
-            <p className="font-sans text-[10px] text-[#767676] mt-1">{total} pieces</p>
+            <h1 className="font-display italic text-[18px] md:text-[22px] lg:text-[26px] font-light leading-none">{activeLabel}</h1>
+            <p className="font-sans text-[9px] md:text-[10px] text-[#767676] mt-1">{total} pieces</p>
           </div>
           <div className="flex items-center gap-4">
             {(search || collection || typeFilter) && (
@@ -158,7 +158,7 @@ function ShopContent() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2.5 md:gap-x-3 lg:gap-x-4 gap-y-7 md:gap-y-8 lg:gap-y-10">
             {products.map(p => <ProductCard key={p._id} product={p} />)}
           </div>
         )}

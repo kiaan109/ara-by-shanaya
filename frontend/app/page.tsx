@@ -197,35 +197,37 @@ export default function HomePage() {
           <div key={i} className="absolute inset-0 transition-opacity duration-[1800ms]"
             style={{ opacity: i === heroPage ? 1 : 0 }}>
             <img src={src} alt="ARA by Shanaya SS '26"
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain md:object-cover md:object-top"
               style={{ display: 'block' }} />
           </div>
         ))}
 
-        {/* Dark gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+        {/* Dark gradient overlay — stronger on desktop for text legibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent md:from-black/70 md:via-black/10" />
+        {/* Side gradient on desktop for split feel */}
+        <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
 
         {/* Hero content */}
-        <div className="absolute bottom-0 left-0 right-0 z-10 px-6 md:px-16 pb-16 md:pb-24">
+        <div className="absolute bottom-0 left-0 right-0 z-10 px-5 md:px-16 lg:px-24 pb-12 md:pb-24 lg:pb-32">
           <AnimatePresence mode="wait">
             {ready && (
               <motion.div key={heroPage}
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                 transition={{ duration: 0.8 }}>
-                <p className="font-sans text-[10px] tracking-[0.55em] uppercase text-white/55 mb-3">
+                <p className="font-sans text-[9px] md:text-[10px] tracking-[0.45em] md:tracking-[0.55em] uppercase text-white/55 mb-2 md:mb-3">
                   Spring Summer '26
                 </p>
-                <h1 className="font-display font-light text-white leading-[0.9] mb-8"
-                  style={{ fontSize: 'clamp(3rem, 9vw, 7.5rem)', letterSpacing: '-0.025em' }}>
+                <h1 className="font-display font-light text-white leading-[0.88] mb-6 md:mb-8"
+                  style={{ fontSize: 'clamp(2.8rem, 8vw, 8rem)', letterSpacing: '-0.025em' }}>
                   Life's a<br />Beach
                 </h1>
-                <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-row gap-3 md:gap-4">
                   <Link href="/shop"
-                    className="gold-btn inline-block px-10 py-4 text-white font-sans text-[11px] tracking-[0.25em] uppercase">
+                    className="gold-btn inline-block px-6 md:px-10 py-3 md:py-4 text-white font-sans text-[10px] md:text-[11px] tracking-[0.2em] md:tracking-[0.25em] uppercase">
                     Shop Collection
                   </Link>
                   <Link href="/try-on"
-                    className="inline-block px-10 py-4 border border-white/50 text-white font-sans text-[11px] tracking-[0.25em] uppercase backdrop-blur-sm hover:bg-white/10 transition-colors">
+                    className="hidden sm:inline-block px-10 py-4 border border-white/50 text-white font-sans text-[11px] tracking-[0.25em] uppercase backdrop-blur-sm hover:bg-white/10 transition-colors">
                     AI Virtual Try-On
                   </Link>
                 </div>
@@ -247,15 +249,15 @@ export default function HomePage() {
       {/* ═══════════════════════════════════════════════════════════════
           INTRO STRIP
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="bg-white py-16 px-6 md:px-16 reveal">
-        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+      <section className="bg-white py-10 md:py-16 lg:py-20 px-5 md:px-16 lg:px-24 reveal">
+        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-5 md:gap-8">
           <div>
-            <p className="font-sans text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-2">New Collection</p>
-            <h2 className="font-display font-light text-[36px] md:text-[52px] italic leading-tight">
+            <p className="font-sans text-[9px] md:text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-2">New Collection</p>
+            <h2 className="font-display font-light text-[28px] md:text-[44px] lg:text-[56px] italic leading-tight">
               Seven Collections.<br />One Season.
             </h2>
           </div>
-          <p className="font-sans text-[15px] text-[#767676] max-w-md leading-relaxed">
+          <p className="font-sans text-[13px] md:text-[15px] text-[#767676] max-w-sm md:max-w-md leading-relaxed">
             A sun-drenched invitation to a world where fashion and horizon intertwine.
             Where the air is salty and the dresses match the tides.
           </p>
@@ -265,7 +267,8 @@ export default function HomePage() {
       {/* ═══════════════════════════════════════════════════════════════
           SCROLL REVEAL — 3-D scroll animation
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="bg-[#0d0d0d]">
+      {/* Desktop/tablet: 3-D scroll lookbook */}
+      <section className="hidden md:block bg-[#0d0d0d]">
         <ContainerScroll
           titleComponent={
             <div className="flex flex-col items-center gap-4 pb-4">
@@ -284,11 +287,23 @@ export default function HomePage() {
         </ContainerScroll>
       </section>
 
+      {/* Mobile: flat lookbook slideshow */}
+      <section className="md:hidden bg-[#0d0d0d] py-12 px-5">
+        <div className="flex flex-col items-center gap-3 mb-6">
+          <img src="/logo.svg" alt="ARA by Shanaya" className="h-10 w-auto" style={{ filter: 'brightness(0) invert(1)' }} />
+          <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-[#C5A059]">Spring Summer &apos;26</p>
+          <h2 className="font-display font-light italic text-white text-[28px]">The Lookbook</h2>
+        </div>
+        <div className="relative w-full overflow-hidden rounded-sm bg-[#111]" style={{ aspectRatio: '3/4' }}>
+          <LookbookSlideshow />
+        </div>
+      </section>
+
       {/* ═══════════════════════════════════════════════════════════════
           AI TRY-ON SECTION
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="bg-[#1a1c1c] py-28 reveal">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-16 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+      <section className="bg-[#1a1c1c] py-16 md:py-24 lg:py-32 reveal">
+        <div className="max-w-[1440px] mx-auto px-5 md:px-16 lg:px-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
           <div className="space-y-7">
             <div className="flex items-center gap-5">
               <span className="h-px w-12 bg-[#C5A059]" />
@@ -324,9 +339,9 @@ export default function HomePage() {
       {/* ═══════════════════════════════════════════════════════════════
           DISPLAY CARDS — stacked editorial showcase
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="bg-[#f9f9f9] py-28 reveal overflow-hidden">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-16">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-20">
+      <section className="bg-[#f9f9f9] py-16 md:py-24 lg:py-32 reveal overflow-hidden">
+        <div className="max-w-[1440px] mx-auto px-5 md:px-16 lg:px-24">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20">
 
             {/* Left: text */}
             <div className="flex-shrink-0 max-w-md">
@@ -365,19 +380,19 @@ export default function HomePage() {
       {/* ═══════════════════════════════════════════════════════════════
           FEATURED PRODUCTS
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="bg-white py-24 reveal">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-16">
-          <div className="flex flex-col items-center text-center mb-14">
-            <p className="font-sans text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-3">Shop Now</p>
-            <h2 className="font-display font-light text-[40px] md:text-[52px] italic leading-tight">Featured Pieces</h2>
-            <div className="w-10 h-px bg-[#C5A059] mt-5" />
+      <section className="bg-white py-16 md:py-24 lg:py-28 reveal">
+        <div className="max-w-[1440px] mx-auto px-5 md:px-16 lg:px-24">
+          <div className="flex flex-col items-center text-center mb-10 md:mb-14">
+            <p className="font-sans text-[9px] md:text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-3">Shop Now</p>
+            <h2 className="font-display font-light text-[32px] md:text-[44px] lg:text-[52px] italic leading-tight">Featured Pieces</h2>
+            <div className="w-10 h-px bg-[#C5A059] mt-4" />
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-10">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 md:gap-x-4 gap-y-8 md:gap-y-10">
             {products.map(p => <ProductCard key={p._id} product={p} />)}
           </div>
-          <div className="text-center mt-14">
+          <div className="text-center mt-10 md:mt-14">
             <Link href="/shop"
-              className="inline-flex items-center gap-2 gold-btn px-12 py-4 text-white font-sans text-[11px] tracking-[0.25em] uppercase">
+              className="inline-flex items-center gap-2 gold-btn px-10 md:px-12 py-3.5 md:py-4 text-white font-sans text-[10px] md:text-[11px] tracking-[0.25em] uppercase">
               View All Pieces
               <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
             </Link>
