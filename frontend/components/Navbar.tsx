@@ -124,7 +124,11 @@ export default function Navbar() {
           {/* ── Column 2: Brand (always centred) ── */}
           <div className="flex justify-center">
             <Link href="/" className="hover:opacity-80 transition-opacity duration-200">
-              <img src="/logo.svg" alt="ARA by Shanaya" className="h-10 w-auto" style={{ minWidth: '110px' }} />
+              <img
+                src="/logo.jpg"
+                alt="ARA by Shanaya"
+                className="h-14 w-[180px] object-contain"
+              />
             </Link>
           </div>
 

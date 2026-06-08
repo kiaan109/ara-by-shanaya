@@ -272,7 +272,7 @@ export default function HomePage() {
         <ContainerScroll
           titleComponent={
             <div className="flex flex-col items-center gap-4 pb-4">
-              <img src="/logo.svg" alt="ARA by Shanaya" className="h-16 w-auto" style={{ filter: 'brightness(0) invert(1)' }} />
+              <img src="/logo.jpg" alt="ARA by Shanaya" className="h-20 w-[240px] object-contain" />
               <p className="font-sans text-[10px] tracking-[0.5em] uppercase text-[#C5A059]">
                 Spring Summer &apos;26
               </p>
@@ -290,7 +290,7 @@ export default function HomePage() {
       {/* Mobile: flat lookbook slideshow */}
       <section className="md:hidden bg-[#0d0d0d] py-12 px-5">
         <div className="flex flex-col items-center gap-3 mb-6">
-          <img src="/logo.svg" alt="ARA by Shanaya" className="h-10 w-auto" style={{ filter: 'brightness(0) invert(1)' }} />
+          <img src="/logo.jpg" alt="ARA by Shanaya" className="h-14 w-[180px] object-contain" />
           <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-[#C5A059]">Spring Summer &apos;26</p>
           <h2 className="font-display font-light italic text-white text-[28px]">The Lookbook</h2>
         </div>
