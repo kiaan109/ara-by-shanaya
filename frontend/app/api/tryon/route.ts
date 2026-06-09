@@ -31,20 +31,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Build a prompt so tryon-max fully replaces the original clothing
-    // (without this, original pants/shirts can bleed through underneath)
-    const promptMap: Record<string, string> = {
-      'tops':
-        'Completely replace the top/shirt with this garment. Keep the original pants/bottoms.',
-      'bottoms':
-        'Completely replace the pants/skirt/shorts with this garment. Remove the original bottoms entirely so none are visible.',
-      'one-pieces':
-        'Replace the entire outfit — top AND pants/skirt — with this garment. ' +
-        'Remove all original clothing so no original pants or shirt are visible underneath.',
-    };
-    const tryonPrompt = promptMap[category] ?? promptMap['one-pieces'];
-
-    // tryon-max = Fashn.ai's best model (enhanced fidelity, recommended endpoint)
+    // tryon-v1.6 with category is the correct model for full outfit replacement.
+    // tryon-max has no "category" param so it can't tell the difference between
+    // "replace full outfit" vs "replace just a top" — pants always bleed through.
+    // category: 'one-pieces' explicitly tells the model to replace everything (top + bottom).
+    // garment_photo_type: 'model' — ARA product images show a model wearing the garment,
+    //   so the AI knows to extract the garment first before placing it.
+    // mode: 'quality' — slowest but highest fidelity output.
     const res = await fetch(`${FASHN_BASE}/run`, {
       method: 'POST',
       headers: {
@@ -52,13 +45,13 @@ export async function POST(req: NextRequest) {
         Authorization: `Bearer ${FASHN_KEY}`,
       },
       body: JSON.stringify({
-        model_name: 'tryon-max',
+        model_name: 'tryon-v1.6',
         inputs: {
-          model_image:     modelImage,
-          product_image:   garmentData,
-          generation_mode: 'quality',
-          resolution:      '2k',
-          prompt:          tryonPrompt,
+          model_image:        modelImage,
+          garment_image:      garmentData,
+          category,
+          garment_photo_type: 'model',
+          mode:               'quality',
         },
       }),
     });
