@@ -278,6 +278,13 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
+          3D VIDEO CARD CAROUSEL  ← moved up (2nd section after hero)
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="relative" style={{ height: '100svh' }}>
+        <VideoCardCarousel />
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
           SCROLL REVEAL — 3-D scroll animation
       ═══════════════════════════════════════════════════════════════ */}
       {/* Desktop/tablet: 3-D scroll lookbook */}
@@ -314,6 +321,13 @@ export default function HomePage() {
         <div className="relative w-full overflow-hidden rounded-sm bg-[#111]" style={{ aspectRatio: '3/4' }}>
           <LookbookSlideshow />
         </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          GLOW FEATURE CARDS  ← moved up (right after lookbook)
+      ═══════════════════════════════════════════════════════════════ */}
+      <section>
+        <GlowFeatureCards />
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
@@ -453,19 +467,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          GLOW FEATURE CARDS
-      ═══════════════════════════════════════════════════════════════ */}
-      <section>
-        <GlowFeatureCards />
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          3D VIDEO CARD CAROUSEL
-      ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative" style={{ height: '100svh' }}>
-        <VideoCardCarousel />
-      </section>
 
     </div>
   );
