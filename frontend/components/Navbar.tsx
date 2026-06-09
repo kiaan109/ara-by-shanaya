@@ -53,7 +53,7 @@ export default function Navbar() {
         scrolled ? 'border-black/10 shadow-sm' : 'border-white/10'
       }`}>
         {/* Single row: 3-column grid — left nav | brand | right icons */}
-        <div className="max-w-[1440px] mx-auto px-6 md:px-14 h-[64px] grid grid-cols-3 items-center">
+        <div className="max-w-[1440px] mx-auto px-4 md:px-14 h-[60px] md:h-[64px] grid grid-cols-3 items-center">
 
           {/* ── Column 1: Left nav links ── */}
           <div className="flex items-center gap-6">
@@ -123,17 +123,15 @@ export default function Navbar() {
 
           {/* ── Column 2: Brand (always centred) ── */}
           <div className="flex justify-center">
-            <Link href="/" className="hover:opacity-80 transition-opacity duration-200">
-              <img
-                src="/logo.jpg"
-                alt="ARA by Shanaya"
-                className="h-14 w-[180px] object-contain"
-              />
+            <Link href="/" className="hover:opacity-70 transition-opacity duration-200 select-none">
+              <span className="font-display text-[12px] sm:text-[15px] lg:text-[18px] tracking-[0.1em] sm:tracking-[0.18em] lg:tracking-[0.22em] uppercase font-light text-[#1a1c1c] whitespace-nowrap">
+                ARA&nbsp;<span className="text-[#C5A059]">by</span>&nbsp;SHANAYA
+              </span>
             </Link>
           </div>
 
           {/* ── Column 3: Right nav + icons ── */}
-          <div className="flex items-center justify-end gap-5">
+          <div className="flex items-center justify-end gap-2.5 sm:gap-4 lg:gap-5">
             {/* Desktop right links */}
             <div className="hidden lg:flex items-center gap-7 mr-3">
               {[
@@ -150,12 +148,12 @@ export default function Navbar() {
 
             {/* Search */}
             <button onClick={() => setSearchOpen(v => !v)} className="hover:opacity-60 transition-opacity">
-              <span className="material-symbols-outlined text-[21px]">search</span>
+              <span className="material-symbols-outlined text-[19px] sm:text-[21px]">search</span>
             </button>
 
             {/* Wishlist */}
             <Link href="/wishlist" className="relative hover:opacity-60 transition-opacity">
-              <span className="material-symbols-outlined text-[21px]">favorite</span>
+              <span className="material-symbols-outlined text-[19px] sm:text-[21px]">favorite</span>
               <AnimatePresence>
                 {wishlistCount > 0 && (
                   <motion.span key="wb" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
@@ -168,7 +166,7 @@ export default function Navbar() {
 
             {/* Cart */}
             <Link href="/cart" className="relative hover:opacity-60 transition-opacity">
-              <span className="material-symbols-outlined text-[21px]">shopping_bag</span>
+              <span className="material-symbols-outlined text-[19px] sm:text-[21px]">shopping_bag</span>
               <AnimatePresence>
                 {cartCount > 0 && (
                   <motion.span key="cb" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
