@@ -192,42 +192,55 @@ export default function HomePage() {
     <div className="overflow-x-hidden">
 
       {/* ═══════════════════════════════════════════════════════════════
-          HERO — Full-screen video
+          HERO — Full-screen video (desktop) / image (mobile)
       ═══════════════════════════════════════════════════════════════ */}
       <section className="relative w-full overflow-hidden bg-[#0d0d0d]" style={{ height: '100svh' }}>
-        {/* Video background */}
-        <video
-          autoPlay muted loop playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ display: 'block' }}
-        >
-          <source src="https://qcnpwaidf1iszznv.public.blob.vercel-storage.com/hero-video.mp4" type="video/mp4" />
-        </video>
 
-        {/* Gradient overlays */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent pointer-events-none" />
+        {/* ── Mobile: beautiful portrait product image ── */}
+        <div className="absolute inset-0 md:hidden">
+          <img
+            src="/products/dark-cloud-corset-maxi.jpg"
+            alt="ARA by Shanaya"
+            className="w-full h-full object-cover object-top"
+            style={{ display: 'block' }}
+          />
+        </div>
+
+        {/* ── Desktop: autoplay video ── */}
+        <div className="absolute inset-0 hidden md:block">
+          <video
+            autoPlay muted loop playsInline
+            className="w-full h-full object-cover"
+            style={{ display: 'block' }}
+          >
+            <source src="https://qcnpwaidf1iszznv.public.blob.vercel-storage.com/hero-video.mp4" type="video/mp4" />
+          </video>
+        </div>
+
+        {/* Gradient overlays — stronger on mobile for legibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20 pointer-events-none md:from-black/70 md:via-black/20 md:to-black/10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent pointer-events-none md:from-black/50 md:via-transparent" />
 
         {/* Text content */}
-        <div className="absolute inset-0 z-10 flex flex-col justify-end px-6 md:px-16 lg:px-24 pb-14 md:pb-20 lg:pb-28">
+        <div className="absolute inset-0 z-10 flex flex-col justify-end px-5 md:px-16 lg:px-24 pb-12 md:pb-20 lg:pb-28">
           {ready && (
             <motion.div
               initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}>
-              <p className="font-sans text-[9px] md:text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-3">
+              <p className="font-sans text-[9px] md:text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-2.5 md:mb-3">
                 Spring Summer '26
               </p>
-              <h1 className="font-display font-light text-white leading-[0.88] mb-7 md:mb-9"
-                style={{ fontSize: 'clamp(3rem, 9vw, 7.5rem)', letterSpacing: '-0.03em' }}>
+              <h1 className="font-display font-light text-white leading-[0.9] mb-6 md:mb-9"
+                style={{ fontSize: 'clamp(2.6rem, 12vw, 7.5rem)', letterSpacing: '-0.03em' }}>
                 Life's a<br />Beach
               </h1>
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col gap-2.5 sm:flex-row sm:gap-3">
                 <Link href="/shop"
-                  className="gold-btn inline-block px-8 md:px-10 py-3.5 md:py-4 text-white font-sans text-[10px] md:text-[11px] tracking-[0.25em] uppercase self-start">
+                  className="gold-btn inline-block px-7 md:px-10 py-3 md:py-4 text-white font-sans text-[10px] md:text-[11px] tracking-[0.25em] uppercase self-start">
                   Shop Collection
                 </Link>
                 <Link href="/try-on"
-                  className="inline-block px-8 md:px-10 py-3.5 md:py-4 border border-white/30 text-white font-sans text-[10px] md:text-[11px] tracking-[0.25em] uppercase hover:bg-white/10 transition-colors self-start">
+                  className="inline-block px-7 md:px-10 py-3 md:py-4 border border-white/40 text-white font-sans text-[10px] md:text-[11px] tracking-[0.25em] uppercase hover:bg-white/10 transition-colors self-start">
                   AI Virtual Try-On
                 </Link>
               </div>
@@ -235,7 +248,7 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* Scroll cue */}
+        {/* Scroll cue — desktop only */}
         <div className="absolute bottom-7 right-8 z-10 hidden md:flex flex-col items-center gap-1.5">
           <div className="w-px h-8 bg-white/20 overflow-hidden">
             <motion.div className="w-full bg-white/60"
