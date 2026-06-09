@@ -6,6 +6,42 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 
+const LOGO_CACHE_KEY = 'ara_logo_url';
+const LOGO_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+function useSiteLogo() {
+  // Seed from localStorage immediately (no flash)
+  const [logoUrl, setLogoUrl] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const raw = localStorage.getItem(LOGO_CACHE_KEY);
+      if (!raw) return null;
+      const { url, ts } = JSON.parse(raw);
+      if (Date.now() - ts < LOGO_CACHE_TTL) return url;
+      return null;
+    } catch { return null; }
+  });
+
+  useEffect(() => {
+    fetch('/api/admin/settings', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(s => {
+        const url = s.logoUrl || null;
+        setLogoUrl(url);
+        try {
+          if (url) {
+            localStorage.setItem(LOGO_CACHE_KEY, JSON.stringify({ url, ts: Date.now() }));
+          } else {
+            localStorage.removeItem(LOGO_CACHE_KEY);
+          }
+        } catch {}
+      })
+      .catch(() => {});
+  }, []);
+
+  return logoUrl;
+}
+
 const COLLECTIONS = [
   { name: 'Dark Cloud',   color: '#6b21a8' },
   { name: 'Horizon',      color: '#c2410c' },
@@ -24,6 +60,7 @@ export default function Navbar() {
   const [query,           setQuery]            = useState('');
   const collectionsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const logoUrl = useSiteLogo();
 
   const cartCount     = useCartStore(s => s.items.reduce((a, i) => a + i.quantity, 0));
   const wishlistCount = useWishlistStore(s => s.items.length);
@@ -121,12 +158,22 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* ── Center: Brand — flex-1 min-w-0 so it never crowds the icons ── */}
+          {/* ── Center: Logo or text brand — flex-1 min-w-0 so it never crowds the icons ── */}
           <div className="flex-1 min-w-0 flex justify-center">
-            <Link href="/" className="hover:opacity-70 transition-opacity duration-200 select-none">
-              <span className="font-display text-[10px] sm:text-[15px] lg:text-[18px] tracking-[0.25em] sm:tracking-[0.18em] lg:tracking-[0.22em] uppercase font-light text-[#1a1c1c] whitespace-nowrap">
-                ARA&nbsp;<span className="text-[#C5A059]">by</span>&nbsp;SHANAYA
-              </span>
+            <Link href="/" className="hover:opacity-70 transition-opacity duration-200 select-none flex items-center">
+              {logoUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={logoUrl}
+                  alt="ARA by SHANAYA"
+                  className="h-[28px] md:h-[32px] w-auto max-w-[160px] object-contain"
+                  style={{ display: 'block' }}
+                />
+              ) : (
+                <span className="font-display text-[10px] sm:text-[15px] lg:text-[18px] tracking-[0.25em] sm:tracking-[0.18em] lg:tracking-[0.22em] uppercase font-light text-[#1a1c1c] whitespace-nowrap">
+                  ARA&nbsp;<span className="text-[#C5A059]">by</span>&nbsp;SHANAYA
+                </span>
+              )}
             </Link>
           </div>
 
