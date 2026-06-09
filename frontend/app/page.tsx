@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard, { Product } from '@/components/ProductCard';
 import { ContainerScroll } from '@/components/ui/container-scroll-animation';
 import DisplayCards from '@/components/ui/display-cards';
+import GlowFeatureCards from '@/components/ui/GlowFeatureCards';
+import VideoCardCarousel from '@/components/ui/VideoCardCarousel';
 
 // Full lookbook spreads — shown at FULL height, never cropped
 const COLLECTIONS = [
@@ -190,59 +192,57 @@ export default function HomePage() {
     <div className="overflow-x-hidden">
 
       {/* ═══════════════════════════════════════════════════════════════
-          HERO — Lookbook cover page, full screen
+          HERO — Full-screen video
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative w-full overflow-hidden" style={{ height: '100svh' }}>
-        {HERO_IMGS.map((src, i) => (
-          <div key={i} className="absolute inset-0 transition-opacity duration-[1800ms]"
-            style={{ opacity: i === heroPage ? 1 : 0 }}>
-            <img src={src} alt="ARA by Shanaya SS '26"
-              className="w-full h-full object-contain md:object-cover md:object-top"
-              style={{ display: 'block' }} />
-          </div>
-        ))}
+      <section className="relative w-full overflow-hidden bg-[#0d0d0d]" style={{ height: '100svh' }}>
+        {/* Video background */}
+        <video
+          autoPlay muted loop playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ display: 'block' }}
+        >
+          <source src="https://qcnpwaidf1iszznv.public.blob.vercel-storage.com/hero-video.mp4" type="video/mp4" />
+        </video>
 
-        {/* Dark gradient overlay — stronger on desktop for text legibility */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent md:from-black/70 md:via-black/10" />
-        {/* Side gradient on desktop for split feel */}
-        <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
+        {/* Gradient overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent pointer-events-none" />
 
-        {/* Hero content */}
-        <div className="absolute bottom-0 left-0 right-0 z-10 px-5 md:px-16 lg:px-24 pb-12 md:pb-24 lg:pb-32">
-          <AnimatePresence mode="wait">
-            {ready && (
-              <motion.div key={heroPage}
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                transition={{ duration: 0.8 }}>
-                <p className="font-sans text-[9px] md:text-[10px] tracking-[0.45em] md:tracking-[0.55em] uppercase text-white/55 mb-2 md:mb-3">
-                  Spring Summer '26
-                </p>
-                <h1 className="font-display font-light text-white leading-[0.88] mb-6 md:mb-8"
-                  style={{ fontSize: 'clamp(2.8rem, 8vw, 8rem)', letterSpacing: '-0.025em' }}>
-                  Life's a<br />Beach
-                </h1>
-                <div className="flex flex-row gap-3 md:gap-4">
-                  <Link href="/shop"
-                    className="gold-btn inline-block px-6 md:px-10 py-3 md:py-4 text-white font-sans text-[10px] md:text-[11px] tracking-[0.2em] md:tracking-[0.25em] uppercase">
-                    Shop Collection
-                  </Link>
-                  <Link href="/try-on"
-                    className="hidden sm:inline-block px-10 py-4 border border-white/50 text-white font-sans text-[11px] tracking-[0.25em] uppercase backdrop-blur-sm hover:bg-white/10 transition-colors">
-                    AI Virtual Try-On
-                  </Link>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+        {/* Text content */}
+        <div className="absolute inset-0 z-10 flex flex-col justify-end px-6 md:px-16 lg:px-24 pb-14 md:pb-20 lg:pb-28">
+          {ready && (
+            <motion.div
+              initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}>
+              <p className="font-sans text-[9px] md:text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-3">
+                Spring Summer '26
+              </p>
+              <h1 className="font-display font-light text-white leading-[0.88] mb-7 md:mb-9"
+                style={{ fontSize: 'clamp(3rem, 9vw, 7.5rem)', letterSpacing: '-0.03em' }}>
+                Life's a<br />Beach
+              </h1>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link href="/shop"
+                  className="gold-btn inline-block px-8 md:px-10 py-3.5 md:py-4 text-white font-sans text-[10px] md:text-[11px] tracking-[0.25em] uppercase self-start">
+                  Shop Collection
+                </Link>
+                <Link href="/try-on"
+                  className="inline-block px-8 md:px-10 py-3.5 md:py-4 border border-white/30 text-white font-sans text-[10px] md:text-[11px] tracking-[0.25em] uppercase hover:bg-white/10 transition-colors self-start">
+                  AI Virtual Try-On
+                </Link>
+              </div>
+            </motion.div>
+          )}
         </div>
 
-        {/* Slide indicator */}
-        <div className="absolute bottom-6 right-8 z-10 flex gap-3">
-          {HERO_IMGS.map((_, i) => (
-            <button key={i} onClick={() => setHeroPage(i)}
-              className="bg-white transition-all duration-500"
-              style={{ height: '1px', width: i === heroPage ? 36 : 12, opacity: i === heroPage ? 1 : 0.35 }} />
-          ))}
+        {/* Scroll cue */}
+        <div className="absolute bottom-7 right-8 z-10 hidden md:flex flex-col items-center gap-1.5">
+          <div className="w-px h-8 bg-white/20 overflow-hidden">
+            <motion.div className="w-full bg-white/60"
+              animate={{ y: ['-100%', '100%'] }} transition={{ duration: 1.4, repeat: Infinity, ease: 'linear' }}
+              style={{ height: '50%' }} />
+          </div>
+          <p className="text-[8px] tracking-[0.3em] uppercase text-white/30">Scroll</p>
         </div>
       </section>
 
@@ -272,7 +272,9 @@ export default function HomePage() {
         <ContainerScroll
           titleComponent={
             <div className="flex flex-col items-center gap-4 pb-4">
-              <img src="/logo.jpg" alt="ARA by Shanaya" className="h-20 w-[240px] object-contain" />
+              <span className="font-display text-[34px] tracking-[0.28em] uppercase font-light text-white">
+                ARA&nbsp;<span className="text-[#C5A059]">by</span>&nbsp;SHANAYA
+              </span>
               <p className="font-sans text-[10px] tracking-[0.5em] uppercase text-[#C5A059]">
                 Spring Summer &apos;26
               </p>
@@ -290,7 +292,9 @@ export default function HomePage() {
       {/* Mobile: flat lookbook slideshow */}
       <section className="md:hidden bg-[#0d0d0d] py-12 px-5">
         <div className="flex flex-col items-center gap-3 mb-6">
-          <img src="/logo.jpg" alt="ARA by Shanaya" className="h-14 w-[180px] object-contain" />
+          <span className="font-display text-[26px] tracking-[0.25em] uppercase font-light text-white">
+            ARA&nbsp;<span className="text-[#C5A059]">by</span>&nbsp;SHANAYA
+          </span>
           <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-[#C5A059]">Spring Summer &apos;26</p>
           <h2 className="font-display font-light italic text-white text-[28px]">The Lookbook</h2>
         </div>
@@ -404,10 +408,11 @@ export default function HomePage() {
           ORANGE VISTA FULL-WIDTH EDITORIAL
       ═══════════════════════════════════════════════════════════════ */}
       <section className="reveal">
-        <div className="relative w-full overflow-hidden" style={{ maxHeight: '90vh' }}>
+        <div className="relative w-full overflow-hidden bg-[#0f0f0f]" style={{ height: '90vh' }}>
           <img src="/lookbook/page-24.jpg" alt="Orange Vista"
-            className="w-full" style={{ display: 'block' }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />
+            className="absolute inset-0 w-full h-full object-contain"
+            style={{ display: 'block' }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
           <div className="absolute left-8 md:left-16 bottom-10 md:bottom-16 text-white">
             <p className="font-sans text-[10px] tracking-[0.5em] uppercase text-white/60 mb-2">Orange Vista</p>
             <h3 className="font-display font-light italic leading-tight mb-6"
@@ -434,6 +439,20 @@ export default function HomePage() {
           ))}
         </div>
       </div>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          GLOW FEATURE CARDS
+      ═══════════════════════════════════════════════════════════════ */}
+      <section>
+        <GlowFeatureCards />
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          3D VIDEO CARD CAROUSEL
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="relative" style={{ height: '100svh' }}>
+        <VideoCardCarousel />
+      </section>
 
     </div>
   );
