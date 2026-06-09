@@ -31,8 +31,20 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Build a prompt so tryon-max fully replaces the original clothing
+    // (without this, original pants/shirts can bleed through underneath)
+    const promptMap: Record<string, string> = {
+      'tops':
+        'Completely replace the top/shirt with this garment. Keep the original pants/bottoms.',
+      'bottoms':
+        'Completely replace the pants/skirt/shorts with this garment. Remove the original bottoms entirely so none are visible.',
+      'one-pieces':
+        'Replace the entire outfit — top AND pants/skirt — with this garment. ' +
+        'Remove all original clothing so no original pants or shirt are visible underneath.',
+    };
+    const tryonPrompt = promptMap[category] ?? promptMap['one-pieces'];
+
     // tryon-max = Fashn.ai's best model (enhanced fidelity, recommended endpoint)
-    // uses product_image (not garment_image), generation_mode + resolution instead of category
     const res = await fetch(`${FASHN_BASE}/run`, {
       method: 'POST',
       headers: {
@@ -43,9 +55,10 @@ export async function POST(req: NextRequest) {
         model_name: 'tryon-max',
         inputs: {
           model_image:     modelImage,
-          product_image:   garmentData,   // tryon-max uses product_image
-          generation_mode: 'quality',     // highest quality output
-          resolution:      '2k',          // 2048px output
+          product_image:   garmentData,
+          generation_mode: 'quality',
+          resolution:      '2k',
+          prompt:          tryonPrompt,
         },
       }),
     });
