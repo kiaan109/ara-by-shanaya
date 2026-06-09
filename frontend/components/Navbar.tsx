@@ -167,7 +167,7 @@ export default function Navbar() {
                   src={logoUrl}
                   alt="ARA by SHANAYA"
                   className="h-[28px] md:h-[32px] w-auto max-w-[160px] object-contain"
-                  style={{ display: 'block' }}
+                  style={{ display: 'block', mixBlendMode: 'multiply' }}
                 />
               ) : (
                 <span className="font-display text-[10px] sm:text-[15px] lg:text-[18px] tracking-[0.25em] sm:tracking-[0.18em] lg:tracking-[0.22em] uppercase font-light text-[#1a1c1c] whitespace-nowrap">
