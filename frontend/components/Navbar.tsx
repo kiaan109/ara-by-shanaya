@@ -121,10 +121,10 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* ── Center: Brand — flex-1 so it never crowds the icons ── */}
-          <div className="flex-1 flex justify-center overflow-hidden">
+          {/* ── Center: Brand — flex-1 min-w-0 so it never crowds the icons ── */}
+          <div className="flex-1 min-w-0 flex justify-center">
             <Link href="/" className="hover:opacity-70 transition-opacity duration-200 select-none">
-              <span className="font-display text-[12px] sm:text-[15px] lg:text-[18px] tracking-[0.08em] sm:tracking-[0.18em] lg:tracking-[0.22em] uppercase font-light text-[#1a1c1c] whitespace-nowrap">
+              <span className="font-display text-[10px] sm:text-[15px] lg:text-[18px] tracking-[0.25em] sm:tracking-[0.18em] lg:tracking-[0.22em] uppercase font-light text-[#1a1c1c] whitespace-nowrap">
                 ARA&nbsp;<span className="text-[#C5A059]">by</span>&nbsp;SHANAYA
               </span>
             </Link>
