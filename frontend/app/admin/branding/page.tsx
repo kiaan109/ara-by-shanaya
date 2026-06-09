@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 
 export default function BrandingPage() {
   const [logoUrl,    setLogoUrl]    = useState<string | null>(null);
