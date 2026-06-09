@@ -52,11 +52,11 @@ export default function Navbar() {
       <nav className={`fixed top-0 w-full z-50 glass-nav border-b transition-all duration-500 ${
         scrolled ? 'border-black/10 shadow-sm' : 'border-white/10'
       }`}>
-        {/* Single row: 3-column grid — left nav | brand | right icons */}
-        <div className="max-w-[1440px] mx-auto px-4 md:px-14 h-[60px] md:h-[64px] grid grid-cols-3 items-center">
+        {/* Single row: flex — left (flex-none) | brand (flex-1 centered) | right (flex-none) */}
+        <div className="max-w-[1440px] mx-auto px-4 md:px-14 h-[60px] md:h-[64px] flex items-center">
 
-          {/* ── Column 1: Left nav links ── */}
-          <div className="flex items-center gap-6">
+          {/* ── Left: hamburger (mobile) + nav links (desktop) ── */}
+          <div className="flex-none flex items-center gap-6">
             {/* Mobile hamburger */}
             <button className="lg:hidden hover:opacity-60 transition-opacity"
               onClick={() => setMenuOpen(true)}>
@@ -121,17 +121,17 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* ── Column 2: Brand (always centred) ── */}
-          <div className="flex justify-center">
+          {/* ── Center: Brand — flex-1 so it never crowds the icons ── */}
+          <div className="flex-1 flex justify-center overflow-hidden">
             <Link href="/" className="hover:opacity-70 transition-opacity duration-200 select-none">
-              <span className="font-display text-[12px] sm:text-[15px] lg:text-[18px] tracking-[0.1em] sm:tracking-[0.18em] lg:tracking-[0.22em] uppercase font-light text-[#1a1c1c] whitespace-nowrap">
+              <span className="font-display text-[12px] sm:text-[15px] lg:text-[18px] tracking-[0.08em] sm:tracking-[0.18em] lg:tracking-[0.22em] uppercase font-light text-[#1a1c1c] whitespace-nowrap">
                 ARA&nbsp;<span className="text-[#C5A059]">by</span>&nbsp;SHANAYA
               </span>
             </Link>
           </div>
 
-          {/* ── Column 3: Right nav + icons ── */}
-          <div className="flex items-center justify-end gap-2.5 sm:gap-4 lg:gap-5">
+          {/* ── Right: nav links (desktop) + icons — flex-none so icons never move ── */}
+          <div className="flex-none flex items-center justify-end gap-2.5 sm:gap-4 lg:gap-5">
             {/* Desktop right links */}
             <div className="hidden lg:flex items-center gap-7 mr-3">
               {[
