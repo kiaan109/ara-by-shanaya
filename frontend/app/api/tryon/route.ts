@@ -21,9 +21,7 @@ export async function POST(req: NextRequest) {
   try {
     const { modelImage, garmentImage, category = 'one-pieces' } = await req.json();
 
-    // ARA product images are all model shots → convert to base64 server-side
-    // so Fashn.ai gets the full-res image, then tell it the photo type is "model"
-    // so it knows to extract the garment (not just warp the whole model photo)
+    // Fetch garment server-side so Fashn.ai gets full-res image data
     let garmentData = garmentImage;
     if (typeof garmentImage === 'string' && garmentImage.startsWith('http')) {
       try {
@@ -33,6 +31,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // tryon-max = Fashn.ai's best model (enhanced fidelity, recommended endpoint)
+    // uses product_image (not garment_image), generation_mode + resolution instead of category
     const res = await fetch(`${FASHN_BASE}/run`, {
       method: 'POST',
       headers: {
@@ -40,12 +40,12 @@ export async function POST(req: NextRequest) {
         Authorization: `Bearer ${FASHN_KEY}`,
       },
       body: JSON.stringify({
-        model_name: 'tryon-v1.6',
+        model_name: 'tryon-max',
         inputs: {
-          model_image:        modelImage,
-          garment_image:      garmentData,
-          category,
-          garment_photo_type: 'model',   // product images show a model wearing the garment
+          model_image:     modelImage,
+          product_image:   garmentData,   // tryon-max uses product_image
+          generation_mode: 'quality',     // highest quality output
+          resolution:      '2k',          // 2048px output
         },
       }),
     });
