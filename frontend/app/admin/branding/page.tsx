@@ -97,26 +97,26 @@ export default function BrandingPage() {
       {/* Header */}
       <div>
         <h1 className="text-[22px] font-light tracking-wide">Branding</h1>
-        <p className="text-[11px] text-white/30 mt-1">
+        <p className="text-[11px] text-gray-400 mt-1">
           Upload your logo to replace the text brand name in the navbar.
         </p>
       </div>
 
       {/* Current logo */}
-      <div className="bg-[#1a1a1a] border border-white/[0.06] rounded-lg overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/[0.06]">
-          <h2 className="text-[11px] tracking-[0.2em] uppercase text-white/40">Current Logo</h2>
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div className="px-5 py-4 border-b border-gray-200">
+          <h2 className="text-[11px] tracking-[0.2em] uppercase text-gray-500">Current Logo</h2>
         </div>
         <div className="px-5 py-6">
           {loading ? (
-            <div className="flex items-center gap-3 text-white/30 text-[12px]">
-              <div className="w-4 h-4 border border-white/20 border-t-white/60 rounded-full animate-spin flex-shrink-0" />
+            <div className="flex items-center gap-3 text-gray-400 text-[12px]">
+              <div className="w-4 h-4 border border-gray-200 border-t-gray-500 rounded-full animate-spin flex-shrink-0" />
               Loading…
             </div>
           ) : logoUrl ? (
             <div className="space-y-4">
               {/* Live preview — simulate the navbar glass look */}
-              <div className="rounded-md overflow-hidden border border-white/[0.08] bg-white/10 backdrop-blur-sm px-6 py-3 flex items-center justify-center">
+              <div className="rounded-md overflow-hidden border border-gray-200 bg-gray-50 backdrop-blur-sm px-6 py-3 flex items-center justify-center">
                 <img
                   src={logoUrl}
                   alt="Logo preview"
@@ -124,14 +124,14 @@ export default function BrandingPage() {
                   style={{ filter: 'none' }}
                 />
               </div>
-              <p className="text-[10px] text-white/25 font-mono truncate">{logoUrl}</p>
+              <p className="text-[10px] text-gray-400 font-mono truncate">{logoUrl}</p>
               <button
                 onClick={removeLogo}
                 disabled={removing}
-                className="flex items-center gap-2 px-4 py-2 rounded-md text-[11px] text-red-400 border border-red-500/20 hover:bg-red-500/10 transition-all disabled:opacity-40"
+                className="flex items-center gap-2 px-4 py-2 rounded-md text-[11px] text-red-500 border border-red-200 hover:bg-red-50 transition-all disabled:opacity-40"
               >
                 {removing ? (
-                  <div className="w-3 h-3 border border-red-400/40 border-t-red-400 rounded-full animate-spin" />
+                  <div className="w-3 h-3 border border-red-300 border-t-red-500 rounded-full animate-spin" />
                 ) : (
                   <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                     <polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
@@ -144,14 +144,14 @@ export default function BrandingPage() {
           ) : (
             <div className="flex items-center gap-3">
               {/* Text fallback preview */}
-              <div className="rounded-md border border-white/[0.08] bg-white/10 px-6 py-3 flex items-center justify-center">
+              <div className="rounded-md border border-gray-200 bg-gray-50 px-6 py-3 flex items-center justify-center">
                 <span className="font-display text-[13px] tracking-[0.25em] uppercase font-light text-[#1a1c1c]">
                   ARA <span className="text-[#C5A059]">by</span> SHANAYA
                 </span>
               </div>
               <div>
-                <p className="text-[11px] text-white/50">No logo uploaded</p>
-                <p className="text-[10px] text-white/25 mt-0.5">Showing text brand name</p>
+                <p className="text-[11px] text-gray-600">No logo uploaded</p>
+                <p className="text-[10px] text-gray-400 mt-0.5">Showing text brand name</p>
               </div>
             </div>
           )}
@@ -159,9 +159,9 @@ export default function BrandingPage() {
       </div>
 
       {/* Upload area */}
-      <div className="bg-[#1a1a1a] border border-white/[0.06] rounded-lg overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/[0.06]">
-          <h2 className="text-[11px] tracking-[0.2em] uppercase text-white/40">Upload New Logo</h2>
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div className="px-5 py-4 border-b border-gray-200">
+          <h2 className="text-[11px] tracking-[0.2em] uppercase text-gray-500">Upload New Logo</h2>
         </div>
         <div className="px-5 py-6 space-y-5">
           {/* Drop zone */}
@@ -174,7 +174,7 @@ export default function BrandingPage() {
               relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all
               ${dragging
                 ? 'border-[#C5A059] bg-[#C5A059]/5'
-                : 'border-white/10 hover:border-white/20 hover:bg-white/[0.02]'
+                : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
               }
             `}
           >
@@ -187,16 +187,16 @@ export default function BrandingPage() {
             />
             <div className="flex flex-col items-center gap-3">
               <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1"
-                className="text-white/20" viewBox="0 0 24 24">
+                className="text-gray-300" viewBox="0 0 24 24">
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
                 <polyline points="17,8 12,3 7,8"/>
                 <line x1="12" y1="3" x2="12" y2="15"/>
               </svg>
               <div>
-                <p className="text-[12px] text-white/50">
+                <p className="text-[12px] text-gray-600">
                   {dragging ? 'Drop your logo here' : 'Drag & drop or click to choose'}
                 </p>
-                <p className="text-[10px] text-white/20 mt-1">PNG, JPG, SVG or WebP · max 5 MB</p>
+                <p className="text-[10px] text-gray-400 mt-1">PNG, JPG, SVG or WebP · max 5 MB</p>
               </div>
             </div>
           </div>
@@ -208,11 +208,11 @@ export default function BrandingPage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                className="border border-white/[0.08] rounded-lg p-5 space-y-4"
+                className="border border-gray-200 rounded-lg p-5 space-y-4"
               >
                 <div className="flex items-center justify-between">
-                  <p className="text-[11px] text-white/50 tracking-[0.1em] uppercase">Preview</p>
-                  <button onClick={cancelPreview} className="text-[10px] text-white/30 hover:text-white/60 transition-colors">
+                  <p className="text-[11px] text-gray-600 tracking-[0.1em] uppercase">Preview</p>
+                  <button onClick={cancelPreview} className="text-[10px] text-gray-400 hover:text-gray-700 transition-colors">
                     Cancel
                   </button>
                 </div>
@@ -250,7 +250,7 @@ export default function BrandingPage() {
                       </>
                     )}
                   </button>
-                  <p className="text-[10px] text-white/25">
+                  <p className="text-[10px] text-gray-400">
                     {file ? `${file.name} · ${(file.size / 1024).toFixed(0)} KB` : ''}
                   </p>
                 </div>
@@ -260,8 +260,8 @@ export default function BrandingPage() {
 
           {/* Tips */}
           <div className="space-y-2">
-            <p className="text-[10px] tracking-[0.15em] uppercase text-white/20">Tips for best results</p>
-            <ul className="space-y-1.5 text-[11px] text-white/30">
+            <p className="text-[10px] tracking-[0.15em] uppercase text-gray-400">Tips for best results</p>
+            <ul className="space-y-1.5 text-[11px] text-gray-500">
               <li className="flex items-start gap-2">
                 <span className="text-[#C5A059] mt-0.5 flex-shrink-0">·</span>
                 Use a transparent PNG or SVG for a clean look on the glass navbar
@@ -292,13 +292,13 @@ export default function BrandingPage() {
             exit={{ opacity: 0, y: 8, scale: 0.96 }}
             className={`fixed bottom-6 right-6 z-[999] flex items-center gap-3 px-5 py-3 rounded-md shadow-xl text-[12px] font-medium
               ${toast.type === 'ok'
-                ? 'bg-[#1e1e1e] border border-[#C5A059]/30 text-white'
-                : 'bg-[#1e1e1e] border border-red-500/30 text-red-400'
+                ? 'bg-white border border-[#C5A059]/30 text-gray-900'
+                : 'bg-white border border-red-300 text-red-600'
               }`}
           >
             {toast.type === 'ok'
               ? <span className="text-[#C5A059]">✓</span>
-              : <span className="text-red-400">✕</span>
+              : <span className="text-red-600">✕</span>
             }
             {toast.msg}
           </motion.div>

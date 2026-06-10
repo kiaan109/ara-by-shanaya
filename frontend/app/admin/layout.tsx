@@ -69,29 +69,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, []);
 
   return (
-    <div className="min-h-screen flex bg-[#0f0f0f] text-white">
+    <div className="min-h-screen flex bg-gray-50 text-gray-900">
       {/* ── Sidebar ── */}
       <aside className={`
-        fixed inset-y-0 left-0 z-50 w-56 bg-[#141414] border-r border-white/[0.06] flex flex-col
+        fixed inset-y-0 left-0 z-50 w-56 bg-white border-r border-gray-200 flex flex-col
         transition-transform duration-300
         ${open ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 lg:static lg:flex
       `}>
         {/* Logo */}
-        <div className="px-6 py-6 border-b border-white/[0.06]">
+        <div className="px-6 py-6 border-b border-gray-200">
           {logoUrl ? (
             <img
               src={logoUrl}
               alt="ARA by SHANAYA"
               className="h-[22px] w-auto max-w-[140px] object-contain"
-              style={{ filter: 'brightness(0) invert(1)' }}
             />
           ) : (
             <p className="font-display text-[13px] tracking-[0.3em] uppercase font-light">
               ARA <span className="text-[#C5A059]">by</span> SHANAYA
             </p>
           )}
-          <p className="text-[9px] tracking-[0.3em] uppercase text-white/30 mt-0.5">Admin Panel</p>
+          <p className="text-[9px] tracking-[0.3em] uppercase text-gray-400 mt-0.5">Admin Panel</p>
         </div>
 
         {/* Nav */}
@@ -107,13 +106,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-[12px] tracking-[0.08em] transition-all ${
                   active
                     ? 'bg-[#C5A059]/15 text-[#C5A059]'
-                    : 'text-white/50 hover:text-white hover:bg-white/[0.04]'
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
-                <span className={active ? 'text-[#C5A059]' : 'text-white/40'}>{icon}</span>
+                <span className={active ? 'text-[#C5A059]' : 'text-gray-400'}>{icon}</span>
                 {label}
                 {external && (
-                  <svg className="ml-auto w-3 h-3 text-white/20" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  <svg className="ml-auto w-3 h-3 text-gray-300" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                     <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/>
                   </svg>
                 )}
@@ -123,8 +122,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-white/[0.06]">
-          <p className="text-[9px] text-white/20 tracking-[0.1em]">ARA Admin v1.0</p>
+        <div className="px-6 py-4 border-t border-gray-200">
+          <p className="text-[9px] text-gray-300 tracking-[0.1em]">ARA Admin v1.0</p>
         </div>
       </aside>
 
@@ -134,16 +133,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* ── Main content ── */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <header className="h-12 bg-[#141414] border-b border-white/[0.06] flex items-center px-4 lg:px-6 gap-4 sticky top-0 z-30">
-          <button onClick={() => setOpen(v => !v)} className="lg:hidden p-1.5 text-white/50 hover:text-white">
+        <header className="h-12 bg-white border-b border-gray-200 flex items-center px-4 lg:px-6 gap-4 sticky top-0 z-30">
+          <button onClick={() => setOpen(v => !v)} className="lg:hidden p-1.5 text-gray-500 hover:text-gray-900">
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
               <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
             </svg>
           </button>
-          <div className="flex items-center gap-2 text-[11px] text-white/30">
+          <div className="flex items-center gap-2 text-[11px] text-gray-400">
             <span>Admin</span>
             <span>/</span>
-            <span className="text-white/60">
+            <span className="text-gray-700">
               {path === '/admin' ? 'Dashboard' : path.replace('/admin/', '').replace('/', ' / ')}
             </span>
           </div>
