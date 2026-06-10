@@ -205,8 +205,8 @@ export default function HomePage() {
         </div>
 
         {/* Gradient overlays — light, just enough for text legibility */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-black/10 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/5 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-black/5 to-transparent pointer-events-none" />
 
         {/* Text content */}
         <div className="absolute inset-0 z-10 flex flex-col justify-end px-5 md:px-16 lg:px-24 pb-12 md:pb-20 lg:pb-28">
@@ -330,7 +330,7 @@ export default function HomePage() {
           <div className="relative overflow-hidden" style={{ aspectRatio: '3/4', maxHeight: '520px' }}>
             <img src="/lookbook/page-11.jpg" alt="AI Try-On"
               className="w-full h-full object-cover object-top" style={{ display: 'block' }} />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/5 to-transparent" />
             <div className="absolute bottom-8 left-8 text-white">
               <span className="font-sans text-[9px] tracking-[0.35em] uppercase text-white/55 block mb-1">Horizon</span>
               <p className="font-display text-[18px] italic">Scuba Corset Dress</p>
@@ -371,7 +371,7 @@ export default function HomePage() {
           <img src="/lookbook/page-24.jpg" alt="Orange Vista"
             className="absolute inset-0 w-full h-full object-contain"
             style={{ display: 'block' }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/15 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/10 to-transparent" />
           <div className="absolute left-8 md:left-16 bottom-10 md:bottom-16 text-white">
             <p className="font-sans text-[10px] tracking-[0.5em] uppercase text-white/60 mb-2">Orange Vista</p>
             <h3 className="font-display font-light italic leading-tight mb-6"

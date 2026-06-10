@@ -26,10 +26,10 @@ export const ContainerScroll = ({
 
   return (
     <div
-      className="h-[42rem] md:h-[58rem] flex items-center justify-center relative p-2 md:p-20"
+      className="h-[30rem] md:h-[46rem] flex items-center justify-center relative p-2 md:p-10"
       ref={containerRef}
     >
-      <div className="py-6 md:py-12 w-full relative">
+      <div className="py-4 md:py-8 w-full relative">
         <Header translate={translate} titleComponent={titleComponent} />
         <Card scale={scale}>
           {children}
@@ -56,7 +56,7 @@ const Card = ({
     style={{
       scale,
     }}
-    className="max-w-5xl -mt-12 mx-auto h-[30rem] md:h-[40rem] w-full border-2 border-[#C5A059]/40 p-1 bg-white rounded-sm"
+    className="max-w-5xl -mt-6 mx-auto h-[22rem] md:h-[32rem] w-full border-2 border-[#C5A059]/40 p-1 bg-white rounded-sm"
   >
     <div className="h-full w-full overflow-hidden rounded-sm bg-white">
       {children}
