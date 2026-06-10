@@ -391,22 +391,22 @@ export default function HomePage() {
       {/* ═══════════════════════════════════════════════════════════════
           ORANGE VISTA FULL-WIDTH EDITORIAL
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="reveal">
-        <div className="relative w-full overflow-hidden bg-white" style={{ height: '90vh' }}>
+      <section className="reveal bg-white">
+        <div className="relative w-full overflow-hidden bg-white" style={{ height: '80vh' }}>
           <img src="/lookbook/page-24.jpg" alt="Orange Vista"
             className="absolute inset-0 w-full h-full object-contain"
             style={{ display: 'block' }} />
-          <div className="absolute left-8 md:left-16 bottom-10 md:bottom-16 text-[#1a1c1c]">
-            <p className="font-sans text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-2">Orange Vista</p>
-            <h3 className="font-display font-light italic leading-tight mb-6"
-              style={{ fontSize: 'clamp(2rem, 5vw, 4rem)' }}>
-              Scuba Maxi<br />with Belt
-            </h3>
-            <Link href="/shop/orange-vista-scuba-maxi"
-              className="gold-btn inline-block px-9 py-3.5 text-white font-sans text-[10px] tracking-[0.25em] uppercase">
-              Shop This Look
-            </Link>
-          </div>
+        </div>
+        <div className="flex flex-col items-center text-center py-10 md:py-14 px-5 text-[#1a1c1c]">
+          <p className="font-sans text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-2">Orange Vista</p>
+          <h3 className="font-display font-light italic leading-tight mb-6"
+            style={{ fontSize: 'clamp(2rem, 5vw, 4rem)' }}>
+            Scuba Maxi<br />with Belt
+          </h3>
+          <Link href="/shop/orange-vista-scuba-maxi"
+            className="gold-btn inline-block px-9 py-3.5 text-white font-sans text-[10px] tracking-[0.25em] uppercase">
+            Shop This Look
+          </Link>
         </div>
       </section>
 
