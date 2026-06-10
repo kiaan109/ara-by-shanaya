@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard, { Product } from '@/components/ProductCard';
@@ -153,6 +153,7 @@ export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [ready,    setReady]    = useState(false);
   const [heroPage, setHeroPage] = useState(0);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     fetch('/api/products?limit=6')
@@ -160,6 +161,25 @@ export default function HomePage() {
       .then(d => setProducts(d.products || []));
     const t = setTimeout(() => setReady(true), 80);
     return () => clearTimeout(t);
+  }, []);
+
+  // Force-play hero video on mobile (some mobile browsers ignore the autoPlay attribute)
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+    video.muted = true;
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        const resume = () => {
+          video.play().catch(() => {});
+          document.removeEventListener('touchstart', resume);
+          document.removeEventListener('click', resume);
+        };
+        document.addEventListener('touchstart', resume, { once: true });
+        document.addEventListener('click', resume, { once: true });
+      });
+    }
   }, []);
 
   // Auto-advance hero
@@ -196,7 +216,14 @@ export default function HomePage() {
         {/* ── Autoplay video (desktop & mobile) ── */}
         <div className="absolute inset-0">
           <video
-            autoPlay muted loop playsInline
+            ref={heroVideoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            // @ts-ignore - older iOS Safari attribute
+            webkit-playsinline="true"
+            preload="auto"
             className="w-full h-full object-cover"
             style={{ display: 'block' }}
           >
