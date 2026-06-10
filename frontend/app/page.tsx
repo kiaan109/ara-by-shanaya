@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard, { Product } from '@/components/ProductCard';
 import { ContainerScroll } from '@/components/ui/container-scroll-animation';
-import DisplayCards from '@/components/ui/display-cards';
 import GlowFeatureCards from '@/components/ui/GlowFeatureCards';
 import VideoCardCarousel from '@/components/ui/VideoCardCarousel';
 
@@ -363,47 +362,6 @@ export default function HomePage() {
               <p className="font-display text-[18px] italic">Scuba Corset Dress</p>
               <p className="font-sans text-[13px] text-white/55 mt-0.5">₹15,500</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          DISPLAY CARDS — stacked editorial showcase
-      ═══════════════════════════════════════════════════════════════ */}
-      <section className="bg-[#f9f9f9] py-16 md:py-24 lg:py-32 reveal overflow-hidden">
-        <div className="max-w-[1440px] mx-auto px-5 md:px-16 lg:px-24">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20">
-
-            {/* Left: text */}
-            <div className="flex-shrink-0 max-w-md">
-              <p className="font-sans text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-3">
-                Stand-Out Pieces
-              </p>
-              <h2 className="font-display font-light italic leading-tight mb-5"
-                style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}>
-                Pieces that<br />stop traffic.
-              </h2>
-              <p className="font-sans text-[14px] text-[#767676] leading-relaxed mb-8">
-                Bold silhouettes, vivid colour, and a confidence that needs no introduction.
-                Hover each card to reveal the look.
-              </p>
-              <Link href="/shop"
-                className="gold-btn inline-flex items-center gap-2 px-9 py-4 text-white font-sans text-[10px] tracking-[0.25em] uppercase">
-                Shop All
-              </Link>
-            </div>
-
-            {/* Right: stacked display cards */}
-            <div className="flex-1 flex justify-center lg:justify-end pr-0 lg:pr-24">
-              <DisplayCards
-                products={[
-                  { src: '/products/dark-cloud-corset-maxi.jpg',      name: 'Dark Cloud Corset Maxi',  price: 18500, href: '/shop/dark-cloud-corset-maxi' },
-                  { src: '/products/horizon-scuba-maxi-cutout.jpg',   name: 'Horizon Scuba Maxi',      price: 15500, href: '/shop/horizon-scuba-maxi-cutout' },
-                  { src: '/products/waves-sun-dress.jpg',             name: 'Waves Sun Dress',         price: 12500, href: '/shop/waves-sun-dress' },
-                ]}
-              />
-            </div>
-
           </div>
         </div>
       </section>

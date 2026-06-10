@@ -187,12 +187,16 @@ export default function VideoCardCarousel() {
       />
 
       {/* Label above */}
-      <div className="absolute top-8 left-1/2 -translate-x-1/2 text-center z-10 pointer-events-none">
-        <p className="text-[9px] tracking-[0.45em] uppercase text-[#C5A059]/70 font-light">
-          ARA by Shanaya
+      <div className="absolute top-6 md:top-10 left-1/2 -translate-x-1/2 text-center z-10 pointer-events-none px-6 w-full max-w-lg">
+        <p className="text-[9px] tracking-[0.5em] uppercase text-[#C5A059]/70 font-light mb-2 md:mb-3">
+          Stand-Out Pieces
         </p>
-        <p className="text-[11px] tracking-[0.2em] uppercase text-white/30 mt-1 font-light">
-          SS '26 Collection
+        <h2 className="font-display font-light italic text-white leading-tight"
+          style={{ fontSize: 'clamp(1.5rem, 4.5vw, 2.75rem)' }}>
+          Pieces that stop traffic.
+        </h2>
+        <p className="hidden md:block font-sans text-[12px] text-white/40 leading-relaxed mt-3 max-w-sm mx-auto">
+          Bold silhouettes, vivid colour, and a confidence that needs no introduction.
         </p>
       </div>
 
