@@ -218,6 +218,20 @@ export default function HomePage() {
         {/* ── Autoplay video (desktop & mobile) ── */}
         <div className="absolute inset-0">
           <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            // @ts-ignore - older iOS Safari attribute
+            webkit-playsinline="true"
+            preload="auto"
+            aria-hidden="true"
+            className="w-full h-full object-cover"
+            style={{ display: 'block', filter: 'blur(40px) brightness(0.6)', transform: 'scale(1.15)' }}
+          >
+            <source src="https://qcnpwaidf1iszznv.public.blob.vercel-storage.com/hero-video.mp4" type="video/mp4" />
+          </video>
+          <video
             ref={heroVideoRef}
             autoPlay
             muted
@@ -226,7 +240,7 @@ export default function HomePage() {
             // @ts-ignore - older iOS Safari attribute
             webkit-playsinline="true"
             preload="auto"
-            className="w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-contain"
             style={{ display: 'block' }}
           >
             <source src="https://qcnpwaidf1iszznv.public.blob.vercel-storage.com/hero-video.mp4" type="video/mp4" />
