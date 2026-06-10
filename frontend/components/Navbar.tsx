@@ -90,7 +90,7 @@ export default function Navbar() {
         scrolled ? 'border-black/10 shadow-sm' : 'border-white/10'
       }`}>
         {/* Single row: flex — left (flex-none) | brand (flex-1 centered) | right (flex-none) */}
-        <div className="max-w-[1440px] mx-auto px-4 md:px-14 h-[60px] md:h-[64px] flex items-center">
+        <div className="max-w-[1440px] mx-auto px-4 md:px-14 h-[76px] md:h-[88px] flex items-center">
 
           {/* ── Left: hamburger (mobile) + nav links (desktop) ── */}
           <div className="flex-none flex items-center gap-6">
@@ -166,7 +166,7 @@ export default function Navbar() {
                 <img
                   src={logoUrl}
                   alt="ARA by SHANAYA"
-                  className="h-[28px] md:h-[32px] w-auto max-w-[160px] object-contain"
+                  className="h-[52px] md:h-[68px] w-auto max-w-[220px] object-contain"
                   style={{ display: 'block', mixBlendMode: 'multiply' }}
                 />
               ) : (
