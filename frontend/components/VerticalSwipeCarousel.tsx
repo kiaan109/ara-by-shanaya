@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const SLIDES = [
   {
-    img: '/lookbook/page-24.jpg',
+    img: '/lookbook/page-02.jpg',
     eyebrow: "Spring Summer '26",
     title: 'Life’s a Beach',
     href: '/shop',
