@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard, { Product } from '@/components/ProductCard';
 import { ContainerScroll } from '@/components/ui/container-scroll-animation';
-import GlowFeatureCards from '@/components/ui/GlowFeatureCards';
 import VideoCardCarousel from '@/components/ui/VideoCardCarousel';
 
 // Full lookbook spreads — shown at FULL height, never cropped
@@ -320,13 +319,6 @@ export default function HomePage() {
         <div className="relative w-full overflow-hidden rounded-sm bg-[#111]" style={{ aspectRatio: '3/4' }}>
           <LookbookSlideshow />
         </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          GLOW FEATURE CARDS  ← moved up (right after lookbook)
-      ═══════════════════════════════════════════════════════════════ */}
-      <section>
-        <GlowFeatureCards />
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════

@@ -186,8 +186,22 @@ export default function VideoCardCarousel() {
         }}
       />
 
-      {/* Label — top on mobile, left side on desktop */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 text-center z-10 pointer-events-none px-6 w-full max-w-sm
+      {/* Colour rings — echo the "Why ARA" feature gradients around the carousel */}
+      <div
+        className="absolute -left-[15%] top-[12%] w-[55vw] h-[55vw] max-w-[520px] max-h-[520px] rounded-full pointer-events-none opacity-40"
+        style={{ background: 'linear-gradient(137deg, #C5A059 0%, #F5D68A 45%, #E07B39 100%)', filter: 'blur(110px)' }}
+      />
+      <div
+        className="absolute -right-[18%] top-[8%] w-[50vw] h-[50vw] max-w-[480px] max-h-[480px] rounded-full pointer-events-none opacity-30"
+        style={{ background: 'linear-gradient(137deg, #4F46E5 0%, #A78BFA 45%, #EC4899 100%)', filter: 'blur(110px)' }}
+      />
+      <div
+        className="absolute -right-[10%] bottom-[6%] w-[45vw] h-[45vw] max-w-[440px] max-h-[440px] rounded-full pointer-events-none opacity-30"
+        style={{ background: 'linear-gradient(137deg, #E11D48 0%, #FB7185 45%, #F97316 100%)', filter: 'blur(110px)' }}
+      />
+
+      {/* Label — top on mobile, left side on desktop (cleared below the navbar) */}
+      <div className="absolute top-24 left-1/2 -translate-x-1/2 text-center z-10 pointer-events-none px-6 w-full max-w-sm
                       md:top-1/2 md:left-8 lg:left-16 md:-translate-y-1/2 md:translate-x-0 md:text-left md:max-w-xs">
         <p className="text-[9px] tracking-[0.5em] uppercase text-[#C5A059]/70 font-light mb-2 md:mb-3">
           Stand-Out Pieces
