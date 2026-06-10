@@ -22,14 +22,14 @@ export const ContainerScroll = ({
 
   const scaleDimensions = () => isMobile ? [0.7, 0.9] : [1.05, 1];
   const scale     = useTransform(scrollYProgress, [0, 1], scaleDimensions());
-  const translate = useTransform(scrollYProgress, [0, 1], [0, -100]);
+  const translate = useTransform(scrollYProgress, [0, 1], [0, -50]);
 
   return (
     <div
-      className="h-[60rem] md:h-[80rem] flex items-center justify-center relative p-2 md:p-20"
+      className="h-[42rem] md:h-[58rem] flex items-center justify-center relative p-2 md:p-20"
       ref={containerRef}
     >
-      <div className="py-10 md:py-40 w-full relative">
+      <div className="py-6 md:py-12 w-full relative">
         <Header translate={translate} titleComponent={titleComponent} />
         <Card scale={scale}>
           {children}
