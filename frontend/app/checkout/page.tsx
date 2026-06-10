@@ -6,12 +6,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
 import { applyCoupon } from '@/lib/coupons';
+import { calcShipping, SHIPPING_COUNTRIES, SHIPPING_ZONES } from '@/lib/shipping';
 
 declare global { interface Window { Razorpay: any } }
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 type OrderItem = { _id: string; name: string; price: number; quantity: number; size: string; image: string };
-type Form = { name: string; email: string; phone: string; address: string; city: string; state: string; pincode: string };
+type Form = { name: string; email: string; phone: string; address: string; city: string; state: string; pincode: string; country: string };
 
 // ─── Field component ────────────────────────────────────────────────────────
 function Field({ label, ...props }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
@@ -23,6 +24,22 @@ function Field({ label, ...props }: { label: string } & React.InputHTMLAttribute
         className="w-full border-0 border-b border-[#e0e0e0] focus:border-black focus:outline-none
           py-2.5 text-[13px] bg-transparent placeholder:text-[#ccc] transition-colors duration-200"
       />
+    </div>
+  );
+}
+
+// ─── Select field component ─────────────────────────────────────────────────
+function SelectField({ label, ...props }: { label: string } & React.SelectHTMLAttributes<HTMLSelectElement>) {
+  return (
+    <div>
+      <label className="block text-[10px] tracking-[0.22em] uppercase text-[#999] mb-1.5">{label}</label>
+      <select
+        {...props}
+        className="w-full border-0 border-b border-[#e0e0e0] focus:border-black focus:outline-none
+          py-2.5 text-[13px] bg-transparent transition-colors duration-200"
+      >
+        {props.children}
+      </select>
     </div>
   );
 }
@@ -50,7 +67,7 @@ function CheckoutContent() {
   const [couponError, setCouponError] = useState('');
 
   const [form, setForm] = useState<Form>({
-    name: '', email: '', phone: '', address: '', city: '', state: '', pincode: '',
+    name: '', email: '', phone: '', address: '', city: '', state: '', pincode: '', country: 'India',
   });
 
   const set = (k: keyof Form, v: string) => setForm(f => ({ ...f, [k]: v }));
@@ -90,7 +107,8 @@ function CheckoutContent() {
     : cartItems.map(i => ({ _id: i._id, name: i.name, price: i.price, quantity: i.quantity, size: i.size || '', image: i.image }));
 
   const subtotal   = items.reduce((s, i) => s + i.price * i.quantity, 0);
-  const shipping   = 0;
+  const shipping   = subtotal > 0 ? calcShipping(form.country, subtotal) : 0;
+  const shippingZone = SHIPPING_ZONES[form.country] || SHIPPING_ZONES['Rest of World'];
   const { discount, percent } = applyCoupon(subtotal, couponCode);
   const grandTotal = Math.max(0, subtotal + shipping - discount);
 
@@ -122,7 +140,8 @@ function CheckoutContent() {
     if (!form.address.trim()) return 'Please enter your shipping address';
     if (!form.city.trim())    return 'Please enter your city';
     if (!form.state.trim())   return 'Please enter your state';
-    if (!form.pincode.trim() || form.pincode.replace(/\D/g, '').length !== 6) return 'Please enter a valid 6-digit PIN code';
+    if (form.country === 'India' && (!form.pincode.trim() || form.pincode.replace(/\D/g, '').length !== 6)) return 'Please enter a valid 6-digit PIN code';
+    if (form.country !== 'India' && !form.pincode.trim()) return 'Please enter your postal/ZIP code';
     if (isSingle && !selSize && product?.sizes?.length) return 'Please select a size';
     return null;
   }
@@ -140,8 +159,8 @@ function CheckoutContent() {
     setPaying(true);
 
     const createPayload = isSingle
-      ? { type: 'single', productId, size: selSize, qty, couponCode }
-      : { type: 'cart',   items: cartItems.map(i => ({ _id: i._id, size: i.size, qty: i.quantity })), couponCode };
+      ? { type: 'single', productId, size: selSize, qty, couponCode, country: form.country }
+      : { type: 'cart',   items: cartItems.map(i => ({ _id: i._id, size: i.size, qty: i.quantity })), couponCode, country: form.country };
 
     try {
       const createRes = await fetch('/api/orders/create', {
@@ -339,13 +358,20 @@ function CheckoutContent() {
                 {isSingle && product?.sizes?.length ? '03' : '02'} — Shipping Address
               </h2>
               <div className="space-y-5">
+                <SelectField label="Country *" value={form.country} onChange={e => set('country', e.target.value)} required>
+                  {SHIPPING_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </SelectField>
                 <Field label="Street Address *" value={form.address} onChange={e => set('address', e.target.value)} placeholder="House/Flat, Street, Area" required />
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   <div className="col-span-2 sm:col-span-1">
                     <Field label="City *" value={form.city} onChange={e => set('city', e.target.value)} placeholder="City" required />
                   </div>
                   <Field label="State *" value={form.state} onChange={e => set('state', e.target.value)} placeholder="State" required />
-                  <Field label="PIN Code *" value={form.pincode} onChange={e => set('pincode', e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="400001" maxLength={6} required />
+                  {form.country === 'India' ? (
+                    <Field label="PIN Code *" value={form.pincode} onChange={e => set('pincode', e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="400001" maxLength={6} required />
+                  ) : (
+                    <Field label="Postal/ZIP Code *" value={form.pincode} onChange={e => set('pincode', e.target.value)} placeholder="ZIP code" required />
+                  )}
                 </div>
               </div>
             </div>
@@ -448,19 +474,22 @@ function CheckoutContent() {
 
               {/* Totals */}
               <div className="border-t border-[#f0f0f0] pt-4 space-y-2.5">
+                <div className="flex justify-between text-[12px] text-[#999]">
+                  <span>Subtotal</span>
+                  <span>₹{subtotal.toLocaleString('en-IN')}</span>
+                </div>
                 {discount > 0 && (
-                  <>
-                    <div className="flex justify-between text-[12px] text-[#999]">
-                      <span>Subtotal</span>
-                      <span>₹{subtotal.toLocaleString('en-IN')}</span>
-                    </div>
-                    <div className="flex justify-between text-[12px] text-[#C5A059]">
-                      <span>Discount ({couponCode} · {percent}%)</span>
-                      <span>−₹{discount.toLocaleString('en-IN')}</span>
-                    </div>
-                  </>
+                  <div className="flex justify-between text-[12px] text-[#C5A059]">
+                    <span>Discount ({couponCode} · {percent}%)</span>
+                    <span>−₹{discount.toLocaleString('en-IN')}</span>
+                  </div>
                 )}
-                <div className="flex justify-between pt-2.5">
+                <div className="flex justify-between text-[12px] text-[#999]">
+                  <span>Shipping ({form.country})</span>
+                  <span>{shipping === 0 ? 'Free' : `₹${shipping.toLocaleString('en-IN')}`}</span>
+                </div>
+                <p className="text-[10px] text-[#bbb]">Estimated delivery: {shippingZone.days}</p>
+                <div className="flex justify-between pt-2.5 border-t border-[#f0f0f0] mt-2.5">
                   <span className="font-sans text-[11px] tracking-[0.1em] uppercase">Total</span>
                   <span className="text-[15px] font-medium">₹{grandTotal.toLocaleString('en-IN')}</span>
                 </div>

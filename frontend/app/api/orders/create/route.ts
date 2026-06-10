@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { list } from '@vercel/blob';
 import { localProducts } from '@/lib/localProducts';
 import { applyCoupon } from '@/lib/coupons';
+import { calcShipping } from '@/lib/shipping';
 
 const ALL_BLOB = 'ara-all-products.json';
 
@@ -51,7 +52,7 @@ export async function POST(req: NextRequest) {
 
     if (subtotal <= 0 || orderItems.length === 0) return NextResponse.json({ error: 'Invalid order' }, { status: 400 });
 
-    const shipping = 0;
+    const shipping = calcShipping(body.country || 'India', subtotal);
     const { discount, percent, code } = applyCoupon(subtotal, body.couponCode);
     const grandTotal = Math.max(0, subtotal + shipping - discount);
 

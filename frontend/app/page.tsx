@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard, { Product } from '@/components/ProductCard';
 import { ContainerScroll } from '@/components/ui/container-scroll-animation';
+import VerticalSwipeCarousel from '@/components/VerticalSwipeCarousel';
+import USPFeatures from '@/components/USPFeatures';
 
 // Full lookbook spreads — shown at FULL height, never cropped
 const COLLECTIONS = [
@@ -272,6 +274,16 @@ export default function HomePage() {
           <p className="text-[8px] tracking-[0.3em] uppercase text-white/30">Scroll</p>
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          VERTICAL SWIPE CAROUSEL
+      ═══════════════════════════════════════════════════════════════ */}
+      <VerticalSwipeCarousel />
+
+      {/* ═══════════════════════════════════════════════════════════════
+          USP FEATURES + SHIPPING CALCULATOR
+      ═══════════════════════════════════════════════════════════════ */}
+      <USPFeatures />
 
       {/* ═══════════════════════════════════════════════════════════════
           INTRO STRIP
