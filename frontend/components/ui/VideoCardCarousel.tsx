@@ -226,16 +226,18 @@ export default function VideoCardCarousel() {
                 backfaceVisibility: 'visible',
               }}
             >
-              {/* Glowing rim around the card */}
+              {/* Glowing rim around the card — alternating white / gold */}
               <div
                 className="absolute rounded-[16px] pointer-events-none"
                 style={{
                   inset:      '-2px',
                   background: 'transparent',
-                  border:     `2px solid ${product.accentHex}`,
+                  border:     `2px solid ${i % 2 === 0 ? '#ffffff' : '#C5A059'}`,
                   opacity:    1,
                   filter:     'saturate(1.6) brightness(1.4)',
-                  boxShadow:  `0 0 10px 1px ${product.accentHex}, 0 0 18px 3px ${product.accentHex}66`,
+                  boxShadow:  i % 2 === 0
+                    ? '0 0 10px 1px #ffffff, 0 0 18px 3px #ffffff66'
+                    : '0 0 10px 1px #C5A059, 0 0 18px 3px #C5A05966',
                   transform:  `translateZ(${THICKNESS_LAYERS[0] - 1.5}px)`,
                 }}
               />
