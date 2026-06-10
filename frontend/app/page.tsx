@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard, { Product } from '@/components/ProductCard';
 import { ContainerScroll } from '@/components/ui/container-scroll-animation';
+import USPFeatures from '@/components/USPFeatures';
 
 // Full lookbook spreads — shown at FULL height, never cropped
 const COLLECTIONS = [
@@ -409,6 +410,11 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          USP FEATURES
+      ═══════════════════════════════════════════════════════════════ */}
+      <USPFeatures />
 
       {/* ═══════════════════════════════════════════════════════════════
           MARQUEE
