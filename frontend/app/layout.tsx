@@ -2,9 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Playfair_Display, Inter } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import WhatsAppButton from '@/components/WhatsAppButton';
+import LayoutShell from '@/components/LayoutShell';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -53,10 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             duration: 2000,
           }}
         />
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
-        <WhatsAppButton />
+        <LayoutShell>{children}</LayoutShell>
       </body>
     </html>
   );

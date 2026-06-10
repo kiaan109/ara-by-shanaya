@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import toast from 'react-hot-toast';
@@ -30,6 +31,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const addItem = useCartStore(s => s.addItem);
   const { toggleItem, isWishlisted } = useWishlistStore();
   const wishlisted = isWishlisted(product._id);
+  const router = useRouter();
 
   const img1 = resolveImg(product.images?.[0] || '');
   const img2 = resolveImg(product.images?.[1] || '');
@@ -130,13 +132,19 @@ export default function ProductCard({ product }: { product: Product }) {
             style={{ opacity: hovered ? 0.08 : 0 }}
           />
 
-          {/* Add to bag — always visible on mobile, hover-reveal on desktop */}
-          <div className="absolute bottom-0 left-0 right-0 p-2 md:p-2.5 md:opacity-0 md:translate-y-1.5 md:group-hover:opacity-100 md:group-hover:translate-y-0 md:transition-all md:duration-300">
+          {/* Buttons — always visible on mobile, hover-reveal on desktop */}
+          <div className="absolute bottom-0 left-0 right-0 p-2 md:p-2.5 md:opacity-0 md:translate-y-1.5 md:group-hover:opacity-100 md:group-hover:translate-y-0 md:transition-all md:duration-300 flex gap-1.5">
             <button
               onClick={handleAdd}
-              className="w-full bg-white text-black text-[9px] md:text-[10px] tracking-[0.18em] md:tracking-[0.2em] uppercase py-3 md:py-3.5 hover:bg-black hover:text-white transition-colors duration-200"
+              className="flex-1 bg-white text-black text-[9px] md:text-[10px] tracking-[0.18em] md:tracking-[0.2em] uppercase py-3 md:py-3.5 hover:bg-black hover:text-white transition-colors duration-200"
             >
               Add to Bag
+            </button>
+            <button
+              onClick={e => { e.preventDefault(); e.stopPropagation(); router.push(`/checkout?id=${product._id}&size=${product.sizes?.[0] || ''}`); }}
+              className="flex-1 gold-btn text-white text-[9px] md:text-[10px] tracking-[0.18em] md:tracking-[0.2em] uppercase py-3 md:py-3.5 transition-colors duration-200"
+            >
+              Buy Now
             </button>
           </div>
         </div>

@@ -1,34 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { list } from '@vercel/blob';
 import { localProducts } from '@/lib/localProducts';
 
-const PRODUCTS_BLOB = 'ara-admin-products.json';
+const ALL_BLOB   = 'ara-all-products.json';
+const ADMIN_BLOB = 'ara-admin-products.json';
 
-// Merge local + admin-uploaded products
-async function getAllProducts() {
-  const all = [...localProducts] as any[];
+async function fetchBlob(pathname: string): Promise<any[] | null> {
   try {
-    const res = await fetch(
-      `https://public.blob.vercel-storage.com/${PRODUCTS_BLOB}?t=${Date.now()}`,
-      { cache: 'no-store' }
-    );
-    if (res.ok) {
-      const adminProducts = await res.json();
-      all.push(...(adminProducts || []));
-    }
-  } catch { /* no admin products yet */ }
-  return all;
+    const { blobs } = await list({ prefix: pathname, limit: 1 });
+    const b = blobs.find(x => x.pathname === pathname);
+    if (!b) return null;
+    const r = await fetch(b.url, { cache: 'no-store' });
+    if (!r.ok) return null;
+    const data = await r.json();
+    return Array.isArray(data) && data.length > 0 ? data : null;
+  } catch { return null; }
+}
+
+async function getAllProducts() {
+  // If admin has saved a full override, use ONLY that
+  const all = await fetchBlob(ALL_BLOB);
+  if (all) return all;
+
+  // Otherwise: local seed + admin-uploaded products merged
+  const merged = [...localProducts] as any[];
+  const adminProducts = await fetchBlob(ADMIN_BLOB);
+  if (adminProducts) merged.push(...adminProducts);
+  return merged;
 }
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const category = searchParams.get('category');
-  const search   = searchParams.get('search');
-  const sort     = searchParams.get('sort');
-  const order    = searchParams.get('order');
-  const limit    = parseInt(searchParams.get('limit') || '20');
-  const page     = parseInt(searchParams.get('page')  || '1');
-
+  const category   = searchParams.get('category');
+  const search     = searchParams.get('search');
+  const sort       = searchParams.get('sort');
+  const order      = searchParams.get('order');
+  const limit      = parseInt(searchParams.get('limit') || '20');
+  const page       = parseInt(searchParams.get('page')  || '1');
   const collection = searchParams.get('collection');
+
   let filtered = await getAllProducts();
 
   if (collection && collection !== 'All') {

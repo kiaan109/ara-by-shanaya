@@ -5,13 +5,23 @@ const WA_NUMBER = '918980008826';
 const INSTAGRAM = 'https://www.instagram.com/arabyshanaya/';
 
 export default function ContactPage() {
-  const [name,    setName]    = useState('');
-  const [message, setMessage] = useState('');
+  const [name,     setName]     = useState('');
+  const [email,    setEmail]    = useState('');
+  const [message,  setMessage]  = useState('');
+  const [sending,  setSending]  = useState(false);
 
-  const handleWA = (e: React.FormEvent) => {
+  const handleWA = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSending(true);
+    // Email arabyshanaya@gmail.com with the message
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, message }),
+    }).catch(() => {});
     const text = encodeURIComponent(`Hi! I'm ${name}. ${message}`);
     window.open(`https://wa.me/${WA_NUMBER}?text=${text}`, '_blank');
+    setSending(false);
   };
 
   return (
@@ -83,6 +93,17 @@ export default function ContactPage() {
                   onChange={e => setName(e.target.value)}
                   required
                   placeholder="Your name"
+                  className="w-full border-0 border-b border-[#e5e5e5] focus:border-black focus:outline-none py-3 text-[13px] text-black placeholder:text-[#ccc] bg-transparent transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] tracking-[0.2em] uppercase text-[#767676] mb-2">Email (optional)</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="your@email.com"
                   className="w-full border-0 border-b border-[#e5e5e5] focus:border-black focus:outline-none py-3 text-[13px] text-black placeholder:text-[#ccc] bg-transparent transition-colors"
                 />
               </div>
