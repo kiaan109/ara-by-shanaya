@@ -244,8 +244,8 @@ export default function ProductDetailPage() {
               {[
                 'Handcrafted',
                 'AI Try-On Ready',
-                'Free Shipping ₹999+',
-                'Easy Returns',
+                '15–20 Day Delivery',
+                'No Exchange / Return',
               ].map((f) => (
                 <div key={f} className="flex items-center gap-2 font-sans text-xs text-gray-400">
                   <span className="w-1 h-1 bg-gray-300 flex-shrink-0" />

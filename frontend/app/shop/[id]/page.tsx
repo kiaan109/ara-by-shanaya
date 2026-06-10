@@ -339,8 +339,8 @@ export default function ProductPage() {
                   <div className="space-y-4">
                     {[
                       { icon: '📦', label: 'Free shipping', body: 'On all orders above ₹3,000' },
-                      { icon: '🚚', label: '5–7 business days', body: 'Estimated delivery time' },
-                      { icon: '↩️', label: 'Easy returns', body: 'Return within 7 days of delivery' },
+                      { icon: '🚚', label: '15–20 day delivery', body: 'Estimated delivery time' },
+                      { icon: '🚫', label: 'No exchange or return', body: 'All sales are final' },
                       { icon: '🔒', label: 'Secure checkout', body: 'Your data is always protected' },
                     ].map(({ icon, label, body }) => (
                       <div key={label} className="flex items-start gap-3">

@@ -72,9 +72,9 @@ function SuccessContent() {
         className="mt-12 grid grid-cols-3 gap-8 text-center max-w-xs"
       >
         {[
-          { icon: '📦', label: '5–7 Day Delivery' },
+          { icon: '📦', label: '15–20 Day Delivery' },
           { icon: '✉️', label: 'Email Confirmation' },
-          { icon: '↩️', label: '7-Day Returns' },
+          { icon: '🚫', label: 'No Exchange/Return' },
         ].map(({ icon, label }) => (
           <div key={label}>
             <div className="text-xl mb-1">{icon}</div>

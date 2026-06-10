@@ -61,7 +61,7 @@ export default function Footer() {
           <div className="space-y-5">
             <h4 className="font-sans text-[11px] tracking-[0.3em] uppercase text-black">Service</h4>
             <ul className="space-y-3">
-              {['Contact Us', 'Shipping', 'Returns', 'FAQs', 'Sustainability'].map(t => (
+              {['Contact Us', 'Shipping', 'FAQs', 'Sustainability'].map(t => (
                 <li key={t}>
                   <button className="font-sans text-[13px] text-[#767676] hover:text-[#C5A059] transition-colors">
                     {t}
@@ -128,7 +128,7 @@ export default function Footer() {
               </svg>
             </a>
             <div className="flex gap-6 font-sans text-[10px] tracking-[0.25em] uppercase text-[#aaa]">
-              {['Privacy', 'Terms', 'Returns'].map(t => (
+              {['Privacy', 'Terms'].map(t => (
                 <button key={t} className="hover:text-[#C5A059] transition-colors">{t}</button>
               ))}
             </div>
