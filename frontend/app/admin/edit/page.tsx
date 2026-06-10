@@ -25,15 +25,17 @@ const ALL_TABS    = ['All', ...COLLECTIONS];
 function ImagePicker({
   onSelect, onClose,
 }: { onSelect: (url: string) => void; onClose: () => void }) {
-  const [tab, setTab]       = useState<'products'|'lookbook'>('products');
+  const [tab, setTab]       = useState<'products'|'lookbook'|'uploads'>('uploads');
   const [images, setImages] = useState<{ products: string[]; lookbook: string[] }>({ products: [], lookbook: [] });
+  const [uploads, setUploads] = useState<string[]>([]);
   const [q, setQ]           = useState('');
 
   useEffect(() => {
     fetch('/api/admin/images').then(r => r.json()).then(setImages);
+    fetch('/api/admin/media').then(r => r.json()).then(d => setUploads((d.items || []).map((i: any) => i.url)));
   }, []);
 
-  const list = (tab === 'products' ? images.products : images.lookbook)
+  const list = (tab === 'products' ? images.products : tab === 'lookbook' ? images.lookbook : uploads)
     .filter(img => !q || img.toLowerCase().includes(q.toLowerCase()));
 
   return (
@@ -50,12 +52,12 @@ function ImagePicker({
 
         {/* Tabs + search */}
         <div className="flex items-center gap-3 px-5 pt-3 pb-2 border-b">
-          {(['products','lookbook'] as const).map(t => (
+          {(['uploads','products','lookbook'] as const).map(t => (
             <button key={t} onClick={() => setTab(t)}
               className={`text-xs px-3 py-1 rounded-full font-medium transition-colors ${
                 tab === t ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}>
-              {t === 'products' ? 'Product Photos' : 'Lookbook Pages'}
+              {t === 'uploads' ? 'My Uploads' : t === 'products' ? 'Product Photos' : 'Lookbook Pages'}
             </button>
           ))}
           <input
@@ -79,7 +81,12 @@ function ImagePicker({
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
               </button>
             ))}
-            {list.length === 0 && (
+            {list.length === 0 && tab === 'uploads' && (
+              <div className="col-span-6 text-center py-10 text-gray-400 text-sm">
+                No uploads yet — go to <a href="/admin/media" target="_blank" className="text-blue-600 underline">Media Library</a> to add and crop photos.
+              </div>
+            )}
+            {list.length === 0 && tab !== 'uploads' && (
               <div className="col-span-6 text-center py-10 text-gray-400 text-sm">No images found</div>
             )}
           </div>

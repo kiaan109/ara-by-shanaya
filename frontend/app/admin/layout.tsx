@@ -45,6 +45,16 @@ const NAV = [
     ),
   },
   {
+    label: 'Media',
+    href: '/admin/media',
+    icon: (
+      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="18" height="14" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+        <path d="M21 15l-5-5L5 21"/><path d="M3 17l4-4 3 3"/>
+      </svg>
+    ),
+  },
+  {
     label: 'Branding',
     href: '/admin/branding',
     icon: (
