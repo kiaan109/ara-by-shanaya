@@ -95,7 +95,7 @@ export default function VideoCardCarousel() {
     const { cardH } = metrics;
 
     const renderLoop = () => {
-      progress.current += 0.0016;
+      progress.current += 0.0024;
       mouse.current.x += (mouse.current.targetX - mouse.current.x) * 0.08;
       mouse.current.y += (mouse.current.targetY - mouse.current.y) * 0.08;
 
@@ -186,8 +186,9 @@ export default function VideoCardCarousel() {
         }}
       />
 
-      {/* Label above */}
-      <div className="absolute top-6 md:top-10 left-1/2 -translate-x-1/2 text-center z-10 pointer-events-none px-6 w-full max-w-lg">
+      {/* Label — top on mobile, left side on desktop */}
+      <div className="absolute top-6 left-1/2 -translate-x-1/2 text-center z-10 pointer-events-none px-6 w-full max-w-sm
+                      md:top-1/2 md:left-8 lg:left-16 md:-translate-y-1/2 md:translate-x-0 md:text-left md:max-w-xs">
         <p className="text-[9px] tracking-[0.5em] uppercase text-[#C5A059]/70 font-light mb-2 md:mb-3">
           Stand-Out Pieces
         </p>
@@ -195,7 +196,7 @@ export default function VideoCardCarousel() {
           style={{ fontSize: 'clamp(1.5rem, 4.5vw, 2.75rem)' }}>
           Pieces that stop traffic.
         </h2>
-        <p className="hidden md:block font-sans text-[12px] text-white/40 leading-relaxed mt-3 max-w-sm mx-auto">
+        <p className="hidden md:block font-sans text-[12px] text-white/40 leading-relaxed mt-3 max-w-[240px]">
           Bold silhouettes, vivid colour, and a confidence that needs no introduction.
         </p>
       </div>
