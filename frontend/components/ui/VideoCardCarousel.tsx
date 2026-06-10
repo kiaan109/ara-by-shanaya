@@ -228,12 +228,13 @@ export default function VideoCardCarousel() {
             >
               {/* Glowing rim around the card */}
               <div
-                className="absolute rounded-[20px] pointer-events-none"
+                className="absolute rounded-[18px] pointer-events-none"
                 style={{
-                  inset:      '-6px',
+                  inset:      '-4px',
                   background: product.accentHex,
-                  opacity:    0.85,
-                  filter:     'blur(14px)',
+                  opacity:    1,
+                  filter:     'blur(8px) saturate(1.6) brightness(1.3)',
+                  boxShadow:  `0 0 24px 4px ${product.accentHex}`,
                   transform:  `translateZ(${THICKNESS_LAYERS[0] - 1.5}px)`,
                 }}
               />
