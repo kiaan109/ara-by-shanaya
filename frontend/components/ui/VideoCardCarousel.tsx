@@ -186,20 +186,6 @@ export default function VideoCardCarousel() {
         }}
       />
 
-      {/* Colour rings — echo the "Why ARA" feature gradients around the carousel */}
-      <div
-        className="absolute -left-[15%] top-[12%] w-[55vw] h-[55vw] max-w-[520px] max-h-[520px] rounded-full pointer-events-none opacity-40"
-        style={{ background: 'linear-gradient(137deg, #C5A059 0%, #F5D68A 45%, #E07B39 100%)', filter: 'blur(110px)' }}
-      />
-      <div
-        className="absolute -right-[18%] top-[8%] w-[50vw] h-[50vw] max-w-[480px] max-h-[480px] rounded-full pointer-events-none opacity-30"
-        style={{ background: 'linear-gradient(137deg, #4F46E5 0%, #A78BFA 45%, #EC4899 100%)', filter: 'blur(110px)' }}
-      />
-      <div
-        className="absolute -right-[10%] bottom-[6%] w-[45vw] h-[45vw] max-w-[440px] max-h-[440px] rounded-full pointer-events-none opacity-30"
-        style={{ background: 'linear-gradient(137deg, #E11D48 0%, #FB7185 45%, #F97316 100%)', filter: 'blur(110px)' }}
-      />
-
       {/* Label — top on mobile, left side on desktop (cleared below the navbar) */}
       <div className="absolute top-24 left-1/2 -translate-x-1/2 text-center z-10 pointer-events-none px-6 w-full max-w-sm
                       md:top-1/2 md:left-8 lg:left-16 md:-translate-y-1/2 md:translate-x-0 md:text-left md:max-w-xs">
@@ -240,6 +226,18 @@ export default function VideoCardCarousel() {
                 backfaceVisibility: 'visible',
               }}
             >
+              {/* Glowing rim around the card */}
+              <div
+                className="absolute rounded-[28px] pointer-events-none"
+                style={{
+                  inset:      '-16px',
+                  background: product.accentHex,
+                  opacity:    0.55,
+                  filter:     'blur(28px)',
+                  transform:  `translateZ(${THICKNESS_LAYERS[0] - 1.5}px)`,
+                }}
+              />
+
               {THICKNESS_LAYERS.map((zOffset, layerIdx) => {
                 const isFront = layerIdx === THICKNESS_LAYERS.length - 1;
                 const isBack  = layerIdx === 0;
@@ -262,13 +260,15 @@ export default function VideoCardCarousel() {
                 // ── Front face: product card ──
                 if (isFront) {
                   return (
-                    <div
+                    <Link
                       key={layerIdx}
-                      className="absolute inset-0 rounded-[14px] overflow-hidden pointer-events-none"
+                      href={`/shop/${product.id}`}
+                      className="absolute inset-0 rounded-[14px] overflow-hidden block cursor-pointer"
                       style={{
                         transform:          `translateZ(${zOffset}px)`,
                         backfaceVisibility: 'hidden',
                         boxShadow:          '0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08)',
+                        pointerEvents:      'auto',
                       }}
                     >
                       {/* Product photo */}
@@ -322,7 +322,7 @@ export default function VideoCardCarousel() {
                           </span>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   );
                 }
 
