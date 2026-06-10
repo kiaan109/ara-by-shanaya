@@ -4,8 +4,6 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard, { Product } from '@/components/ProductCard';
 import { ContainerScroll } from '@/components/ui/container-scroll-animation';
-import VerticalSwipeCarousel from '@/components/VerticalSwipeCarousel';
-import USPFeatures from '@/components/USPFeatures';
 
 // Full lookbook spreads — shown at FULL height, never cropped
 const COLLECTIONS = [
@@ -216,36 +214,20 @@ export default function HomePage() {
       <section className="relative w-full overflow-hidden bg-[#0d0d0d]" style={{ height: '100svh' }}>
 
         {/* ── Autoplay video (desktop & mobile) ── */}
-        <div className="absolute inset-0">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            // @ts-ignore - older iOS Safari attribute
-            webkit-playsinline="true"
-            preload="auto"
-            aria-hidden="true"
-            className="w-full h-full object-cover"
-            style={{ display: 'block', filter: 'blur(40px) brightness(0.6)', transform: 'scale(1.15)' }}
-          >
-            <source src="https://qcnpwaidf1iszznv.public.blob.vercel-storage.com/hero-video.mp4" type="video/mp4" />
-          </video>
-          <video
-            ref={heroVideoRef}
-            autoPlay
-            muted
-            loop
-            playsInline
-            // @ts-ignore - older iOS Safari attribute
-            webkit-playsinline="true"
-            preload="auto"
-            className="absolute inset-0 w-full h-full object-contain"
-            style={{ display: 'block' }}
-          >
-            <source src="https://qcnpwaidf1iszznv.public.blob.vercel-storage.com/hero-video.mp4" type="video/mp4" />
-          </video>
-        </div>
+        <video
+          ref={heroVideoRef}
+          autoPlay
+          muted
+          loop
+          playsInline
+          // @ts-ignore - older iOS Safari attribute
+          webkit-playsinline="true"
+          preload="auto"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ display: 'block' }}
+        >
+          <source src="https://qcnpwaidf1iszznv.public.blob.vercel-storage.com/hero-video.mp4" type="video/mp4" />
+        </video>
 
         {/* Gradient overlays — light, just enough for text legibility */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent pointer-events-none" />
@@ -288,16 +270,6 @@ export default function HomePage() {
           <p className="text-[8px] tracking-[0.3em] uppercase text-white/30">Scroll</p>
         </div>
       </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          VERTICAL SWIPE CAROUSEL
-      ═══════════════════════════════════════════════════════════════ */}
-      <VerticalSwipeCarousel />
-
-      {/* ═══════════════════════════════════════════════════════════════
-          USP FEATURES + SHIPPING CALCULATOR
-      ═══════════════════════════════════════════════════════════════ */}
-      <USPFeatures />
 
       {/* ═══════════════════════════════════════════════════════════════
           INTRO STRIP
