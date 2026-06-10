@@ -75,7 +75,7 @@ function LookbookSlideshow() {
   }, []);
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-[#111]">
+    <div className="relative w-full h-full overflow-hidden bg-white">
       {/* Book page slide animation */}
       <AnimatePresence initial={false} custom={dir} mode="popLayout">
         <motion.div
@@ -106,13 +106,13 @@ function LookbookSlideshow() {
       <button
         onClick={() => goTo((idx - 1 + LOOKBOOK_PAGES.length) % LOOKBOOK_PAGES.length)}
         className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center
-          text-white/30 hover:text-white/80 transition-colors select-none text-3xl font-extralight"
+          text-black/30 hover:text-black/80 transition-colors select-none text-3xl font-extralight"
         aria-label="Previous page"
       >‹</button>
       <button
         onClick={() => goTo((idx + 1) % LOOKBOOK_PAGES.length)}
         className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center
-          text-white/30 hover:text-white/80 transition-colors select-none text-3xl font-extralight"
+          text-black/30 hover:text-black/80 transition-colors select-none text-3xl font-extralight"
         aria-label="Next page"
       >›</button>
 
@@ -125,13 +125,13 @@ function LookbookSlideshow() {
         return isFirst && col ? (
           <div className="absolute top-5 left-5 z-10 pointer-events-none">
             <p className="font-sans text-[8px] tracking-[0.45em] uppercase text-[#C5A059] mb-1">Collection</p>
-            <p className="font-display text-[18px] italic text-white leading-none">{col.name}</p>
+            <p className="font-display text-[18px] italic text-black leading-none">{col.name}</p>
           </div>
         ) : null;
       })()}
 
       {/* Page counter */}
-      <div className="absolute bottom-4 right-5 font-sans text-[9px] tracking-[0.3em] text-white/40 select-none z-10">
+      <div className="absolute bottom-4 right-5 font-sans text-[9px] tracking-[0.3em] text-black/40 select-none z-10">
         {String(idx + 1).padStart(2, '0')} / {String(LOOKBOOK_PAGES.length).padStart(2, '0')}
       </div>
 
@@ -141,7 +141,7 @@ function LookbookSlideshow() {
           <button
             key={i}
             onClick={() => goTo(i)}
-            className="transition-all duration-300 bg-white"
+            className="transition-all duration-300 bg-black"
             style={{ height: '1.5px', width: i === idx ? '22px' : '6px', opacity: i === idx ? 0.9 : 0.2 }}
           />
         ))}
@@ -286,17 +286,17 @@ export default function HomePage() {
           SCROLL REVEAL — 3-D scroll animation
       ═══════════════════════════════════════════════════════════════ */}
       {/* Desktop/tablet: 3-D scroll lookbook */}
-      <section className="hidden md:block bg-[#0d0d0d]">
+      <section className="hidden md:block bg-white">
         <ContainerScroll
           titleComponent={
             <div className="flex flex-col items-center gap-4 pb-4">
-              <span className="font-display text-[34px] tracking-[0.28em] uppercase font-light text-white">
+              <span className="font-display text-[34px] tracking-[0.28em] uppercase font-light text-[#1a1c1c]">
                 ARA&nbsp;<span className="text-[#C5A059]">by</span>&nbsp;SHANAYA
               </span>
               <p className="font-sans text-[10px] tracking-[0.5em] uppercase text-[#C5A059]">
                 Spring Summer &apos;26
               </p>
-              <h2 className="font-display font-light italic text-white leading-none"
+              <h2 className="font-display font-light italic text-[#1a1c1c] leading-none"
                 style={{ fontSize: 'clamp(2rem, 5vw, 4rem)' }}>
                 The Lookbook
               </h2>
@@ -308,15 +308,15 @@ export default function HomePage() {
       </section>
 
       {/* Mobile: flat lookbook slideshow */}
-      <section className="md:hidden bg-[#0d0d0d] py-12 px-5">
+      <section className="md:hidden bg-white py-12 px-5">
         <div className="flex flex-col items-center gap-3 mb-6">
-          <span className="font-display text-[26px] tracking-[0.25em] uppercase font-light text-white">
+          <span className="font-display text-[26px] tracking-[0.25em] uppercase font-light text-[#1a1c1c]">
             ARA&nbsp;<span className="text-[#C5A059]">by</span>&nbsp;SHANAYA
           </span>
           <p className="font-sans text-[9px] tracking-[0.5em] uppercase text-[#C5A059]">Spring Summer &apos;26</p>
-          <h2 className="font-display font-light italic text-white text-[28px]">The Lookbook</h2>
+          <h2 className="font-display font-light italic text-[#1a1c1c] text-[28px]">The Lookbook</h2>
         </div>
-        <div className="relative w-full overflow-hidden rounded-sm bg-[#111]" style={{ aspectRatio: '3/4' }}>
+        <div className="relative w-full overflow-hidden rounded-sm bg-white border border-gray-100" style={{ aspectRatio: '3/4' }}>
           <LookbookSlideshow />
         </div>
       </section>
@@ -324,18 +324,18 @@ export default function HomePage() {
       {/* ═══════════════════════════════════════════════════════════════
           AI TRY-ON SECTION
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="bg-[#1a1c1c] py-16 md:py-24 lg:py-32 reveal">
+      <section className="bg-white py-16 md:py-24 lg:py-32 reveal">
         <div className="max-w-[1440px] mx-auto px-5 md:px-16 lg:px-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
           <div className="space-y-7">
             <div className="flex items-center gap-5">
               <span className="h-px w-12 bg-[#C5A059]" />
               <span className="font-sans text-[10px] tracking-[0.4em] uppercase text-[#C5A059]">Innovation</span>
             </div>
-            <h2 className="font-display font-light text-white italic leading-tight"
+            <h2 className="font-display font-light text-[#1a1c1c] italic leading-tight"
               style={{ fontSize: 'clamp(2.5rem, 5vw, 5rem)', letterSpacing: '-0.02em' }}>
               Virtual Try-On
             </h2>
-            <p className="font-sans text-[15px] text-white/55 leading-relaxed max-w-md">
+            <p className="font-sans text-[15px] text-[#767676] leading-relaxed max-w-md">
               Upload your photo. Select a style. See yourself in ARA SS '26 — powered by AI, styled by you.
             </p>
             <Link href="/try-on"

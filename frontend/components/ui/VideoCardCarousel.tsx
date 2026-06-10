@@ -176,13 +176,13 @@ export default function VideoCardCarousel() {
   }, [metrics, CARD_COUNT]);
 
   return (
-    <div className="absolute inset-0 bg-[#080808] text-white flex items-center justify-center overflow-hidden select-none">
+    <div className="absolute inset-0 bg-white text-black flex items-center justify-center overflow-hidden select-none">
 
       {/* Ambient glow behind the carousel */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(197,160,89,0.08) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(197,160,89,0.10) 0%, transparent 70%)',
         }}
       />
 
@@ -192,11 +192,11 @@ export default function VideoCardCarousel() {
         <p className="text-[9px] tracking-[0.5em] uppercase text-[#C5A059]/70 font-light mb-2 md:mb-3">
           Stand-Out Pieces
         </p>
-        <h2 className="font-display font-light italic text-white leading-tight"
+        <h2 className="font-display font-light italic text-[#1a1c1c] leading-tight"
           style={{ fontSize: 'clamp(1.5rem, 4.5vw, 2.75rem)' }}>
           Pieces that stop traffic.
         </h2>
-        <p className="hidden md:block font-sans text-[12px] text-white/40 leading-relaxed mt-3 max-w-[240px]">
+        <p className="hidden md:block font-sans text-[12px] text-black/40 leading-relaxed mt-3 max-w-[240px]">
           Bold silhouettes, vivid colour, and a confidence that needs no introduction.
         </p>
       </div>
@@ -226,13 +226,13 @@ export default function VideoCardCarousel() {
                 backfaceVisibility: 'visible',
               }}
             >
-              {/* Flat rim around the card — alternating white / gold */}
+              {/* Flat rim around the card — alternating charcoal / gold */}
               <div
                 className="absolute rounded-[16px] pointer-events-none"
                 style={{
                   inset:      '-2px',
                   background: 'transparent',
-                  border:     `2px solid ${i % 2 === 0 ? '#ffffff' : '#C5A059'}`,
+                  border:     `2px solid ${i % 2 === 0 ? '#1a1c1c' : '#C5A059'}`,
                   opacity:    1,
                   transform:  `translateZ(${THICKNESS_LAYERS[0] - 1.5}px)`,
                 }}
@@ -371,7 +371,7 @@ export default function VideoCardCarousel() {
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
         <Link
           href="/shop"
-          className="flex items-center gap-2 text-[9px] tracking-[0.35em] uppercase text-white/40 hover:text-[#C5A059] transition-colors duration-300"
+          className="flex items-center gap-2 text-[9px] tracking-[0.35em] uppercase text-black/40 hover:text-[#C5A059] transition-colors duration-300"
           style={{ pointerEvents: 'auto' }}
         >
           <span>Explore All Pieces</span>
