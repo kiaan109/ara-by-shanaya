@@ -53,8 +53,15 @@ export default function VerticalSwipeCarousel() {
         >
           <img
             src={slide.img}
-            alt={slide.eyebrow}
+            alt=""
+            aria-hidden="true"
             className="w-full h-full object-cover"
+            style={{ display: 'block', filter: 'blur(40px) brightness(0.6)', transform: 'scale(1.15)' }}
+          />
+          <img
+            src={slide.img}
+            alt={slide.eyebrow}
+            className="absolute inset-0 w-full h-full object-contain"
             style={{ display: 'block' }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
