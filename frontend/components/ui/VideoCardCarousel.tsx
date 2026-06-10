@@ -125,14 +125,13 @@ export default function VideoCardCarousel() {
         const peekAmount = -50;
         const D          = 1350;
 
-        let y = 0, z = 0, rot = 0;
+        let y = 0, z = 0;
 
         if (absOffset <= 1) {
           const t      = absOffset;
           const easedT = t * t * (3 - 2 * t);
           y   = -sign * (easedT * (cardH + gap));
           z   = 400 + easedT * (220 - 400);
-          rot = easedT * 132;
 
         } else if (absOffset <= 2) {
           const t      = absOffset - 1;
@@ -142,7 +141,6 @@ export default function VideoCardCarousel() {
           const yEnd   = (h / 2 - peekAmount) / sEnd - cardH / 2;
           y   = -sign * ((cardH + gap) + easedT * (yEnd - (cardH + gap)));
           z   = 220 + easedT * (zEnd - 220);
-          rot = 132 + easedT * (175 - 132);
 
         } else {
           const t      = Math.min(absOffset - 2, 1);
@@ -153,20 +151,12 @@ export default function VideoCardCarousel() {
           const yEnd3  = (h / 2 + 100)        / sEnd3  + cardH / 2;
           y   = -sign * (yStart + easedT * (yEnd3 - yStart));
           z   = zStart + easedT * (zEnd3  - zStart);
-          rot = 175   + easedT * (195    - 175);
         }
-
-        const localRot    = -sign * rot;
-        const center      = Math.max(0, 1 - absOffset);
-        const activeTiltX = -mouse.current.y * 12 * center;
-        const activeTiltY =  mouse.current.x * 15 * center;
 
         card.style.zIndex   = Math.round(z).toString();
         card.style.opacity  = '1';
         card.style.transform =
-          `translateY(${y.toFixed(2)}px) translateZ(${z.toFixed(2)}px) ` +
-          `rotateX(${(localRot + activeTiltX).toFixed(2)}deg) ` +
-          `rotateY(${activeTiltY.toFixed(2)}deg) rotateZ(-3deg)`;
+          `translateY(${y.toFixed(2)}px) translateZ(${z.toFixed(2)}px)`;
       }
     };
 
@@ -226,18 +216,6 @@ export default function VideoCardCarousel() {
                 backfaceVisibility: 'visible',
               }}
             >
-              {/* Flat rim around the card — alternating charcoal / gold */}
-              <div
-                className="absolute rounded-[16px] pointer-events-none"
-                style={{
-                  inset:      '-2px',
-                  background: 'transparent',
-                  border:     `2px solid ${i % 2 === 0 ? '#1a1c1c' : '#C5A059'}`,
-                  opacity:    1,
-                  transform:  `translateZ(${THICKNESS_LAYERS[0] - 1.5}px)`,
-                }}
-              />
-
               {THICKNESS_LAYERS.map((zOffset, layerIdx) => {
                 const isFront = layerIdx === THICKNESS_LAYERS.length - 1;
                 const isBack  = layerIdx === 0;
