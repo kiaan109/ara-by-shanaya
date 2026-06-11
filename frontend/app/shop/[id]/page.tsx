@@ -110,8 +110,29 @@ export default function ProductPage() {
     window.open(`https://wa.me/918980008826?text=${msg}`, '_blank');
   };
 
+  const productJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description: product.description,
+    image: images,
+    sku: product._id,
+    brand: { '@type': 'Brand', name: 'ARA by Shanaya' },
+    offers: {
+      '@type': 'Offer',
+      url: `https://arabyshanaya.com/shop/${product._id}`,
+      priceCurrency: 'INR',
+      price: product.price,
+      availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+    },
+  };
+
   return (
     <div className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
       {/* Breadcrumb */}
       <div className="px-5 md:px-10 py-3.5 flex items-center gap-2 text-[10px] tracking-[0.12em] uppercase text-[#999] border-b border-[#f5f5f5]">
         <Link href="/" className="hover:text-black transition-colors">Home</Link>
