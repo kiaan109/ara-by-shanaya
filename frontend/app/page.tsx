@@ -291,6 +291,29 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
+          FEATURED PRODUCTS
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="bg-white py-16 md:py-24 lg:py-28 reveal">
+        <div className="max-w-[1440px] mx-auto px-5 md:px-16 lg:px-24">
+          <div className="flex flex-col items-center text-center mb-10 md:mb-14">
+            <p className="font-sans text-[9px] md:text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-3">Shop Now</p>
+            <h2 className="font-display font-light text-[32px] md:text-[44px] lg:text-[52px] italic leading-tight">Featured Pieces</h2>
+            <div className="w-10 h-px bg-[#C5A059] mt-4" />
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 md:gap-x-4 gap-y-8 md:gap-y-10">
+            {products.map(p => <ProductCard key={p._id} product={p} />)}
+          </div>
+          <div className="text-center mt-10 md:mt-14">
+            <Link href="/shop"
+              className="inline-flex items-center gap-2 gold-btn px-10 md:px-12 py-3.5 md:py-4 text-white font-sans text-[10px] md:text-[11px] tracking-[0.25em] uppercase">
+              View All Pieces
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
           SCROLL REVEAL — 3-D scroll animation
       ═══════════════════════════════════════════════════════════════ */}
       {/* Desktop/tablet: 3-D scroll lookbook */}
@@ -362,29 +385,6 @@ export default function HomePage() {
               <p className="font-display text-[18px] italic">Scuba Corset Dress</p>
               <p className="font-sans text-[13px] text-white/55 mt-0.5">₹15,500</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          FEATURED PRODUCTS
-      ═══════════════════════════════════════════════════════════════ */}
-      <section className="bg-white py-16 md:py-24 lg:py-28 reveal">
-        <div className="max-w-[1440px] mx-auto px-5 md:px-16 lg:px-24">
-          <div className="flex flex-col items-center text-center mb-10 md:mb-14">
-            <p className="font-sans text-[9px] md:text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-3">Shop Now</p>
-            <h2 className="font-display font-light text-[32px] md:text-[44px] lg:text-[52px] italic leading-tight">Featured Pieces</h2>
-            <div className="w-10 h-px bg-[#C5A059] mt-4" />
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 md:gap-x-4 gap-y-8 md:gap-y-10">
-            {products.map(p => <ProductCard key={p._id} product={p} />)}
-          </div>
-          <div className="text-center mt-10 md:mt-14">
-            <Link href="/shop"
-              className="inline-flex items-center gap-2 gold-btn px-10 md:px-12 py-3.5 md:py-4 text-white font-sans text-[10px] md:text-[11px] tracking-[0.25em] uppercase">
-              View All Pieces
-              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </Link>
           </div>
         </div>
       </section>
