@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import './globals.css';
 import { Playfair_Display, Inter } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
@@ -66,6 +67,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSON_LD) }}
         />
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-9T598WDN9G" strategy="afterInteractive" />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-9T598WDN9G');
+          `}
+        </Script>
       </head>
       <body className="bg-[#f9f9f9] text-[#1a1c1c] antialiased font-sans">
         <Toaster
