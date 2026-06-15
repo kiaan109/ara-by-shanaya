@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const WA_NUMBER = '918980008826';
 const WA_MSG = encodeURIComponent(
-  "Hi! I visited the ARA by Shanaya website and I'm interested in your Summer 2025 collection. Could you please assist me? 🌸✨"
+  "Hi! I visited the ARA by Shanaya website and I'm interested in your Summer 2026 collection. Could you please assist me? 🌸✨"
 );
 
 export default function WhatsAppButton() {

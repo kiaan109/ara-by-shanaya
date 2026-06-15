@@ -26,11 +26,11 @@ export default function CollectionsPage() {
 
       {/* Hero */}
       <section className="relative w-full overflow-hidden bg-black" style={{ height: '60vh' }}>
-        <Image src="/products/bustier-dress-black-pink-1.jpg" alt="Summer 2025 Collection" fill
+        <Image src="/products/bustier-dress-black-pink-1.jpg" alt="Summer 2026 Collection" fill
           className="object-cover object-top opacity-80" sizes="100vw" priority />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center">
           <p className="text-[10px] tracking-[0.4em] uppercase mb-3 opacity-70">ARA by Shanaya</p>
-          <h1 className="text-4xl md:text-6xl font-light tracking-[-0.02em] leading-none">Summer 2025</h1>
+          <h1 className="text-4xl md:text-6xl font-light tracking-[-0.02em] leading-none">Summer 2026</h1>
         </div>
       </section>
 

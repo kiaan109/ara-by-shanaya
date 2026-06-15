@@ -52,11 +52,19 @@ const COLLECTIONS = [
   { name: 'Orange Vista', color: '#c2410c' },
 ];
 
+const CATEGORIES = [
+  { name: 'Dresses', value: 'Dress' },
+  { name: 'Tops',    value: 'Top' },
+  { name: 'Skirts',  value: 'Skirt' },
+  { name: 'Pants',   value: 'Pants' },
+];
+
 export default function Navbar() {
   const [scrolled,        setScrolled]        = useState(false);
   const [menuOpen,        setMenuOpen]         = useState(false);
   const [searchOpen,      setSearchOpen]       = useState(false);
   const [collectionsOpen, setCollectionsOpen]  = useState(false);
+  const [categoriesOpen,  setCategoriesOpen]   = useState(false);
   const [query,           setQuery]            = useState('');
   const collectionsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -90,10 +98,10 @@ export default function Navbar() {
         scrolled ? 'border-black/10 shadow-sm' : 'border-white/10'
       }`}>
         {/* Single row: flex — left (flex-none) | brand (flex-1 centered) | right (flex-none) */}
-        <div className="max-w-[1440px] mx-auto px-4 md:px-14 h-[76px] md:h-[88px] flex items-center">
+        <div className="max-w-[1440px] mx-auto px-4 md:px-14 h-[76px] md:h-[88px] grid grid-cols-[1fr_auto_1fr] items-center">
 
           {/* ── Left: hamburger (mobile) + nav links (desktop) ── */}
-          <div className="flex-none flex items-center gap-6">
+          <div className="justify-self-start flex items-center gap-6">
             {/* Mobile hamburger */}
             <button className="lg:hidden hover:opacity-60 transition-opacity"
               onClick={() => setMenuOpen(true)}>
@@ -147,19 +155,49 @@ export default function Navbar() {
                 </AnimatePresence>
               </div>
 
-              <Link href="/shop?category=Dress"
-                className="nav-link text-[11px] tracking-[0.18em] uppercase text-[#444] hover:text-black transition-colors whitespace-nowrap">
-                Dresses
-              </Link>
-              <Link href="/shop?category=Top"
-                className="nav-link text-[11px] tracking-[0.18em] uppercase text-[#444] hover:text-black transition-colors whitespace-nowrap">
-                Tops
-              </Link>
+              {/* Categories dropdown */}
+              <div
+                className="relative"
+                onMouseEnter={() => setCategoriesOpen(true)}
+                onMouseLeave={() => setCategoriesOpen(false)}
+              >
+                <button className="nav-link text-[11px] tracking-[0.18em] uppercase text-[#444] hover:text-black transition-colors whitespace-nowrap flex items-center gap-1">
+                  Categories
+                  <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor"
+                    style={{ transform: categoriesOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                    <path d="M0 2l4 4 4-4H0z"/>
+                  </svg>
+                </button>
+                <AnimatePresence>
+                  {categoriesOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.18 }}
+                      className="absolute top-full left-1/2 -translate-x-1/2 pt-3 z-50"
+                    >
+                      <div className="bg-white border border-[#f0f0f0] shadow-lg min-w-[160px] py-2">
+                        {CATEGORIES.map(({ name, value }) => (
+                          <Link
+                            key={name}
+                            href={`/shop?category=${encodeURIComponent(value)}`}
+                            onClick={() => setCategoriesOpen(false)}
+                            className="flex items-center px-5 py-2.5 text-[10px] tracking-[0.15em] uppercase text-[#444] hover:text-black hover:bg-[#f9f9f9] transition-colors whitespace-nowrap"
+                          >
+                            {name}
+                          </Link>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
 
-          {/* ── Center: Logo or text brand — flex-1 min-w-0 so it never crowds the icons ── */}
-          <div className="flex-1 min-w-0 flex justify-center">
+          {/* ── Center: Logo or text brand ── */}
+          <div className="justify-self-center min-w-0 flex justify-center">
             <Link href="/" className="hover:opacity-70 transition-opacity duration-200 select-none flex items-center">
               {logoUrl ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
@@ -177,14 +215,12 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* ── Right: nav links (desktop) + icons — flex-none so icons never move ── */}
-          <div className="flex-none flex items-center justify-end gap-2.5 sm:gap-4 lg:gap-5">
+          {/* ── Right: nav links (desktop) + icons ── */}
+          <div className="justify-self-end flex items-center justify-end gap-2.5 sm:gap-4 lg:gap-5">
             {/* Desktop right links */}
             <div className="hidden lg:flex items-center gap-7 mr-3">
               {[
-                { href: '/shop?category=Skirt', label: 'Skirts' },
-                { href: '/shop?category=Pants', label: 'Pants' },
-                { href: '/try-on',              label: 'AI Try-On' },
+                { href: '/try-on', label: 'AI Try-On' },
               ].map(({ href, label }) => (
                 <Link key={label} href={href}
                   className="nav-link text-[11px] tracking-[0.18em] uppercase text-[#444] hover:text-black transition-colors whitespace-nowrap">

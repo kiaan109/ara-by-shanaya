@@ -224,10 +224,10 @@ export default function HomePage() {
           // @ts-ignore - older iOS Safari attribute
           webkit-playsinline="true"
           preload="auto"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-contain bg-[#0d0d0d]"
           style={{ display: 'block' }}
         >
-          <source src="https://qcnpwaidf1iszznv.public.blob.vercel-storage.com/hero-video.mp4" type="video/mp4" />
+          <source src="/hero-video-2.mp4" type="video/mp4" />
         </video>
 
         {/* Gradient overlays — light, just enough for text legibility */}
@@ -349,6 +349,37 @@ export default function HomePage() {
         </div>
         <div className="relative w-full overflow-hidden rounded-sm bg-white border border-gray-100" style={{ aspectRatio: '3/4' }}>
           <LookbookSlideshow />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          EDITORIAL — full video, never cropped
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="reveal bg-[#0d0d0d]">
+        <div className="flex flex-col items-center text-center pt-12 md:pt-16 px-5">
+          <p className="font-sans text-[9px] md:text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-3">Editorial</p>
+          <h2 className="font-display font-light italic leading-tight text-white"
+            style={{ fontSize: 'clamp(2rem, 5vw, 4rem)' }}>
+            Life's a Beach
+          </h2>
+          <p className="font-sans text-[13px] md:text-[15px] text-white/50 max-w-md mt-4">
+            A moment from the SS '26 film — sun, salt and the colours of the season.
+          </p>
+        </div>
+        <div className="relative w-full overflow-hidden bg-[#0d0d0d] mt-8 md:mt-12" style={{ height: '85vh' }}>
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            // @ts-ignore - older iOS Safari attribute
+            webkit-playsinline="true"
+            preload="metadata"
+            className="absolute inset-0 w-full h-full object-contain"
+            style={{ display: 'block' }}
+          >
+            <source src="/hero-video-2.mp4" type="video/mp4" />
+          </video>
         </div>
       </section>
 

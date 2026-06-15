@@ -340,7 +340,7 @@ export default function ProductPage() {
                   <div>
                     <p className="text-[12.5px] text-[#444] leading-relaxed mb-4">{product.description}</p>
                     <ul className="space-y-1.5 text-[12px] text-[#555]">
-                      <li className="flex gap-2"><span className="text-[#bbb]">—</span> Summer 2025 Collection</li>
+                      <li className="flex gap-2"><span className="text-[#bbb]">—</span> Summer 2026 Collection</li>
                       <li className="flex gap-2"><span className="text-[#bbb]">—</span> Lightweight summer fabric</li>
                       <li className="flex gap-2"><span className="text-[#bbb]">—</span> Made in India</li>
                     </ul>

@@ -41,7 +41,7 @@ export default function ContactPage() {
             {/* WhatsApp */}
             <div>
               <p className="text-[10px] tracking-[0.25em] uppercase mb-4">WhatsApp</p>
-              <a href={`https://wa.me/${WA_NUMBER}?text=Hi%21%20I%27m%20interested%20in%20your%20Summer%202025%20collection.`}
+              <a href={`https://wa.me/${WA_NUMBER}?text=Hi%21%20I%27m%20interested%20in%20your%20Summer%202026%20collection.`}
                 target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-3 group">
                 <div className="w-10 h-10 bg-[#25D366] flex items-center justify-center flex-shrink-0">
