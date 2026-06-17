@@ -6,6 +6,35 @@ import ProductCard, { Product } from '@/components/ProductCard';
 import { ContainerScroll } from '@/components/ui/container-scroll-animation';
 import USPFeatures from '@/components/USPFeatures';
 
+function LazyVideo({ src }: { src: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        el.src = src;
+        el.load();
+        el.play().catch(() => {});
+        obs.disconnect();
+      }
+    }, { threshold: 0.1 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [src]);
+  return (
+    <video
+      ref={ref}
+      muted
+      loop
+      playsInline
+      preload="none"
+      className="absolute inset-0 w-full h-full object-contain"
+      style={{ display: 'block' }}
+    />
+  );
+}
+
 // Full lookbook spreads — shown at FULL height, never cropped
 const COLLECTIONS = [
   {
@@ -227,7 +256,7 @@ export default function HomePage() {
           playsInline
           // @ts-ignore - older iOS Safari attribute
           webkit-playsinline="true"
-          preload="auto"
+          preload="metadata"
           className="absolute inset-0 w-full h-full object-contain bg-white"
           style={{ display: 'block' }}
         >
@@ -374,17 +403,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3">
             {['/editorial-1.mp4', '/editorial-2.mp4', '/editorial-3.mp4'].map((src, i) => (
               <div key={i} className="relative overflow-hidden bg-white" style={{ height: '85vh' }}>
-                <video
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  className="absolute inset-0 w-full h-full object-contain"
-                  style={{ display: 'block' }}
-                >
-                  <source src={src} type="video/mp4" />
-                </video>
+                <LazyVideo src={src} />
               </div>
             ))}
           </div>
