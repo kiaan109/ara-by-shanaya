@@ -370,20 +370,24 @@ export default function HomePage() {
             A moment from the SS '26 film — sun, salt and the colours of the season.
           </p>
         </div>
-        <div className="relative w-full overflow-hidden bg-white mt-8 md:mt-12" style={{ height: '85vh' }}>
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            // @ts-ignore - older iOS Safari attribute
-            webkit-playsinline="true"
-            preload="metadata"
-            className="absolute inset-0 w-full h-full object-contain"
-            style={{ display: 'block' }}
-          >
-            <source src="/hero-video-2.mp4" type="video/mp4" />
-          </video>
+        <div className="w-full mt-8 md:mt-12">
+          <div className="grid grid-cols-1 md:grid-cols-3">
+            {['/editorial-1.mp4', '/editorial-2.mp4', '/editorial-3.mp4'].map((src, i) => (
+              <div key={i} className="relative overflow-hidden bg-white" style={{ height: '85vh' }}>
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  className="absolute inset-0 w-full h-full object-contain"
+                  style={{ display: 'block' }}
+                >
+                  <source src={src} type="video/mp4" />
+                </video>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
