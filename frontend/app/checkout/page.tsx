@@ -346,8 +346,8 @@ function CheckoutContent() {
               <div className="space-y-5">
                 <Field label="Full Name *" value={form.name} onChange={e => set('name', e.target.value)} placeholder="As on shipping label" required />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <Field label="Email Address *" type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="your@email.com" required />
-                  <Field label="Phone Number *" type="tel" value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="+91 XXXXX XXXXX" required />
+                  <Field label="Email Address *" type="email" value={form.email} onChange={e => set('email', e.target.value.trim())} placeholder="your@email.com" required />
+                  <Field label="Phone Number *" type="tel" value={form.phone} onChange={e => set('phone', e.target.value.replace(/[^\d+\-\s()]/g, '').slice(0, 15))} placeholder="+91 XXXXX XXXXX" maxLength={15} required />
                 </div>
               </div>
             </div>

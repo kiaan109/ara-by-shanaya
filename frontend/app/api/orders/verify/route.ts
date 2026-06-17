@@ -10,7 +10,8 @@ async function readBlob<T>(pathname: string, fallback: T): Promise<T> {
     const { blobs } = await list({ prefix: pathname, limit: 1 });
     const b = blobs.find(x => x.pathname === pathname);
     if (!b) return fallback;
-    const r = await fetch(b.url, { cache: 'no-store' });
+    const url = `${b.url}?_t=${Date.now()}`;
+    const r = await fetch(url, { cache: 'no-store' });
     return r.ok ? await r.json() : fallback;
   } catch { return fallback; }
 }
@@ -118,7 +119,7 @@ export async function POST(req: NextRequest) {
     if (expected !== razorpaySignature) return NextResponse.json({ success: false, error: 'Invalid signature' }, { status: 400 });
 
     const orderId = `ARA-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
-    const order = { orderId, ...orderData, paymentId: razorpayPaymentId, rzpOrderId: razorpayOrderId, status: 'confirmed', createdAt: new Date().toISOString() };
+    const order = { orderId, ...orderData, email: orderData.email?.trim().toLowerCase(), paymentId: razorpayPaymentId, rzpOrderId: razorpayOrderId, status: 'confirmed', createdAt: new Date().toISOString() };
 
     const orders: any[] = await readBlob(ORDERS_BLOB, []);
     orders.unshift(order);

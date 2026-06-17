@@ -10,7 +10,8 @@ async function readBlob<T>(pathname: string, fallback: T): Promise<T> {
     const { blobs } = await list({ prefix: pathname, limit: 1 });
     const b = blobs.find(x => x.pathname === pathname);
     if (!b) return fallback;
-    const r = await fetch(b.url, { cache: 'no-store' });
+    const url = `${b.url}?_t=${Date.now()}`;
+    const r = await fetch(url, { cache: 'no-store' });
     return r.ok ? await r.json() : fallback;
   } catch { return fallback; }
 }
@@ -30,7 +31,8 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, phone, address, city, state, pincode, items, subtotal, shipping, discount, couponCode, total } = body;
+    const { name, email: rawEmail, phone, address, city, state, pincode, items, subtotal, shipping, discount, couponCode, total } = body;
+    const email = rawEmail?.trim().toLowerCase();
     if (!name || !email || !phone) return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
 
     const orderId = `ARA-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
