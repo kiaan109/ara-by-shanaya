@@ -247,8 +247,8 @@ export default function HomePage() {
               <p className="font-sans text-[9px] md:text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-2.5 md:mb-3">
                 Spring Summer '26
               </p>
-              <h1 className="font-script text-white leading-[0.9] mb-6 md:mb-9"
-                style={{ fontSize: 'clamp(3rem, 14vw, 9rem)' }}>
+              <h1 className="font-display font-light italic text-white leading-[1.05] mb-6 md:mb-9"
+                style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.8rem)' }}>
                 Life's a Beach
               </h1>
               <div className="flex flex-col gap-2.5 sm:flex-row sm:gap-3">
@@ -362,8 +362,8 @@ export default function HomePage() {
       <section className="reveal bg-white">
         <div className="flex flex-col items-center text-center pt-12 md:pt-16 px-5">
           <p className="font-sans text-[9px] md:text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-3">Editorial</p>
-          <h2 className="font-script leading-tight text-[#1a1c1c]"
-            style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)' }}>
+          <h2 className="font-display font-light italic leading-tight text-[#1a1c1c]"
+            style={{ fontSize: 'clamp(2rem, 4vw, 3.2rem)' }}>
             Life's a Beach
           </h2>
           <p className="font-sans text-[13px] md:text-[15px] text-[#767676] max-w-md mt-4">
