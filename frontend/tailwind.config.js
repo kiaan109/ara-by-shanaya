@@ -18,6 +18,7 @@ module.exports = {
         display:  ['"Playfair Display"', 'Georgia', 'serif'],
         sans:     ['Inter', 'system-ui', 'sans-serif'],
         serif:    ['"Playfair Display"', 'Georgia', 'serif'],
+        script:   ['"Great Vibes"', 'cursive'],
       },
       keyframes: {
         marquee: {

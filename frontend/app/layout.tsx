@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import './globals.css';
-import { Playfair_Display, Inter } from 'next/font/google';
+import { Playfair_Display, Inter, Great_Vibes } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import LayoutShell from '@/components/LayoutShell';
 
@@ -18,6 +18,13 @@ const inter = Inter({
   weight: ['400', '500', '600'],
   display: 'swap',
   variable: '--font-inter',
+});
+
+const greatVibes = Great_Vibes({
+  subsets: ['latin'],
+  weight: ['400'],
+  display: 'swap',
+  variable: '--font-great-vibes',
 });
 
 export const metadata: Metadata = {
@@ -60,7 +67,7 @@ const ORG_JSON_LD = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${playfair.variable} ${inter.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${playfair.variable} ${inter.variable} ${greatVibes.variable}`}>
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
         <script

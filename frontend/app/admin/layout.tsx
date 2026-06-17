@@ -76,17 +76,68 @@ const NAV = [
   },
 ];
 
+const ADMIN_PASSWORD = 'ARA2026';
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [authed, setAuthed] = useState(false);
+  const [pw, setPw] = useState('');
+  const [err, setErr] = useState(false);
 
   useEffect(() => {
+    if (sessionStorage.getItem('ara-admin-auth') === '1') setAuthed(true);
+  }, []);
+
+  useEffect(() => {
+    if (!authed) return;
     fetch('/api/admin/settings', { cache: 'no-store' })
       .then(r => r.json())
       .then(s => setLogoUrl(s.logoUrl || null))
       .catch(() => {});
-  }, []);
+  }, [authed]);
+
+  if (!authed) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f9f9f9]">
+        <div className="w-full max-w-sm px-8 py-12 bg-white border border-black/8">
+          <p className="font-display text-[13px] tracking-[0.3em] uppercase text-center mb-1">
+            ARA <span className="text-[#C5A059]">by</span> SHANAYA
+          </p>
+          <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-[#aaa] text-center mb-10">Admin Access</p>
+          <form onSubmit={e => {
+            e.preventDefault();
+            if (pw === ADMIN_PASSWORD) {
+              sessionStorage.setItem('ara-admin-auth', '1');
+              setAuthed(true);
+              setErr(false);
+            } else {
+              setErr(true);
+              setPw('');
+            }
+          }} className="space-y-5">
+            <div>
+              <label className="font-sans text-[10px] tracking-[0.2em] uppercase text-[#767676] block mb-2">Password</label>
+              <input
+                type="password"
+                value={pw}
+                onChange={e => { setPw(e.target.value); setErr(false); }}
+                autoFocus
+                className="w-full border-b border-black/20 bg-transparent py-2 text-[13px] font-sans outline-none focus:border-[#C5A059] transition-colors"
+                placeholder="Enter admin password"
+              />
+              {err && <p className="font-sans text-[10px] text-red-500 mt-2">Incorrect password</p>}
+            </div>
+            <button type="submit"
+              className="w-full gold-btn py-3 text-white font-sans text-[10px] tracking-[0.25em] uppercase">
+              Sign In
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex bg-gray-50 text-gray-900">

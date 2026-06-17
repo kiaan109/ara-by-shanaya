@@ -16,10 +16,7 @@ function resolveImg(img: string) {
 }
 
 const CARE = [
-  { icon: '🧺', label: 'Hand wash cold' },
-  { icon: '🚫', label: 'Do not bleach' },
-  { icon: '❌', label: 'Do not tumble dry' },
-  { icon: '♨️', label: 'Low iron' },
+  { icon: '✨', label: 'Dry clean only' },
 ];
 
 const SIZE_GUIDE = [

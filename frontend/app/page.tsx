@@ -157,9 +157,13 @@ export default function HomePage() {
   const heroVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    fetch('/api/products?limit=6')
+    fetch('/api/products?limit=12')
       .then(r => r.json())
-      .then(d => setProducts(d.products || []));
+      .then(d => {
+        const all = d.products || [];
+        const shuffled = [...all].sort(() => Math.random() - 0.5);
+        setProducts(shuffled.slice(0, 6));
+      });
     const t = setTimeout(() => setReady(true), 80);
     return () => clearTimeout(t);
   }, []);
@@ -212,7 +216,7 @@ export default function HomePage() {
       {/* ═══════════════════════════════════════════════════════════════
           HERO — Full-screen video (desktop) / image (mobile)
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative w-full overflow-hidden bg-[#0d0d0d]" style={{ height: '100svh' }}>
+      <section className="relative w-full overflow-hidden bg-white" style={{ height: '100svh' }}>
 
         {/* ── Autoplay video (desktop & mobile) ── */}
         <video
@@ -224,7 +228,7 @@ export default function HomePage() {
           // @ts-ignore - older iOS Safari attribute
           webkit-playsinline="true"
           preload="auto"
-          className="absolute inset-0 w-full h-full object-contain bg-[#0d0d0d]"
+          className="absolute inset-0 w-full h-full object-contain bg-white"
           style={{ display: 'block' }}
         >
           <source src="/hero-video-2.mp4" type="video/mp4" />
@@ -243,9 +247,9 @@ export default function HomePage() {
               <p className="font-sans text-[9px] md:text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-2.5 md:mb-3">
                 Spring Summer '26
               </p>
-              <h1 className="font-display font-light text-white leading-[0.9] mb-6 md:mb-9"
-                style={{ fontSize: 'clamp(2.6rem, 12vw, 7.5rem)', letterSpacing: '-0.03em' }}>
-                Life's a<br />Beach
+              <h1 className="font-script text-white leading-[0.9] mb-6 md:mb-9"
+                style={{ fontSize: 'clamp(3rem, 14vw, 9rem)' }}>
+                Life's a Beach
               </h1>
               <div className="flex flex-col gap-2.5 sm:flex-row sm:gap-3">
                 <Link href="/shop"
@@ -355,18 +359,18 @@ export default function HomePage() {
       {/* ═══════════════════════════════════════════════════════════════
           EDITORIAL — full video, never cropped
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="reveal bg-[#0d0d0d]">
+      <section className="reveal bg-white">
         <div className="flex flex-col items-center text-center pt-12 md:pt-16 px-5">
           <p className="font-sans text-[9px] md:text-[10px] tracking-[0.5em] uppercase text-[#C5A059] mb-3">Editorial</p>
-          <h2 className="font-display font-light italic leading-tight text-white"
-            style={{ fontSize: 'clamp(2rem, 5vw, 4rem)' }}>
+          <h2 className="font-script leading-tight text-[#1a1c1c]"
+            style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)' }}>
             Life's a Beach
           </h2>
-          <p className="font-sans text-[13px] md:text-[15px] text-white/50 max-w-md mt-4">
+          <p className="font-sans text-[13px] md:text-[15px] text-[#767676] max-w-md mt-4">
             A moment from the SS '26 film — sun, salt and the colours of the season.
           </p>
         </div>
-        <div className="relative w-full overflow-hidden bg-[#0d0d0d] mt-8 md:mt-12" style={{ height: '85vh' }}>
+        <div className="relative w-full overflow-hidden bg-white mt-8 md:mt-12" style={{ height: '85vh' }}>
           <video
             autoPlay
             muted
