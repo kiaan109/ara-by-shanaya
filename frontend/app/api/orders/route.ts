@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { put, list } from '@vercel/blob';
 import crypto from 'crypto';
 
+export const dynamic = 'force-dynamic';
+
 const ORDERS_BLOB = 'ara-orders.json';
 const USERS_BLOB  = 'ara-users.json';
 

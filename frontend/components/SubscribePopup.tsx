@@ -44,7 +44,19 @@ export default function SubscribePopup() {
         setResult({ ok: false, message: data.error || 'Something went wrong. Please try again.' });
       } else {
         try {
-          localStorage.setItem('ara_subscriber', JSON.stringify({ name, email, phone }));
+          const lead = { name, email, phone: `+91${phone}` };
+          localStorage.setItem('ara_subscriber', JSON.stringify(lead));
+          // Also pre-fill checkout — only set if no existing user session
+          if (!localStorage.getItem('ara_user')) {
+            localStorage.setItem('ara_user', JSON.stringify(lead));
+          } else {
+            // Merge phone/email into existing session if missing
+            const existing = JSON.parse(localStorage.getItem('ara_user')!);
+            if (!existing.phone) existing.phone = `+91${phone}`;
+            if (!existing.email) existing.email = email;
+            if (!existing.name) existing.name = name;
+            localStorage.setItem('ara_user', JSON.stringify(existing));
+          }
         } catch { /* ignore */ }
         setResult({
           ok: true,

@@ -22,12 +22,15 @@ export default function AdminOrdersPage() {
   const [tracking, setTracking] = useState<Record<string, string>>({});
   const [newStatus, setNewStatus] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    fetch('/api/orders').then(r => r.json()).then(d => {
+  const loadOrders = () => {
+    setLoading(true);
+    fetch(`/api/orders?_t=${Date.now()}`, { cache: 'no-store' }).then(r => r.json()).then(d => {
       setOrders(d.orders || []);
       setLoading(false);
     });
-  }, []);
+  };
+
+  useEffect(() => { loadOrders(); }, []);
 
   const updateStatus = async (orderId: string) => {
     const status = newStatus[orderId] || orders.find(o => o.orderId === orderId)?.status;
@@ -76,13 +79,23 @@ export default function AdminOrdersPage() {
           <h1 className="text-[22px] font-light tracking-wide">Orders</h1>
           <p className="text-[11px] text-gray-400 mt-1">{orders.length} total · ₹{totalRevenue.toLocaleString('en-IN')} revenue</p>
         </div>
-        <button onClick={exportCSV}
-          className="flex items-center gap-2 border border-gray-300 hover:border-[#C5A059]/50 text-gray-500 hover:text-[#C5A059] px-4 py-2 text-[10px] tracking-[0.15em] uppercase transition-all rounded">
-          <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Export CSV
-        </button>
+        <div className="flex gap-2">
+          <button onClick={loadOrders} disabled={loading}
+            className="flex items-center gap-2 border border-gray-300 hover:border-[#C5A059]/50 text-gray-500 hover:text-[#C5A059] px-4 py-2 text-[10px] tracking-[0.15em] uppercase transition-all rounded disabled:opacity-40">
+            <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"
+              className={loading ? 'animate-spin' : ''}>
+              <path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+            Refresh
+          </button>
+          <button onClick={exportCSV}
+            className="flex items-center gap-2 border border-gray-300 hover:border-[#C5A059]/50 text-gray-500 hover:text-[#C5A059] px-4 py-2 text-[10px] tracking-[0.15em] uppercase transition-all rounded">
+            <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Export CSV
+          </button>
+        </div>
       </div>
 
       {/* Summary stats */}

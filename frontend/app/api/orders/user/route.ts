@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { list } from '@vercel/blob';
 
+export const dynamic = 'force-dynamic';
+
 const ORDERS_BLOB = 'ara-orders.json';
 
 export async function GET(req: NextRequest) {
