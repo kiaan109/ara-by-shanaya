@@ -85,7 +85,7 @@ async function sendEmails(order: any) {
   const key = process.env.RESEND_API_KEY;
   if (!key) return;
   const html = buildEmailHtml(order);
-  const from = 'ARA by Shanaya <onboarding@resend.dev>';
+  const from = 'ARA by Shanaya <noreply@arabyshanaya.com>';
   await Promise.allSettled([
     fetch('https://api.resend.com/emails', {
       method: 'POST',
