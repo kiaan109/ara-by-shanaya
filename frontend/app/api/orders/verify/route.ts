@@ -107,8 +107,10 @@ async function sendEmails(order: any) {
   const html = buildEmailHtml(order);
   const from = 'ARA by Shanaya <noreply@arabyshanaya.com>';
   await Promise.allSettled([
-    sendResend(key, { from, html, to: ADMIN_EMAILS, subject: `🛍️ New Order ${order.orderId} — ₹${(order.total || 0).toLocaleString('en-IN')}` }, 'admin'),
-    sendResend(key, { from, html, to: [order.email], subject: `Your ARA order ${order.orderId} is confirmed ✓` }, 'customer'),
+    ...ADMIN_EMAILS.map(to =>
+      sendResend(key, { from, html, to: [to], subject: `New order ${order.orderId} — Rs ${(order.total || 0).toLocaleString('en-IN')}` }, `admin:${to}`)
+    ),
+    sendResend(key, { from, html, to: [order.email], subject: `Your ARA order ${order.orderId} is confirmed` }, 'customer'),
   ]);
 }
 

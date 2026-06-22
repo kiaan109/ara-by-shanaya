@@ -114,13 +114,13 @@ export async function POST(req: NextRequest) {
       };
 
       await Promise.allSettled([
-        // Notify Shanaya
-        sendResend({
+        // Notify Shanaya — separate sends per recipient for reliable delivery
+        ...['arabyshanaya@gmail.com', 'shanayasanghani@gmail.com'].map(to => sendResend({
           from: 'ARA by Shanaya <noreply@arabyshanaya.com>',
-          to: ['arabyshanaya@gmail.com', 'shanayasanghani@gmail.com'],
-          subject: `🛍️ New Order ${orderId} — ${name} — ₹${total?.toLocaleString('en-IN')}`,
+          to: [to],
+          subject: `New order ${orderId} — ${name} — Rs ${total?.toLocaleString('en-IN')}`,
           html,
-        }, 'admin'),
+        }, `admin:${to}`)),
         // Confirm to customer
         sendResend({
           from: 'ARA by Shanaya <noreply@arabyshanaya.com>',
