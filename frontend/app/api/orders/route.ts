@@ -97,35 +97,38 @@ export async function POST(req: NextRequest) {
           </div>
         </div></body></html>`;
 
-      try {
-        await Promise.all([
-          // Notify Shanaya
-          fetch('https://api.resend.com/emails', {
+      const sendResend = async (payload: any, label: string) => {
+        try {
+          const r = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              from: 'ARA by Shanaya <noreply@arabyshanaya.com>',
-              to: [process.env.NOTIFICATION_EMAIL || 'arabyshanaya@gmail.com'],
-              subject: `🛍️ New Order ${orderId} — ${name} — ₹${total?.toLocaleString('en-IN')}`,
-              html,
-            }),
-          }),
-          // Confirm to customer
-          fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              from: 'ARA by Shanaya <noreply@arabyshanaya.com>',
-              to: [email],
-              subject: `Your ARA order ${orderId} has been received`,
-              html: html.replace('New Order Received', 'Order Confirmation').replace('Payment pending — confirm with customer before dispatching', 'Thank you for your order! We will contact you to confirm payment.'),
-            }),
-          }),
-        ]);
-      } catch (emailErr) {
-        console.error('[email]', emailErr);
-        // Don't fail the order if email fails
-      }
+            body: JSON.stringify(payload),
+          });
+          if (!r.ok) {
+            const body = await r.text().catch(() => '');
+            console.error(`[resend:${label}] ${r.status} ${body}`);
+          }
+        } catch (e) {
+          console.error(`[resend:${label}] threw`, e);
+        }
+      };
+
+      await Promise.allSettled([
+        // Notify Shanaya
+        sendResend({
+          from: 'ARA by Shanaya <noreply@arabyshanaya.com>',
+          to: ['arabyshanaya@gmail.com', 'shanayasanghani@gmail.com'],
+          subject: `🛍️ New Order ${orderId} — ${name} — ₹${total?.toLocaleString('en-IN')}`,
+          html,
+        }, 'admin'),
+        // Confirm to customer
+        sendResend({
+          from: 'ARA by Shanaya <noreply@arabyshanaya.com>',
+          to: [email],
+          subject: `Your ARA order ${orderId} has been received`,
+          html: html.replace('New Order Received', 'Order Confirmation').replace('Payment pending — confirm with customer before dispatching', 'Thank you for your order! We will contact you to confirm payment.'),
+        }, 'customer'),
+      ]);
     }
 
     return NextResponse.json({ success: true, orderId });

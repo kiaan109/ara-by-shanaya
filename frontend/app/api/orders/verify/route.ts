@@ -83,22 +83,32 @@ function buildEmailHtml(order: any): string {
   </div></body></html>`;
 }
 
+const ADMIN_EMAILS = ['arabyshanaya@gmail.com', 'shanayasanghani@gmail.com'];
+
+async function sendResend(key: string, payload: any, label: string) {
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!r.ok) {
+      const body = await r.text().catch(() => '');
+      console.error(`[resend:${label}] ${r.status} ${body}`);
+    }
+  } catch (e) {
+    console.error(`[resend:${label}] threw`, e);
+  }
+}
+
 async function sendEmails(order: any) {
   const key = process.env.RESEND_API_KEY;
-  if (!key) return;
+  if (!key) { console.error('[resend] RESEND_API_KEY not set'); return; }
   const html = buildEmailHtml(order);
   const from = 'ARA by Shanaya <noreply@arabyshanaya.com>';
   await Promise.allSettled([
-    fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from, html, to: [process.env.NOTIFICATION_EMAIL || 'arabyshanaya@gmail.com'], subject: `🛍️ New Order ${order.orderId} — ₹${(order.total || 0).toLocaleString('en-IN')}` }),
-    }),
-    fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from, html, to: [order.email], subject: `Your ARA order ${order.orderId} is confirmed ✓` }),
-    }),
+    sendResend(key, { from, html, to: ADMIN_EMAILS, subject: `🛍️ New Order ${order.orderId} — ₹${(order.total || 0).toLocaleString('en-IN')}` }, 'admin'),
+    sendResend(key, { from, html, to: [order.email], subject: `Your ARA order ${order.orderId} is confirmed ✓` }, 'customer'),
   ]);
 }
 
