@@ -1,7 +1,8 @@
 // Central place for discount-code definitions.
-// Add new codes here — { percent: 0-100 }
-export const COUPONS: Record<string, { percent: number; label: string }> = {
-  NEW20: { percent: 20, label: '20% off — welcome gift' },
+// Add new codes here — { percent: 0-100, maxUses?: limit }
+export const COUPONS: Record<string, { percent: number; label: string; maxUses?: number }> = {
+  NEW20:      { percent: 20, label: '20% off — welcome gift' },
+  PROUDMOM15: { percent: 15, label: '15% off — first 50 customers', maxUses: 50 },
 };
 
 export function getCoupon(code: string | undefined | null) {

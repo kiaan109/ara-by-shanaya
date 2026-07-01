@@ -2,8 +2,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { list } from '@vercel/blob';
 import { localProducts } from '@/lib/localProducts';
-import { applyCoupon } from '@/lib/coupons';
+import { applyCoupon, getCoupon } from '@/lib/coupons';
 import { calcShipping } from '@/lib/shipping';
+
+const ORDERS_BLOB = 'ara-orders.json';
+
+async function countCouponUses(code: string): Promise<number> {
+  try {
+    const { blobs } = await list({ prefix: ORDERS_BLOB, limit: 1 });
+    const b = blobs.find(x => x.pathname === ORDERS_BLOB);
+    if (!b) return 0;
+    const r = await fetch(`${b.url}?_t=${Date.now()}`, { cache: 'no-store' });
+    if (!r.ok) return 0;
+    const orders: any[] = await r.json();
+    return orders.filter(o => o.couponCode === code && o.status !== 'cancelled').length;
+  } catch { return 0; }
+}
 
 const ALL_BLOB = 'ara-all-products.json';
 
@@ -53,7 +67,19 @@ export async function POST(req: NextRequest) {
     if (subtotal <= 0 || orderItems.length === 0) return NextResponse.json({ error: 'Invalid order' }, { status: 400 });
 
     const shipping = calcShipping(body.country || 'India', subtotal);
-    const { discount, percent, code } = applyCoupon(subtotal, body.couponCode);
+    let { discount, percent, code } = applyCoupon(subtotal, body.couponCode);
+
+    // Enforce maxUses limit for limited-run coupons
+    if (code) {
+      const couponDef = getCoupon(code);
+      if (couponDef?.maxUses) {
+        const used = await countCouponUses(code);
+        if (used >= couponDef.maxUses) {
+          return NextResponse.json({ error: `Sorry, the ${code} promotion has ended — it was limited to the first ${couponDef.maxUses} customers.` }, { status: 400 });
+        }
+      }
+    }
+
     const grandTotal = Math.max(0, subtotal + shipping - discount);
 
     if (!keyId || !keySecret) {
