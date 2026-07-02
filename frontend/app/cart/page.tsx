@@ -13,6 +13,9 @@ function resolveImg(img: string) {
 export default function CartPage() {
   const { items, removeItem, updateQuantity, total } = useCartStore();
   const subtotal = total();
+  const shipping = subtotal >= 2000 ? 0 : 99;
+  const tax = Math.round(subtotal * 0.05);
+  const grandTotal = subtotal + shipping + tax;
 
   if (items.length === 0) {
     return (
@@ -89,7 +92,7 @@ export default function CartPage() {
           })}
         </div>
 
-        {/* Summary */}
+        {/* Order Summary */}
         <div className="lg:sticky lg:top-[80px] h-fit">
           <div className="border border-[#e5e5e5] p-6">
             <h2 className="text-[11px] tracking-[0.3em] uppercase mb-6">Order Summary</h2>
@@ -101,18 +104,22 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between text-[13px]">
                 <span className="text-[#767676]">Shipping</span>
-                <span>{subtotal >= 3000 ? 'Free' : '₹200'}</span>
+                <span>{shipping === 0 ? 'Free' : `₹${shipping}`}</span>
+              </div>
+              <div className="flex justify-between text-[13px]">
+                <span className="text-[#767676]">Estimated tax (5% GST)</span>
+                <span>₹{tax.toLocaleString('en-IN')}</span>
               </div>
             </div>
 
             <div className="border-t border-[#e5e5e5] pt-4 mb-6 flex justify-between">
-              <span className="text-[11px] tracking-[0.1em] uppercase">Total</span>
-              <span className="text-[15px]">₹{(subtotal >= 3000 ? subtotal : subtotal + 200).toLocaleString('en-IN')}</span>
+              <span className="text-[11px] tracking-[0.1em] uppercase">Total (INR)</span>
+              <span className="text-[15px]">₹{grandTotal.toLocaleString('en-IN')}</span>
             </div>
 
-            {subtotal < 3000 && (
+            {shipping > 0 && (
               <p className="text-[10px] text-[#767676] mb-4 tracking-[0.05em]">
-                Add ₹{(3000 - subtotal).toLocaleString('en-IN')} more for free shipping
+                Add ₹{(2000 - subtotal).toLocaleString('en-IN')} more for free shipping
               </p>
             )}
 
