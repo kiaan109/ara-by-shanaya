@@ -21,8 +21,7 @@ async function readUsers(): Promise<any[]> {
 }
 
 async function writeUsers(users: any[]) {
-  const b = new Blob([JSON.stringify(users, null, 2)], { type: 'application/json' });
-  await put(USERS_BLOB, b, { access: 'public', addRandomSuffix: false, allowOverwrite: true });
+  await put(USERS_BLOB, JSON.stringify(users, null, 2), { access: 'public', addRandomSuffix: false, allowOverwrite: true });
 }
 
 // GET /api/auth — health check: confirms route is live and blob is reachable

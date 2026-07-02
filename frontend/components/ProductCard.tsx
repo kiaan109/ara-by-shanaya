@@ -45,13 +45,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
   const handleAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!product.inStock) return;
-    if (product.sizes?.length) {
-      setPicker('bag');
-      return;
-    }
-    addItem({ _id: product._id, name: product.name, price: product.price, image: img1, color: product.colors?.[0] });
-    toast.success('Added to bag');
+    router.push(`/shop/${product._id}`);
   };
 
   const handleBuyNow = (e: React.MouseEvent) => {
