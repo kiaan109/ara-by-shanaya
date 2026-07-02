@@ -16,6 +16,9 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [user, setUser] = useState<User | null>(null);
+  const [forgotMode, setForgotMode] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotSent, setForgotSent] = useState(false);
   const errorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -198,13 +201,63 @@ export default function AccountPage() {
                 </button>
                 {tab === 'login' && (
                   <p className="text-center text-[11px] text-[#767676]">
-                    <button type="button" onClick={() => toast('Password reset coming soon — WhatsApp us for help', { icon: 'ℹ️', duration: 4000 })}
+                    <button type="button" onClick={() => { setForgotMode(true); setForgotSent(false); setForgotEmail(email); }}
                       className="hover:text-black transition-colors underline underline-offset-2">
                       Forgot Password?
                     </button>
                   </p>
                 )}
               </form>
+
+              {/* ── Forgot password modal ── */}
+              {forgotMode && (
+                <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/50 px-6" onClick={() => setForgotMode(false)}>
+                  <div className="w-full max-w-sm bg-white p-8 rounded-lg shadow-2xl" onClick={e => e.stopPropagation()}>
+                    <button onClick={() => setForgotMode(false)} className="absolute top-4 right-4 text-[#767676] hover:text-black text-xl leading-none">×</button>
+
+                    {forgotSent ? (
+                      <div className="text-center py-4 space-y-4">
+                        <div className="w-10 h-10 mx-auto rounded-full bg-[#C5A059]/15 flex items-center justify-center">
+                          <svg width="18" height="18" fill="none" stroke="#C5A059" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        <p className="text-[13px] font-light">Check your inbox</p>
+                        <p className="text-[12px] text-[#767676] leading-relaxed">If that email has an account, a reset link is on its way. Check your spam folder too.</p>
+                        <button onClick={() => setForgotMode(false)} className="text-[11px] tracking-[0.15em] uppercase underline underline-offset-2 text-[#767676] hover:text-black transition-colors">Back to Sign In</button>
+                      </div>
+                    ) : (
+                      <>
+                        <h2 className="text-[13px] tracking-[0.2em] uppercase mb-2">Reset Password</h2>
+                        <p className="text-[12px] text-[#767676] mb-6 leading-relaxed">Enter your email and we'll send you a link to set a new password.</p>
+                        <form onSubmit={async (e) => {
+                          e.preventDefault();
+                          const tid = toast.loading('Sending reset link…');
+                          try {
+                            await fetch('/api/auth', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ action: 'forgot', email: forgotEmail.trim().toLowerCase() }),
+                            });
+                            toast.dismiss(tid);
+                            setForgotSent(true);
+                          } catch {
+                            toast.error('Network error — please try again', { id: tid });
+                          }
+                        }} className="space-y-5">
+                          <div>
+                            <label className="block text-[10px] tracking-[0.2em] uppercase text-[#767676] mb-2">Email</label>
+                            <input type="email" value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} required
+                              placeholder="your@email.com"
+                              className="w-full border-0 border-b border-[#e5e5e5] focus:border-black focus:outline-none py-3 text-[13px] bg-transparent placeholder:text-[#ccc] transition-colors" />
+                          </div>
+                          <button type="submit" className="w-full bg-black text-white text-[11px] tracking-[0.2em] uppercase py-4 hover:opacity-75 transition-opacity">
+                            Send Reset Link
+                          </button>
+                        </form>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
 
               <div className="mt-10 pt-8 border-t border-[#e5e5e5] text-center">
                 <p className="text-[11px] text-[#767676] mb-4">Or contact us directly</p>
