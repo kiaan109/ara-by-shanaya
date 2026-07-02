@@ -1,7 +1,8 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import LogoSVG from '@/components/LogoSVG';
 
 type User = { name: string; email: string; phone?: string };
@@ -15,10 +16,10 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [user, setUser] = useState<User | null>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     try {
-      // Only restore session from a real login — not from popup/checkout pre-fill
       if (localStorage.getItem('ara_authenticated') === '1') {
         const stored = localStorage.getItem('ara_user');
         if (stored) setUser(JSON.parse(stored));
@@ -26,28 +27,63 @@ export default function AccountPage() {
     } catch {}
   }, []);
 
+  // Scroll error into view whenever it changes
+  useEffect(() => {
+    if (error) {
+      errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [error]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
     setLoading(true);
+
+    const toastId = toast.loading(tab === 'register' ? 'Creating account…' : 'Signing in…');
+
     try {
-      const body: any = { action: tab, email, password };
-      if (tab === 'register') body.name = name;
+      const body: any = { action: tab, email: email.trim().toLowerCase(), password };
+      if (tab === 'register') body.name = name.trim();
+
       const res = await fetch('/api/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-      const data = await res.json();
+
+      let data: any = {};
+      try { data = await res.json(); } catch { /* non-JSON response */ }
+
       if (!res.ok) {
-        setError(data.error || 'Something went wrong');
+        toast.dismiss(toastId);
+        const msg = data.error || `Error ${res.status}`;
+
+        // If email already registered, auto-switch to sign in
+        if (res.status === 409) {
+          setTab('login');
+          setError('');
+          toast.error('Account already exists — please sign in below.', { duration: 5000 });
+        } else {
+          setError(msg);
+          toast.error(msg, { duration: 5000 });
+        }
       } else {
+        if (!data.user) {
+          toast.dismiss(toastId);
+          setError('Unexpected response. Please try again.');
+          toast.error('Unexpected response. Please try again.', { duration: 5000 });
+          return;
+        }
         localStorage.setItem('ara_user', JSON.stringify(data.user));
         localStorage.setItem('ara_authenticated', '1');
+        toast.success(tab === 'register' ? `Welcome, ${data.user.name}!` : `Welcome back, ${data.user.name}!`, { id: toastId });
         setUser(data.user);
       }
-    } catch {
-      setError('Network error. Please try again.');
+    } catch (err: any) {
+      toast.dismiss(toastId);
+      const msg = 'Network error — please check your connection and try again.';
+      setError(msg);
+      toast.error(msg, { duration: 6000 });
     } finally {
       setLoading(false);
     }
@@ -59,6 +95,7 @@ export default function AccountPage() {
     setEmail('');
     setPassword('');
     setName('');
+    toast.success('Signed out');
   }
 
   return (
@@ -116,7 +153,7 @@ export default function AccountPage() {
             /* ── Auth forms ── */
             <>
               {/* Tabs */}
-              <div className="flex border-b border-[#e5e5e5] mb-10">
+              <div className="flex border-b border-[#e5e5e5] mb-8">
                 {(['login', 'register'] as const).map(t => (
                   <button key={t} onClick={() => { setTab(t); setError(''); }}
                     className={`flex-1 pb-3 text-[11px] tracking-[0.2em] uppercase transition-all ${
@@ -127,10 +164,11 @@ export default function AccountPage() {
                 ))}
               </div>
 
+              {/* Error — scrolled into view automatically */}
               {error && (
-                <p className="mb-6 text-[12px] text-red-600 bg-red-50 border border-red-100 px-4 py-3 rounded">
+                <div ref={errorRef} className="mb-6 text-[12px] text-red-600 bg-red-50 border border-red-200 px-4 py-3 rounded">
                   {error}
-                </p>
+                </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -156,11 +194,12 @@ export default function AccountPage() {
                 </div>
                 <button type="submit" disabled={loading}
                   className="w-full bg-black text-white text-[11px] tracking-[0.2em] uppercase py-4 hover:opacity-75 transition-opacity disabled:opacity-50">
-                  {loading ? 'Please wait...' : tab === 'login' ? 'Sign In' : 'Create Account'}
+                  {loading ? 'Please wait…' : tab === 'login' ? 'Sign In' : 'Create Account'}
                 </button>
                 {tab === 'login' && (
                   <p className="text-center text-[11px] text-[#767676]">
-                    <button type="button" className="hover:text-black transition-colors underline underline-offset-2">
+                    <button type="button" onClick={() => toast('Password reset coming soon — WhatsApp us for help', { icon: 'ℹ️', duration: 4000 })}
+                      className="hover:text-black transition-colors underline underline-offset-2">
                       Forgot Password?
                     </button>
                   </p>
