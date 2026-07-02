@@ -18,8 +18,11 @@ export default function AccountPage() {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('ara_user');
-      if (stored) setUser(JSON.parse(stored));
+      // Only restore session from a real login — not from popup/checkout pre-fill
+      if (localStorage.getItem('ara_authenticated') === '1') {
+        const stored = localStorage.getItem('ara_user');
+        if (stored) setUser(JSON.parse(stored));
+      }
     } catch {}
   }, []);
 
@@ -40,6 +43,7 @@ export default function AccountPage() {
         setError(data.error || 'Something went wrong');
       } else {
         localStorage.setItem('ara_user', JSON.stringify(data.user));
+        localStorage.setItem('ara_authenticated', '1');
         setUser(data.user);
       }
     } catch {
@@ -50,7 +54,7 @@ export default function AccountPage() {
   }
 
   function handleLogout() {
-    localStorage.removeItem('ara_user');
+    localStorage.removeItem('ara_authenticated');
     setUser(null);
     setEmail('');
     setPassword('');

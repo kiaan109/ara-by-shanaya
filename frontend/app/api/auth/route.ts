@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { put, list } from '@vercel/blob';
 
+export const dynamic = 'force-dynamic';
+
 const USERS_BLOB = 'ara-users.json';
 
 function hashPassword(password: string): string {
