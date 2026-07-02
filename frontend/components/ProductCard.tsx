@@ -37,23 +37,34 @@ export default function ProductCard({ product }: { product: Product }) {
   const img1 = resolveImg(product.images?.[0] || '');
   const img2 = resolveImg(product.images?.[1] || '');
 
+  // Clicking the image area navigates — UNLESS a picker is open
+  const handleImageClick = () => {
+    if (picker) return;
+    router.push(`/shop/${product._id}`);
+  };
+
   const handleAdd = (e: React.MouseEvent) => {
-    e.preventDefault();
     e.stopPropagation();
-    if (product.sizes?.length) { setPicker('bag'); return; }
+    if (!product.inStock) return;
+    if (product.sizes?.length) {
+      setPicker('bag');
+      return;
+    }
     addItem({ _id: product._id, name: product.name, price: product.price, image: img1, color: product.colors?.[0] });
     toast.success('Added to bag');
   };
 
   const handleBuyNow = (e: React.MouseEvent) => {
-    e.preventDefault();
     e.stopPropagation();
-    if (product.sizes?.length) { setPicker('buy'); return; }
+    if (!product.inStock) return;
+    if (product.sizes?.length) {
+      setPicker('buy');
+      return;
+    }
     router.push(`/checkout?id=${product._id}`);
   };
 
   const confirmSize = (e: React.MouseEvent, size: string) => {
-    e.preventDefault();
     e.stopPropagation();
     if (picker === 'bag') {
       addItem({ _id: product._id, name: product.name, price: product.price, image: img1, size, color: product.colors?.[0] });
@@ -65,9 +76,13 @@ export default function ProductCard({ product }: { product: Product }) {
   };
 
   const handleWishlist = (e: React.MouseEvent) => {
-    e.preventDefault();
     e.stopPropagation();
     toggleItem({ _id: product._id, name: product.name, price: product.price, image: img1, category: product.category });
+  };
+
+  const closePicker = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPicker(null);
   };
 
   return (
@@ -76,48 +91,48 @@ export default function ProductCard({ product }: { product: Product }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Image container */}
-      <div className="relative overflow-hidden bg-white border border-[#f0f0f0]" style={{ aspectRatio: '3/4' }}>
-
-        {/* Navigation link covers the image area — buttons/picker are siblings with higher z-index */}
-        <Link href={`/shop/${product._id}`} className="absolute inset-0 z-[1]" aria-label={product.name}>
-          {img1 ? (
-            <>
+      {/* ── Image container — onClick navigates; buttons stopPropagation ── */}
+      <div
+        className="relative overflow-hidden bg-white border border-[#f0f0f0]"
+        style={{ aspectRatio: '3/4' }}
+        onClick={handleImageClick}
+      >
+        {img1 ? (
+          <>
+            <img
+              src={img1}
+              alt={product.name}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-contain transition-all duration-700 pointer-events-none"
+              style={{
+                transform: hovered ? 'scale(1.03)' : 'scale(1)',
+                opacity: hovered && img2 ? 0 : 1,
+              }}
+            />
+            {img2 && (
               <img
-                src={img1}
+                src={img2}
                 alt={product.name}
                 loading="lazy"
-                className="absolute inset-0 w-full h-full object-contain transition-all duration-700"
+                className="absolute inset-0 w-full h-full object-contain transition-all duration-700 pointer-events-none"
                 style={{
                   transform: hovered ? 'scale(1.03)' : 'scale(1)',
-                  opacity: hovered && img2 ? 0 : 1,
+                  opacity: hovered ? 1 : 0,
                 }}
               />
-              {img2 && (
-                <img
-                  src={img2}
-                  alt={product.name}
-                  loading="lazy"
-                  className="absolute inset-0 w-full h-full object-contain transition-all duration-700"
-                  style={{
-                    transform: hovered ? 'scale(1.03)' : 'scale(1)',
-                    opacity: hovered ? 1 : 0,
-                  }}
-                />
-              )}
-            </>
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-[#f5f5f5]">
-              <svg className="w-8 h-8 text-[#ccc]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-          )}
-        </Link>
+            )}
+          </>
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-[#f5f5f5] pointer-events-none">
+            <svg className="w-8 h-8 text-[#ccc]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+        )}
 
-        {/* Sold out badge */}
+        {/* Sold out */}
         {!product.inStock && (
-          <div className="absolute top-3 left-3 bg-white text-black text-[9px] tracking-[0.15em] uppercase px-2 py-1 z-[2]">
+          <div className="absolute top-3 left-3 bg-white text-black text-[9px] tracking-[0.15em] uppercase px-2 py-1 pointer-events-none">
             Sold Out
           </div>
         )}
@@ -125,7 +140,7 @@ export default function ProductCard({ product }: { product: Product }) {
         {/* Wishlist heart */}
         <button
           onClick={handleWishlist}
-          className="absolute top-3 right-3 z-[2] transition-all duration-300"
+          className="absolute top-3 right-3 transition-all duration-300"
           style={{
             opacity: hovered || wishlisted ? 1 : 0,
             transform: hovered || wishlisted ? 'scale(1)' : 'scale(0.8)',
@@ -141,17 +156,17 @@ export default function ProductCard({ product }: { product: Product }) {
           </svg>
         </button>
 
-        {/* Dark hover overlay — pointer-events-none so it doesn't block clicks */}
+        {/* Dark overlay on hover */}
         <div
-          className="absolute inset-0 bg-black z-[2] pointer-events-none transition-opacity duration-400"
+          className="absolute inset-0 bg-black pointer-events-none transition-opacity duration-400"
           style={{ opacity: hovered ? 0.08 : 0 }}
         />
 
-        {/* Size picker overlay */}
+        {/* ── Size picker overlay ── */}
         {picker && (
           <div
-            className="absolute inset-0 bg-white flex flex-col items-center justify-center gap-3 p-4 z-[10]"
-            onClick={e => { e.stopPropagation(); setPicker(null); }}
+            className="absolute inset-0 bg-white flex flex-col items-center justify-center gap-3 p-4"
+            onClick={closePicker}
           >
             <p className="text-[9px] tracking-[0.25em] uppercase text-[#767676]">
               {picker === 'bag' ? 'Select size to add' : 'Select size to buy'}
@@ -168,7 +183,7 @@ export default function ProductCard({ product }: { product: Product }) {
               ))}
             </div>
             <button
-              onClick={e => { e.stopPropagation(); setPicker(null); }}
+              onClick={closePicker}
               className="text-[9px] tracking-[0.2em] uppercase text-[#aaa] hover:text-black transition-colors mt-1"
             >
               Cancel
@@ -176,24 +191,28 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
         )}
 
-        {/* Action buttons — z-[3], NOT inside the Link, so clicks never navigate */}
-        <div className="absolute bottom-0 left-0 right-0 p-2 md:p-2.5 z-[3] md:opacity-0 md:translate-y-1.5 md:group-hover:opacity-100 md:group-hover:translate-y-0 md:transition-all md:duration-300 flex gap-1.5">
-          <button
-            onClick={handleAdd}
-            className="flex-1 bg-white text-black text-[9px] md:text-[10px] tracking-[0.18em] md:tracking-[0.2em] uppercase py-3 md:py-3.5 hover:bg-black hover:text-white transition-colors duration-200"
-          >
-            Add to Bag
-          </button>
-          <button
-            onClick={handleBuyNow}
-            className="flex-1 gold-btn text-white text-[9px] md:text-[10px] tracking-[0.18em] md:tracking-[0.2em] uppercase py-3 md:py-3.5 transition-colors duration-200"
-          >
-            Buy Now
-          </button>
-        </div>
+        {/* ── Add to Bag / Buy Now — always visible on mobile ── */}
+        {!picker && (
+          <div className="absolute bottom-0 left-0 right-0 p-2 md:p-2.5 md:opacity-0 md:translate-y-1.5 md:group-hover:opacity-100 md:group-hover:translate-y-0 md:transition-all md:duration-300 flex gap-1.5">
+            <button
+              onClick={handleAdd}
+              disabled={!product.inStock}
+              className="flex-1 bg-white text-black text-[9px] md:text-[10px] tracking-[0.18em] md:tracking-[0.2em] uppercase py-3 md:py-3.5 hover:bg-black hover:text-white transition-colors duration-200 disabled:opacity-40"
+            >
+              Add to Bag
+            </button>
+            <button
+              onClick={handleBuyNow}
+              disabled={!product.inStock}
+              className="flex-1 gold-btn text-white text-[9px] md:text-[10px] tracking-[0.18em] md:tracking-[0.2em] uppercase py-3 md:py-3.5 transition-colors duration-200 disabled:opacity-40"
+            >
+              Buy Now
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Info */}
+      {/* ── Info ── */}
       <Link href={`/shop/${product._id}`} className="block mt-2">
         <p className="text-[11px] text-black leading-tight truncate">{product.name}</p>
         <p className="text-[11px] text-[#C5A059] mt-0.5">₹{product.price.toLocaleString('en-IN')}</p>
