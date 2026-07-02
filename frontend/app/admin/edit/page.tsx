@@ -17,9 +17,9 @@ type Product = {
 };
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const COLLECTIONS = ['Dark Cloud','Horizon','Ocean','Beach','Waves','Pink Skies','Orange Vista'];
-const CATEGORIES  = ['Dress','Top','Skirt','Pants'];
-const ALL_TABS    = ['All', ...COLLECTIONS];
+const DEFAULT_COLLECTIONS = ['Dark Cloud','Horizon','Ocean','Beach','Waves','Pink Skies','Orange Vista'];
+const DEFAULT_CATEGORIES  = ['Dress','Top','Skirt','Pants'];
+const ALL_TABS    = ['All', ...DEFAULT_COLLECTIONS];
 
 // ─── Image Picker ─────────────────────────────────────────────────────────────
 function ImagePicker({
@@ -96,11 +96,18 @@ function ImagePicker({
   );
 }
 
-// ─── Edit Panel (expands inside each row) ─────────────────────────────────────
+// ─── Edit Panel ───────────────────────────────────────────────────────────────
 function EditPanel({
-  product, onChange,
-}: { product: Product; onChange: (updates: Partial<Product>) => void }) {
+  product, onChange, categories, addCategory,
+}: {
+  product: Product;
+  onChange: (updates: Partial<Product>) => void;
+  categories: string[];
+  addCategory: (name: string) => void;
+}) {
   const [picker, setPicker] = useState<number | null>(null);
+  const [newCatOpen, setNewCatOpen] = useState(false);
+  const [newCatValue, setNewCatValue] = useState('');
 
   const setImage = (idx: number, url: string) => {
     const imgs = [...(product.images || [])];
@@ -109,6 +116,15 @@ function EditPanel({
   };
   const addImage    = () => onChange({ images: [...(product.images || []), ''] });
   const removeImage = (idx: number) => onChange({ images: product.images.filter((_, i) => i !== idx) });
+
+  const handleAddCategory = () => {
+    const name = newCatValue.trim();
+    if (!name) return;
+    addCategory(name);
+    onChange({ category: name });
+    setNewCatValue('');
+    setNewCatOpen(false);
+  };
 
   return (
     <div className="px-4 pb-5 pt-3 border-t border-blue-100 bg-[#f8fbff]">
@@ -131,7 +147,7 @@ function EditPanel({
         <div>
           <label className="label">Collection</label>
           <select value={product.collection} onChange={e => onChange({ collection: e.target.value })} className="inp">
-            {COLLECTIONS.map(c => <option key={c}>{c}</option>)}
+            {DEFAULT_COLLECTIONS.map(c => <option key={c}>{c}</option>)}
             <option value="Other">Other</option>
           </select>
         </div>
@@ -139,9 +155,42 @@ function EditPanel({
         {/* Category */}
         <div>
           <label className="label">Category (Type)</label>
-          <select value={product.category} onChange={e => onChange({ category: e.target.value })} className="inp">
-            {CATEGORIES.map(c => <option key={c}>{c}</option>)}
-          </select>
+          <div className="flex gap-2 items-center">
+            <select value={product.category} onChange={e => onChange({ category: e.target.value })} className="inp flex-1">
+              {categories.map(c => <option key={c}>{c}</option>)}
+            </select>
+            <button
+              onClick={() => { setNewCatOpen(v => !v); setNewCatValue(''); }}
+              title="Add new category type"
+              className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 text-base font-bold transition-colors"
+            >
+              +
+            </button>
+          </div>
+          {newCatOpen && (
+            <div className="flex gap-2 mt-1.5">
+              <input
+                value={newCatValue}
+                onChange={e => setNewCatValue(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') handleAddCategory(); if (e.key === 'Escape') setNewCatOpen(false); }}
+                placeholder="e.g. Jacket, Jumpsuit…"
+                autoFocus
+                className="flex-1 border border-blue-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500"
+              />
+              <button
+                onClick={handleAddCategory}
+                className="text-xs px-2.5 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium transition-colors"
+              >
+                Add
+              </button>
+              <button
+                onClick={() => setNewCatOpen(false)}
+                className="text-xs px-2 py-1 text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Stock */}
@@ -242,20 +291,29 @@ function EditPanel({
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function AdminEditPage() {
-  const [products,  setProducts]  = useState<Product[]>([]);
-  const [loading,   setLoading]   = useState(true);
-  const [saving,    setSaving]    = useState(false);
-  const [dirty,     setDirty]     = useState(false);
-  const [savedAt,   setSavedAt]   = useState<string | null>(null);
-  const [expandId,  setExpandId]  = useState<string | null>(null);
-  const [search,    setSearch]    = useState('');
-  const [tab,       setTab]       = useState('All');
+  const [products,    setProducts]    = useState<Product[]>([]);
+  const [loading,     setLoading]     = useState(true);
+  const [saving,      setSaving]      = useState(false);
+  const [dirty,       setDirty]       = useState(false);
+  const [savedAt,     setSavedAt]     = useState<string | null>(null);
+  const [expandId,    setExpandId]    = useState<string | null>(null);
+  const [search,      setSearch]      = useState('');
+  const [tab,         setTab]         = useState('All');
+  const [categories,  setCategories]  = useState<string[]>(DEFAULT_CATEGORIES);
 
-  // Load
+  // Load products + saved custom categories
   useEffect(() => {
     fetch('/api/products?limit=500')
       .then(r => r.json())
       .then(d => { setProducts(d.products || []); setLoading(false); });
+
+    try {
+      const saved = localStorage.getItem('ara_custom_categories');
+      if (saved) {
+        const custom: string[] = JSON.parse(saved);
+        setCategories([...new Set([...DEFAULT_CATEGORIES, ...custom])]);
+      }
+    } catch {}
   }, []);
 
   // ── Helpers ──────────────────────────────────────────────────────────────
@@ -296,13 +354,22 @@ export default function AdminEditPage() {
     const id = `new-${Date.now()}`;
     const p: Product = {
       _id: id, name: 'New Product', price: 0, description: '',
-      category: 'Dress', collection: 'Dark Cloud',
+      category: categories[0] || 'Dress', collection: 'Dark Cloud',
       sizes: ['XS','S','M','L','XL'], colors: [],
       inStock: true, featured: false, images: [],
     };
     setProducts(ps => [p, ...ps]);
     setExpandId(id);
     touch();
+  };
+
+  const addCategory = (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed || categories.includes(trimmed)) return;
+    const next = [...categories, trimmed];
+    setCategories(next);
+    const custom = next.filter(c => !DEFAULT_CATEGORIES.includes(c));
+    try { localStorage.setItem('ara_custom_categories', JSON.stringify(custom)); } catch {}
   };
 
   const saveAll = async () => {
@@ -335,7 +402,6 @@ export default function AdminEditPage() {
     return true;
   });
 
-  // Map from _id → index in the FULL products array (for move up/down)
   const idxOf = (id: string) => products.findIndex(p => p._id === id);
 
   if (loading) return (
@@ -346,7 +412,6 @@ export default function AdminEditPage() {
 
   return (
     <>
-      {/* Inject utility classes inline since this page has no layout */}
       <style>{`
         .label { display:block; font-size:11px; font-weight:500; color:#374151; margin-bottom:3px; }
         .inp   { width:100%; border:1px solid #d1d5db; border-radius:4px; padding:6px 10px;
@@ -410,7 +475,6 @@ export default function AdminEditPage() {
             </button>
           ))}
 
-          {/* Search */}
           <input
             value={search} onChange={e => setSearch(e.target.value)}
             placeholder="Search product name…"
@@ -419,14 +483,19 @@ export default function AdminEditPage() {
         </div>
 
         {/* ── Count bar ────────────────────────────────────────────────── */}
-        <div className="px-5 py-2 text-[11px] text-gray-400 bg-gray-50 border-b border-gray-100">
-          Showing {filtered.length} of {products.length} products
-          {tab !== 'All' && ` in ${tab}`}
-          {search && ` matching "${search}"`}
+        <div className="px-5 py-2 text-[11px] text-gray-400 bg-gray-50 border-b border-gray-100 flex items-center gap-3">
+          <span>
+            Showing {filtered.length} of {products.length} products
+            {tab !== 'All' && ` in ${tab}`}
+            {search && ` matching "${search}"`}
+          </span>
           {(tab !== 'All' || search) && (
             <button onClick={() => { setTab('All'); setSearch(''); }}
-              className="ml-2 text-blue-500 hover:text-blue-700">Clear</button>
+              className="text-blue-500 hover:text-blue-700">Clear</button>
           )}
+          <span className="ml-auto text-[10px] text-gray-300">
+            Categories: {categories.join(' · ')}
+          </span>
         </div>
 
         {/* ── Product table ────────────────────────────────────────────── */}
@@ -465,19 +534,11 @@ export default function AdminEditPage() {
                       }
                     </div>
 
-                    {/* Name */}
                     <span className="text-sm font-medium text-gray-900 truncate pr-3">{p.name}</span>
-
-                    {/* Collection */}
                     <span className="text-xs text-gray-600 truncate">{p.collection}</span>
-
-                    {/* Category */}
                     <span className="text-xs text-gray-600">{p.category}</span>
-
-                    {/* Price */}
                     <span className="text-sm text-gray-700">₹{(p.price||0).toLocaleString('en-IN')}</span>
 
-                    {/* Stock */}
                     <span className={`text-[10px] px-1.5 py-0.5 rounded w-fit font-medium ${
                       p.inStock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'
                     }`}>
@@ -486,18 +547,10 @@ export default function AdminEditPage() {
 
                     {/* Actions */}
                     <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
-                      {/* Move up/down */}
-                      <button
-                        onClick={() => moveUp(globalIdx)}
-                        disabled={globalIdx === 0}
-                        title="Move up"
+                      <button onClick={() => moveUp(globalIdx)} disabled={globalIdx === 0} title="Move up"
                         className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-700 disabled:opacity-20 text-sm">↑</button>
-                      <button
-                        onClick={() => moveDown(globalIdx)}
-                        disabled={globalIdx === products.length - 1}
-                        title="Move down"
+                      <button onClick={() => moveDown(globalIdx)} disabled={globalIdx === products.length - 1} title="Move down"
                         className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-700 disabled:opacity-20 text-sm">↓</button>
-                      {/* Edit toggle */}
                       <button
                         onClick={() => setExpandId(isOpen ? null : p._id)}
                         className={`text-[10px] px-2 py-0.5 rounded font-medium transition-colors ${
@@ -505,9 +558,7 @@ export default function AdminEditPage() {
                         }`}>
                         {isOpen ? 'Close' : 'Edit'}
                       </button>
-                      {/* Delete */}
-                      <button
-                        onClick={() => remove(p._id)}
+                      <button onClick={() => remove(p._id)}
                         className="text-[10px] px-2 py-0.5 rounded bg-red-50 text-red-500 hover:bg-red-100 font-medium transition-colors">
                         Del
                       </button>
@@ -519,6 +570,8 @@ export default function AdminEditPage() {
                     <EditPanel
                       product={p}
                       onChange={updates => update(p._id, updates)}
+                      categories={categories}
+                      addCategory={addCategory}
                     />
                   )}
                 </div>
@@ -527,7 +580,7 @@ export default function AdminEditPage() {
           </div>
         </div>
 
-        {/* ── Bottom save bar (sticky when dirty) ─────────────────────── */}
+        {/* ── Bottom save bar ─────────────────────────────────────────── */}
         {dirty && (
           <div className="sticky bottom-0 bg-amber-50 border-t border-amber-200 px-5 py-3 flex items-center justify-between">
             <p className="text-xs text-amber-800">

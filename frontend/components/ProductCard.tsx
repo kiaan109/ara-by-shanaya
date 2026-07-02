@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cartStore';
@@ -29,17 +29,41 @@ function resolveImg(img: string) {
 export default function ProductCard({ product }: { product: Product }) {
   const [hovered, setHovered] = useState(false);
   const [picker, setPicker] = useState<'bag' | 'buy' | null>(null);
+  const [imgIdx, setImgIdx] = useState(0);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const didSwipe = useRef(false);
   const addItem = useCartStore(s => s.addItem);
   const { toggleItem, isWishlisted } = useWishlistStore();
   const wishlisted = isWishlisted(product._id);
   const router = useRouter();
 
-  const img1 = resolveImg(product.images?.[0] || '');
-  const img2 = resolveImg(product.images?.[1] || '');
+  const imgs = (product.images || []).map(resolveImg).filter(Boolean);
+  const img1 = imgs[0] || '';
+  const currentImg = imgs[imgIdx] || '';
+  const nextImg = imgs.length > 1 ? imgs[(imgIdx + 1) % imgs.length] : '';
 
-  // Clicking the image area navigates — UNLESS a picker is open
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    didSwipe.current = false;
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - (touchStartY.current ?? 0);
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+      didSwipe.current = true;
+      setImgIdx(i => dx < 0 ? Math.min(i + 1, imgs.length - 1) : Math.max(i - 1, 0));
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
+
   const handleImageClick = () => {
     if (picker) return;
+    if (didSwipe.current) { didSwipe.current = false; return; }
     router.push(`/shop/${product._id}`);
   };
 
@@ -85,27 +109,29 @@ export default function ProductCard({ product }: { product: Product }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* ── Image container — onClick navigates; buttons stopPropagation ── */}
+      {/* ── Image container ── */}
       <div
         className="relative overflow-hidden bg-white border border-[#f0f0f0]"
         style={{ aspectRatio: '3/4' }}
         onClick={handleImageClick}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
       >
-        {img1 ? (
+        {currentImg ? (
           <>
             <img
-              src={img1}
+              src={currentImg}
               alt={product.name}
               loading="lazy"
               className="absolute inset-0 w-full h-full object-contain transition-all duration-700 pointer-events-none"
               style={{
                 transform: hovered ? 'scale(1.03)' : 'scale(1)',
-                opacity: hovered && img2 ? 0 : 1,
+                opacity: hovered && nextImg ? 0 : 1,
               }}
             />
-            {img2 && (
+            {nextImg && (
               <img
-                src={img2}
+                src={nextImg}
                 alt={product.name}
                 loading="lazy"
                 className="absolute inset-0 w-full h-full object-contain transition-all duration-700 pointer-events-none"
@@ -156,6 +182,23 @@ export default function ProductCard({ product }: { product: Product }) {
           style={{ opacity: hovered ? 0.08 : 0 }}
         />
 
+        {/* Swipe dot indicators */}
+        {imgs.length > 1 && !picker && (
+          <div className="absolute bottom-[50px] left-0 right-0 flex justify-center gap-1 pointer-events-none z-10">
+            {imgs.map((_, i) => (
+              <div
+                key={i}
+                className="rounded-full transition-all duration-200"
+                style={{
+                  width: i === imgIdx ? '6px' : '5px',
+                  height: i === imgIdx ? '6px' : '5px',
+                  background: i === imgIdx ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.25)',
+                }}
+              />
+            ))}
+          </div>
+        )}
+
         {/* ── Size picker overlay ── */}
         {picker && (
           <div
@@ -185,7 +228,7 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
         )}
 
-        {/* ── Add to Bag / Buy Now — always visible on mobile ── */}
+        {/* ── Add to Bag / Buy Now ── */}
         {!picker && (
           <div className="absolute bottom-0 left-0 right-0 p-2 md:p-2.5 md:opacity-0 md:translate-y-1.5 md:group-hover:opacity-100 md:group-hover:translate-y-0 md:transition-all md:duration-300 flex gap-1.5">
             <button
