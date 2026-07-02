@@ -72,7 +72,7 @@ export default function ProductDetailPage() {
       toast.error('Please select a size to continue');
       return;
     }
-    router.push(`/checkout?productId=${product!._id}&size=${encodeURIComponent(selectedSize)}&qty=1`);
+    router.push(`/checkout?id=${product!._id}&size=${encodeURIComponent(selectedSize)}&qty=1`);
   };
 
   return (

@@ -1,10 +1,14 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const SEEN_KEY = 'ara_subscribe_seen';
 
+const SUPPRESSED_PATHS = ['/account', '/checkout'];
+
 export default function SubscribePopup() {
+  const pathname = usePathname();
   const [open,    setOpen]    = useState(false);
   const [name,    setName]    = useState('');
   const [email,   setEmail]   = useState('');
@@ -13,12 +17,13 @@ export default function SubscribePopup() {
   const [result,  setResult]  = useState<{ ok: boolean; message: string; code?: string } | null>(null);
 
   useEffect(() => {
+    if (SUPPRESSED_PATHS.some(p => pathname?.startsWith(p))) return;
     try {
       if (localStorage.getItem(SEEN_KEY)) return;
     } catch { /* ignore */ }
     const t = setTimeout(() => setOpen(true), 2500);
     return () => clearTimeout(t);
-  }, []);
+  }, [pathname]);
 
   const close = () => {
     setOpen(false);
