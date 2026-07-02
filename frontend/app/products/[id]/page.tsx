@@ -229,7 +229,7 @@ export default function ProductDetailPage() {
               className="w-full py-3 mb-3 bg-[#1a1c1c] hover:bg-[#C5A059] text-white font-sans text-xs tracking-widest uppercase font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ borderRadius: 0 }}
             >
-              {product.inStock ? 'Buy Now' : 'Out of Stock'}
+              {!product.inStock ? 'Out of Stock' : product.sizes?.length && !selectedSize ? '↑ Select a Size First' : 'Buy Now'}
             </button>
 
             {/* Add to Cart */}
@@ -238,7 +238,7 @@ export default function ProductDetailPage() {
               disabled={!product.inStock}
               className="btn-primary w-full text-center mb-3 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {product.inStock ? 'Add to Cart' : 'Out of Stock'}
+              {!product.inStock ? 'Out of Stock' : product.sizes?.length && !selectedSize ? '↑ Select a Size First' : 'Add to Cart'}
             </button>
 
             {/* WhatsApp */}

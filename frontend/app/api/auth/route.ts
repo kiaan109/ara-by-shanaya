@@ -25,6 +25,16 @@ async function writeUsers(users: any[]) {
   await put(USERS_BLOB, b, { access: 'public', addRandomSuffix: false, allowOverwrite: true });
 }
 
+// GET /api/auth — health check: confirms route is live and blob is reachable
+export async function GET() {
+  try {
+    const users = await readUsers();
+    return NextResponse.json({ ok: true, accounts: users.length });
+  } catch (e: any) {
+    return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
+  }
+}
+
 // POST /api/auth  body: { action: 'register'|'login', name?, email, password }
 export async function POST(req: NextRequest) {
   try {

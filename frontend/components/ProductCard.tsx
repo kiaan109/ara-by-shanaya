@@ -28,6 +28,7 @@ function resolveImg(img: string) {
 
 export default function ProductCard({ product }: { product: Product }) {
   const [hovered, setHovered] = useState(false);
+  const [picker, setPicker] = useState<'bag' | 'buy' | null>(null);
   const addItem = useCartStore(s => s.addItem);
   const { toggleItem, isWishlisted } = useWishlistStore();
   const wishlisted = isWishlisted(product._id);
@@ -39,15 +40,28 @@ export default function ProductCard({ product }: { product: Product }) {
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem({
-      _id: product._id,
-      name: product.name,
-      price: product.price,
-      image: img1,
-      size: product.sizes?.[0],
-      color: product.colors?.[0],
-    });
+    if (product.sizes?.length) { setPicker('bag'); return; }
+    addItem({ _id: product._id, name: product.name, price: product.price, image: img1, color: product.colors?.[0] });
     toast.success('Added to bag');
+  };
+
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (product.sizes?.length) { setPicker('buy'); return; }
+    router.push(`/checkout?id=${product._id}`);
+  };
+
+  const confirmSize = (e: React.MouseEvent, size: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (picker === 'bag') {
+      addItem({ _id: product._id, name: product.name, price: product.price, image: img1, size, color: product.colors?.[0] });
+      toast.success(`Added to bag — ${size}`);
+    } else {
+      router.push(`/checkout?id=${product._id}&size=${encodeURIComponent(size)}`);
+    }
+    setPicker(null);
   };
 
   const handleWishlist = (e: React.MouseEvent) => {
@@ -132,6 +146,35 @@ export default function ProductCard({ product }: { product: Product }) {
             style={{ opacity: hovered ? 0.08 : 0 }}
           />
 
+          {/* Size picker overlay */}
+          {picker && (
+            <div
+              className="absolute inset-0 bg-white flex flex-col items-center justify-center gap-3 p-4 z-10"
+              onClick={e => { e.preventDefault(); e.stopPropagation(); setPicker(null); }}
+            >
+              <p className="text-[9px] tracking-[0.25em] uppercase text-[#767676]">
+                {picker === 'bag' ? 'Select size to add' : 'Select size to buy'}
+              </p>
+              <div className="flex flex-wrap gap-1.5 justify-center">
+                {product.sizes!.map(s => (
+                  <button
+                    key={s}
+                    onClick={e => confirmSize(e, s)}
+                    className="px-3 py-2 border border-[#1a1c1c] text-[#1a1c1c] text-[10px] tracking-wider uppercase hover:bg-[#1a1c1c] hover:text-white transition-colors"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={e => { e.preventDefault(); e.stopPropagation(); setPicker(null); }}
+                className="text-[9px] tracking-[0.2em] uppercase text-[#aaa] hover:text-black transition-colors mt-1"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+
           {/* Buttons — always visible on mobile, hover-reveal on desktop */}
           <div className="absolute bottom-0 left-0 right-0 p-2 md:p-2.5 md:opacity-0 md:translate-y-1.5 md:group-hover:opacity-100 md:group-hover:translate-y-0 md:transition-all md:duration-300 flex gap-1.5">
             <button
@@ -141,7 +184,7 @@ export default function ProductCard({ product }: { product: Product }) {
               Add to Bag
             </button>
             <button
-              onClick={e => { e.preventDefault(); e.stopPropagation(); router.push(`/checkout?id=${product._id}&size=${product.sizes?.[0] || ''}`); }}
+              onClick={handleBuyNow}
               className="flex-1 gold-btn text-white text-[9px] md:text-[10px] tracking-[0.18em] md:tracking-[0.2em] uppercase py-3 md:py-3.5 transition-colors duration-200"
             >
               Buy Now
