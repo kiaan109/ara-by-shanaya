@@ -65,6 +65,7 @@ function CheckoutContent() {
   const [couponInput, setCouponInput] = useState('');
   const [couponCode,  setCouponCode]  = useState<string | null>(null);
   const [couponError, setCouponError] = useState('');
+  const [summaryOpen, setSummaryOpen] = useState(false);
 
   const [form, setForm] = useState<Form>({
     name: '', email: '', phone: '', address: '', city: '', state: '', pincode: '', country: 'India',
@@ -110,7 +111,8 @@ function CheckoutContent() {
   const shipping   = subtotal > 0 ? calcShipping(form.country, subtotal) : 0;
   const shippingZone = SHIPPING_ZONES[form.country] || SHIPPING_ZONES['Rest of World'];
   const { discount, percent } = applyCoupon(subtotal, couponCode);
-  const grandTotal = Math.max(0, subtotal + shipping - discount);
+  const tax        = Math.round((subtotal - discount) * 0.05); // 5% GST
+  const grandTotal = Math.max(0, subtotal + shipping + tax - discount);
 
   const applyCouponCode = () => {
     const code = couponInput.trim().toUpperCase();
@@ -302,6 +304,57 @@ function CheckoutContent() {
         </div>
       </div>
 
+      {/* ── Mobile order summary bar (hidden on desktop) ── */}
+      <div className="lg:hidden border-b border-[#ebebeb] bg-[#f5f5f5]">
+        <button
+          type="button"
+          onClick={() => setSummaryOpen(o => !o)}
+          className="w-full flex items-center justify-between px-5 py-3.5 text-[12px]"
+        >
+          <span className="flex items-center gap-2 text-[#1a1c1c] font-medium tracking-wide">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+              <line x1="7" y1="7" x2="7.01" y2="7"/>
+            </svg>
+            Order summary
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+              className={`transition-transform ${summaryOpen ? 'rotate-180' : ''}`}>
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </span>
+          <span className="text-[#1a1c1c] font-semibold">₹{grandTotal.toLocaleString('en-IN')}</span>
+        </button>
+
+        {summaryOpen && (
+          <div className="px-5 pb-5 border-t border-[#ebebeb] bg-white">
+            <div className="space-y-3 py-4">
+              {items.map((item, i) => (
+                <div key={i} className="flex gap-3">
+                  <div className="w-12 flex-shrink-0 bg-[#f5f5f5]" style={{ aspectRatio: '3/4' }}>
+                    {item.image && <img src={item.image} alt={item.name} className="w-full h-full object-contain" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[12px] font-medium truncate">{item.name}</p>
+                    {item.size && <p className="text-[11px] text-[#999]">Size: {item.size}</p>}
+                    <p className="text-[11px] text-[#999]">Qty: {item.quantity}</p>
+                    <p className="text-[12px]">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="border-t border-[#f0f0f0] pt-3 space-y-2 text-[12px] text-[#999]">
+              <div className="flex justify-between"><span>Subtotal</span><span>₹{subtotal.toLocaleString('en-IN')}</span></div>
+              {discount > 0 && <div className="flex justify-between text-[#C5A059]"><span>Discount ({couponCode})</span><span>−₹{discount.toLocaleString('en-IN')}</span></div>}
+              <div className="flex justify-between"><span>Shipping</span><span>{shipping === 0 ? 'Free' : `₹${shipping.toLocaleString('en-IN')}`}</span></div>
+              <div className="flex justify-between"><span>Estimated tax (5% GST)</span><span>₹{tax.toLocaleString('en-IN')}</span></div>
+              <div className="flex justify-between pt-2 border-t border-[#f0f0f0] text-[#1a1c1c] font-medium text-[13px]">
+                <span>Total (INR)</span><span>₹{grandTotal.toLocaleString('en-IN')}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="max-w-[1100px] mx-auto px-5 md:px-8 py-8 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 lg:gap-16 items-start">
 
@@ -489,8 +542,12 @@ function CheckoutContent() {
                   <span>{shipping === 0 ? 'Free' : `₹${shipping.toLocaleString('en-IN')}`}</span>
                 </div>
                 <p className="text-[10px] text-[#bbb]">Estimated delivery: {shippingZone.days}</p>
+                <div className="flex justify-between text-[12px] text-[#999]">
+                  <span>Estimated tax (5% GST)</span>
+                  <span>₹{tax.toLocaleString('en-IN')}</span>
+                </div>
                 <div className="flex justify-between pt-2.5 border-t border-[#f0f0f0] mt-2.5">
-                  <span className="font-sans text-[11px] tracking-[0.1em] uppercase">Total</span>
+                  <span className="font-sans text-[11px] tracking-[0.1em] uppercase">Total (INR)</span>
                   <span className="text-[15px] font-medium">₹{grandTotal.toLocaleString('en-IN')}</span>
                 </div>
               </div>

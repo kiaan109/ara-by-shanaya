@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { getProduct } from '@/lib/api';
 import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
@@ -18,12 +18,12 @@ export default function ProductDetailPage() {
   const [selectedColor, setColor]         = useState('');
   const [zoomed,        setZoomed]        = useState(false);
   const addItem = useCartStore((s) => s.addItem);
+  const router = useRouter();
 
   useEffect(() => {
     getProduct(id)
       .then((data) => {
         setProduct(data);
-        if (data.sizes?.length)  setSize(data.sizes[0]);
         if (data.colors?.length) setColor(data.colors[0]);
       })
       .catch(() => toast.error('Product not found'))
@@ -52,15 +52,27 @@ export default function ProductDetailPage() {
   const mainImg = images[activeImg] || '';
 
   const handleAddToCart = () => {
+    if (product!.sizes?.length && !selectedSize) {
+      toast.error('Please select a size before adding to cart');
+      return;
+    }
     addItem({
-      _id:   product._id,
-      name:  product.name,
-      price: product.price,
+      _id:   product!._id,
+      name:  product!.name,
+      price: product!.price,
       image: images[0] || '',
       size:  selectedSize,
       color: selectedColor,
     } as any);
-    toast.success(`${product.name} added to cart`);
+    toast.success(`${product!.name} added to cart`);
+  };
+
+  const handleBuyNow = () => {
+    if (product!.sizes?.length && !selectedSize) {
+      toast.error('Please select a size to continue');
+      return;
+    }
+    router.push(`/checkout?productId=${product!._id}&size=${encodeURIComponent(selectedSize)}&qty=1`);
   };
 
   return (
@@ -187,7 +199,10 @@ export default function ProductDetailPage() {
             {/* Sizes */}
             {product.sizes && product.sizes.length > 0 && (
               <div className="mb-8">
-                <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gray-400 mb-3">Size</p>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="font-sans text-[10px] tracking-[0.25em] uppercase text-gray-400">Size</p>
+                  {!selectedSize && <p className="font-sans text-[10px] text-[#C5A059] tracking-wide">— Select a size</p>}
+                </div>
                 <div className="flex gap-2 flex-wrap">
                   {product.sizes.map((s) => (
                     <button
@@ -206,6 +221,16 @@ export default function ProductDetailPage() {
                 </div>
               </div>
             )}
+
+            {/* Buy Now */}
+            <button
+              onClick={handleBuyNow}
+              disabled={!product.inStock}
+              className="w-full py-3 mb-3 bg-[#1a1c1c] hover:bg-[#C5A059] text-white font-sans text-xs tracking-widest uppercase font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ borderRadius: 0 }}
+            >
+              {product.inStock ? 'Buy Now' : 'Out of Stock'}
+            </button>
 
             {/* Add to Cart */}
             <button
