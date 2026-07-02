@@ -311,7 +311,7 @@ export default function AdminEditPage() {
       const saved = localStorage.getItem('ara_custom_categories');
       if (saved) {
         const custom: string[] = JSON.parse(saved);
-        setCategories([...new Set([...DEFAULT_CATEGORIES, ...custom])]);
+        setCategories(Array.from(new Set([...DEFAULT_CATEGORIES, ...custom])));
       }
     } catch {}
   }, []);

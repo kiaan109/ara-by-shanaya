@@ -6,7 +6,6 @@ import { Resend } from 'resend';
 export const dynamic = 'force-dynamic';
 
 const USERS_BLOB = 'ara-users.json';
-const resend = new Resend(process.env.RESEND_API_KEY);
 const SITE = 'https://arabyshanaya.com';
 
 function hashPassword(password: string): string {
@@ -61,6 +60,7 @@ export async function POST(req: NextRequest) {
 
       const resetUrl = `${SITE}/reset-password?token=${token}`;
 
+      const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
         from: 'ARA by Shanaya <noreply@arabyshanaya.com>',
         to: email,
