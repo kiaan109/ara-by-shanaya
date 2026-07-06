@@ -177,7 +177,7 @@ function CheckoutContent() {
         const pendingRes = await fetch('/api/orders', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ ...form, items: data.items, subtotal: data.subtotal, shipping: data.shipping, discount: data.discount, couponCode: data.couponCode, total: data.total }),
+          body:    JSON.stringify({ ...form, items: data.items, subtotal: data.subtotal, shipping: data.shipping, tax: data.tax, discount: data.discount, couponCode: data.couponCode, total: data.total }),
         });
         const pendingData = await pendingRes.json();
         if (pendingData.success) {
@@ -209,6 +209,7 @@ function CheckoutContent() {
         items:      data.items,
         subtotal:   data.subtotal,
         shipping:   data.shipping,
+        tax:        data.tax,
         discount:   data.discount,
         couponCode: data.couponCode,
         total:      data.total,

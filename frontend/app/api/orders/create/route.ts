@@ -80,10 +80,11 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const grandTotal = Math.max(0, subtotal + shipping - discount);
+    const tax        = Math.round((subtotal - discount) * 0.05); // 5% GST
+    const grandTotal = Math.max(0, subtotal + shipping + tax - discount);
 
     if (!keyId || !keySecret) {
-      return NextResponse.json({ pending: true, subtotal, shipping, discount, couponCode: code, total: grandTotal, items: orderItems }, { status: 503 });
+      return NextResponse.json({ pending: true, subtotal, shipping, tax, discount, couponCode: code, total: grandTotal, items: orderItems }, { status: 503 });
     }
 
     const amountPaise = Math.round(grandTotal * 100);
@@ -99,7 +100,7 @@ export async function POST(req: NextRequest) {
     if (!rzp.ok) return NextResponse.json({ error: 'Payment gateway error' }, { status: 502 });
     const rzpOrder = await rzp.json();
 
-    return NextResponse.json({ razorpayOrderId: rzpOrder.id, amount: rzpOrder.amount, currency: 'INR', key: keyId, subtotal, shipping, discount, couponCode: code, percent, total: grandTotal, items: orderItems });
+    return NextResponse.json({ razorpayOrderId: rzpOrder.id, amount: rzpOrder.amount, currency: 'INR', key: keyId, subtotal, shipping, tax, discount, couponCode: code, percent, total: grandTotal, items: orderItems });
   } catch (e: any) {
     return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }

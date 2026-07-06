@@ -23,6 +23,24 @@ async function writeBlob(pathname: string, data: any) {
   await put(pathname, b, { access: 'public', addRandomSuffix: false, allowOverwrite: true });
 }
 
+// Decrement stock counts for purchased items (only products that track a numeric stock)
+async function decrementStock(items: any[]) {
+  try {
+    const all: any[] = await readBlob('ara-all-products.json', []);
+    if (!all.length) return;
+    let changed = false;
+    for (const it of items || []) {
+      const p = all.find(x => x._id === it._id);
+      if (p && typeof p.stock === 'number') {
+        p.stock = Math.max(0, p.stock - (it.quantity || 1));
+        if (p.stock === 0) p.inStock = false;
+        changed = true;
+      }
+    }
+    if (changed) await writeBlob('ara-all-products.json', all);
+  } catch { /* non-fatal */ }
+}
+
 async function upsertUser(user: { name: string; email: string; phone: string; address?: string; city?: string; state?: string; pincode?: string }) {
   try {
     const users: any[] = await readBlob(USERS_BLOB, []);
@@ -76,6 +94,7 @@ function buildEmailHtml(order: any): string {
         <p style="color:#767676;margin:3px 0">Subtotal: ₹${(order.subtotal || 0).toLocaleString('en-IN')}</p>
         ${order.discount > 0 ? `<p style="color:#C5A059;margin:3px 0">Discount (${order.couponCode}): −₹${order.discount.toLocaleString('en-IN')}</p>` : ''}
         <p style="color:#767676;margin:3px 0">Shipping: ${order.shipping === 0 ? 'Free' : '₹' + order.shipping}</p>
+        ${order.tax > 0 ? `<p style="color:#767676;margin:3px 0">Tax (5% GST): ₹${order.tax.toLocaleString('en-IN')}</p>` : ''}
         <p style="font-size:15px;font-weight:700;margin:8px 0 0;color:#1a1c1c">Total: ₹${(order.total || 0).toLocaleString('en-IN')}</p>
       </div>
     </div>
@@ -140,7 +159,7 @@ export async function POST(req: NextRequest) {
     await writeBlob(ORDERS_BLOB, orders);
     await upsertUser({ name: order.name, email: order.email, phone: order.phone, address: order.address, city: order.city, state: order.state, pincode: order.pincode });
     // MUST await — serverless terminates after response otherwise
-    await Promise.allSettled([sendEmails(order), pushToGoogleSheets(order)]);
+    await Promise.allSettled([sendEmails(order), pushToGoogleSheets(order), decrementStock(order.items)]);
 
     return NextResponse.json({ success: true, orderId });
   } catch (e: any) {

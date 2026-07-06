@@ -12,6 +12,7 @@ type Product = {
   sizes: string[];
   colors: string[];
   inStock: boolean;
+  stock?: number | null;
   featured: boolean;
   images: string[];
 };
@@ -19,7 +20,6 @@ type Product = {
 // ─── Constants ────────────────────────────────────────────────────────────────
 const DEFAULT_COLLECTIONS = ['Dark Cloud','Horizon','Ocean','Beach','Waves','Pink Skies','Orange Vista'];
 const DEFAULT_CATEGORIES  = ['Dress','Top','Skirt','Pants'];
-const ALL_TABS    = ['All', ...DEFAULT_COLLECTIONS];
 
 // ─── Image Picker ─────────────────────────────────────────────────────────────
 function ImagePicker({
@@ -98,16 +98,20 @@ function ImagePicker({
 
 // ─── Edit Panel ───────────────────────────────────────────────────────────────
 function EditPanel({
-  product, onChange, categories, addCategory,
+  product, onChange, categories, addCategory, collections, addCollection,
 }: {
   product: Product;
   onChange: (updates: Partial<Product>) => void;
   categories: string[];
   addCategory: (name: string) => void;
+  collections: string[];
+  addCollection: (name: string) => void;
 }) {
   const [picker, setPicker] = useState<number | null>(null);
   const [newCatOpen, setNewCatOpen] = useState(false);
   const [newCatValue, setNewCatValue] = useState('');
+  const [newColOpen, setNewColOpen] = useState(false);
+  const [newColValue, setNewColValue] = useState('');
 
   const setImage = (idx: number, url: string) => {
     const imgs = [...(product.images || [])];
@@ -124,6 +128,15 @@ function EditPanel({
     onChange({ category: name });
     setNewCatValue('');
     setNewCatOpen(false);
+  };
+
+  const handleAddCollection = () => {
+    const name = newColValue.trim();
+    if (!name) return;
+    addCollection(name);
+    onChange({ collection: name });
+    setNewColValue('');
+    setNewColOpen(false);
   };
 
   return (
@@ -146,10 +159,43 @@ function EditPanel({
         {/* Collection */}
         <div>
           <label className="label">Collection</label>
-          <select value={product.collection} onChange={e => onChange({ collection: e.target.value })} className="inp">
-            {DEFAULT_COLLECTIONS.map(c => <option key={c}>{c}</option>)}
-            <option value="Other">Other</option>
-          </select>
+          <div className="flex gap-2 items-center">
+            <select value={product.collection} onChange={e => onChange({ collection: e.target.value })} className="inp flex-1">
+              {collections.map(c => <option key={c}>{c}</option>)}
+              <option value="Other">Other</option>
+            </select>
+            <button
+              onClick={() => { setNewColOpen(v => !v); setNewColValue(''); }}
+              title="Add new collection"
+              className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 text-base font-bold transition-colors"
+            >
+              +
+            </button>
+          </div>
+          {newColOpen && (
+            <div className="flex gap-2 mt-1.5">
+              <input
+                value={newColValue}
+                onChange={e => setNewColValue(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') handleAddCollection(); if (e.key === 'Escape') setNewColOpen(false); }}
+                placeholder="e.g. Winter 2026…"
+                autoFocus
+                className="flex-1 border border-blue-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500"
+              />
+              <button
+                onClick={handleAddCollection}
+                className="text-xs px-2.5 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium transition-colors"
+              >
+                Add
+              </button>
+              <button
+                onClick={() => setNewColOpen(false)}
+                className="text-xs px-2 py-1 text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Category */}
@@ -201,6 +247,20 @@ function EditPanel({
             <option value="true">In Stock</option>
             <option value="false">Sold Out</option>
           </select>
+        </div>
+
+        {/* Stock count */}
+        <div>
+          <label className="label">Stock Count (units)</label>
+          <input type="number" min={0}
+            value={product.stock ?? ''}
+            placeholder="e.g. 5"
+            onChange={e => {
+              const v = e.target.value === '' ? null : Math.max(0, parseInt(e.target.value) || 0);
+              onChange({ stock: v, ...(v !== null ? { inStock: v > 0 } : {}) });
+            }}
+            className="inp" />
+          <p className="text-[10px] text-gray-400 mt-0.5">Setting 0 marks it Sold Out automatically</p>
         </div>
 
         {/* Featured */}
@@ -300,18 +360,31 @@ export default function AdminEditPage() {
   const [search,      setSearch]      = useState('');
   const [tab,         setTab]         = useState('All');
   const [categories,  setCategories]  = useState<string[]>(DEFAULT_CATEGORIES);
+  const [collections, setCollections] = useState<string[]>(DEFAULT_COLLECTIONS);
 
-  // Load products + saved custom categories
+  // Load products + saved custom categories/collections
   useEffect(() => {
     fetch('/api/products?limit=500')
       .then(r => r.json())
-      .then(d => { setProducts(d.products || []); setLoading(false); });
+      .then(d => {
+        const ps: Product[] = d.products || [];
+        setProducts(ps);
+        setLoading(false);
+        // Surface any collections already used on products (saved from another device)
+        const used = ps.map(p => p.collection).filter(Boolean);
+        setCollections(prev => Array.from(new Set([...prev, ...used])));
+      });
 
     try {
       const saved = localStorage.getItem('ara_custom_categories');
       if (saved) {
         const custom: string[] = JSON.parse(saved);
         setCategories(Array.from(new Set([...DEFAULT_CATEGORIES, ...custom])));
+      }
+      const savedCol = localStorage.getItem('ara_custom_collections');
+      if (savedCol) {
+        const custom: string[] = JSON.parse(savedCol);
+        setCollections(prev => Array.from(new Set([...prev, ...custom])));
       }
     } catch {}
   }, []);
@@ -354,7 +427,7 @@ export default function AdminEditPage() {
     const id = `new-${Date.now()}`;
     const p: Product = {
       _id: id, name: 'New Product', price: 0, description: '',
-      category: categories[0] || 'Dress', collection: 'Dark Cloud',
+      category: categories[0] || 'Dress', collection: collections[0] || 'Dark Cloud',
       sizes: ['XS','S','M','L','XL'], colors: [],
       inStock: true, featured: false, images: [],
     };
@@ -370,6 +443,15 @@ export default function AdminEditPage() {
     setCategories(next);
     const custom = next.filter(c => !DEFAULT_CATEGORIES.includes(c));
     try { localStorage.setItem('ara_custom_categories', JSON.stringify(custom)); } catch {}
+  };
+
+  const addCollection = (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed || collections.includes(trimmed)) return;
+    const next = [...collections, trimmed];
+    setCollections(next);
+    const custom = next.filter(c => !DEFAULT_COLLECTIONS.includes(c));
+    try { localStorage.setItem('ara_custom_collections', JSON.stringify(custom)); } catch {}
   };
 
   const saveAll = async () => {
@@ -459,7 +541,7 @@ export default function AdminEditPage() {
 
         {/* ── Collection tabs ──────────────────────────────────────────── */}
         <div className="bg-white border-b border-gray-200 px-5 flex items-center gap-0 overflow-x-auto">
-          {ALL_TABS.map(t => (
+          {['All', ...collections].map(t => (
             <button key={t} onClick={() => setTab(t)}
               className={`whitespace-nowrap px-4 py-3 text-xs font-medium border-b-2 transition-colors ${
                 tab === t
@@ -540,9 +622,11 @@ export default function AdminEditPage() {
                     <span className="text-sm text-gray-700">₹{(p.price||0).toLocaleString('en-IN')}</span>
 
                     <span className={`text-[10px] px-1.5 py-0.5 rounded w-fit font-medium ${
-                      p.inStock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'
+                      !p.inStock ? 'bg-red-100 text-red-600'
+                      : typeof p.stock === 'number' && p.stock <= 3 ? 'bg-amber-100 text-amber-700'
+                      : 'bg-green-100 text-green-700'
                     }`}>
-                      {p.inStock ? 'In Stock' : 'Sold Out'}
+                      {!p.inStock ? 'Sold Out' : typeof p.stock === 'number' ? `${p.stock} left` : 'In Stock'}
                     </span>
 
                     {/* Actions */}
@@ -572,6 +656,8 @@ export default function AdminEditPage() {
                       onChange={updates => update(p._id, updates)}
                       categories={categories}
                       addCategory={addCategory}
+                      collections={collections}
+                      addCollection={addCollection}
                     />
                   )}
                 </div>

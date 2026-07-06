@@ -1,15 +1,17 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 
-const STATUSES = ['confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'pending_payment'];
+const STATUSES = ['confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled', 'pending_payment'];
 const STATUS_COLOR: Record<string, string> = {
-  confirmed:       'bg-green-100 text-green-700',
-  processing:      'bg-blue-100 text-blue-700',
-  shipped:         'bg-purple-100 text-purple-700',
-  delivered:       'bg-green-100 text-green-700',
-  cancelled:       'bg-red-100 text-red-700',
-  pending_payment: 'bg-amber-100 text-amber-700',
+  confirmed:        'bg-green-100 text-green-700',
+  processing:       'bg-blue-100 text-blue-700',
+  shipped:          'bg-purple-100 text-purple-700',
+  out_for_delivery: 'bg-indigo-100 text-indigo-700',
+  delivered:        'bg-green-100 text-green-700',
+  cancelled:        'bg-red-100 text-red-700',
+  pending_payment:  'bg-amber-100 text-amber-700',
 };
 
 export default function AdminOrdersPage() {
@@ -35,11 +37,21 @@ export default function AdminOrdersPage() {
   const updateStatus = async (orderId: string) => {
     const status = newStatus[orderId] || orders.find(o => o.orderId === orderId)?.status;
     setSaving(orderId);
-    await fetch('/api/orders', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ orderId, status, trackingId: tracking[orderId] }),
-    });
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId, status, trackingId: tracking[orderId] }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(data.emailed ? `Order updated — "${status.replace(/_/g, ' ')}" email sent to customer` : 'Order updated');
+      } else {
+        toast.error(data.error || 'Update failed');
+      }
+    } catch {
+      toast.error('Network error — try again');
+    }
     setOrders(prev => prev.map(o => o.orderId === orderId ? { ...o, status, trackingId: tracking[orderId] || o.trackingId } : o));
     setSaving(null);
   };

@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
+import { calcShipping, SHIPPING_ZONES } from '@/lib/shipping';
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 function resolveImg(img: string) {
@@ -13,7 +14,8 @@ function resolveImg(img: string) {
 export default function CartPage() {
   const { items, removeItem, updateQuantity, total } = useCartStore();
   const subtotal = total();
-  const shipping = subtotal >= 2000 ? 0 : 99;
+  const shipping = subtotal > 0 ? calcShipping('India', subtotal) : 0;
+  const freeOver = SHIPPING_ZONES['India'].freeOver || 3000;
   const tax = Math.round(subtotal * 0.05);
   const grandTotal = subtotal + shipping + tax;
 
@@ -119,7 +121,7 @@ export default function CartPage() {
 
             {shipping > 0 && (
               <p className="text-[10px] text-[#767676] mb-4 tracking-[0.05em]">
-                Add ₹{(2000 - subtotal).toLocaleString('en-IN')} more for free shipping
+                Add ₹{(freeOver - subtotal).toLocaleString('en-IN')} more for free shipping in India
               </p>
             )}
 
