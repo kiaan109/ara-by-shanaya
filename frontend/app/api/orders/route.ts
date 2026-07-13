@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
             </table>
             ${discount > 0 ? `<p style="text-align:right;font-size:13px;color:#C5A059;margin:8px 0 0">Discount (${couponCode}): −₹${discount.toLocaleString('en-IN')}</p>` : ''}
             <p style="text-align:right;font-size:13px;color:#767676;margin:8px 0 0">Shipping: ${shipping === 0 ? 'Free' : '₹' + (shipping || 0).toLocaleString('en-IN')}</p>
-            ${tax > 0 ? `<p style="text-align:right;font-size:13px;color:#767676;margin:4px 0 0">Tax (5% GST): ₹${tax.toLocaleString('en-IN')}</p>` : ''}
+            ${tax > 0 ? `<p style="text-align:right;font-size:13px;color:#767676;margin:4px 0 0">Tax (18% GST): ₹${tax.toLocaleString('en-IN')}</p>` : ''}
             <p style="text-align:right;font-size:15px;font-weight:700;margin:12px 0 0">Total: ₹${(total || 0).toLocaleString('en-IN')}</p>
           </div>
           <div style="padding:16px 32px;text-align:center;font-size:11px;color:#aaa">
@@ -233,26 +233,36 @@ export async function PATCH(req: NextRequest) {
     const order = orders[idx];
     const apiKey = process.env.RESEND_API_KEY;
     let emailed = false;
-    if (apiKey && status !== prevStatus && STATUS_EMAIL[status] && order.email) {
-      try {
-        const r = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            from: 'ARA by Shanaya <noreply@arabyshanaya.com>',
-            to: [order.email],
-            subject: STATUS_EMAIL[status].subject(order),
-            html: buildStatusEmail(order, status),
-          }),
-        });
-        emailed = r.ok;
-        if (!r.ok) console.error(`[resend:status:${status}] ${r.status} ${await r.text().catch(() => '')}`);
-      } catch (e) {
-        console.error(`[resend:status:${status}] threw`, e);
+    let emailError = '';
+    if (status !== prevStatus && STATUS_EMAIL[status] && order.email) {
+      if (!apiKey) {
+        emailError = 'RESEND_API_KEY is not set in Vercel — customer email NOT sent';
+      } else {
+        try {
+          const r = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              from: 'ARA by Shanaya <noreply@arabyshanaya.com>',
+              to: [order.email],
+              subject: STATUS_EMAIL[status].subject(order),
+              html: buildStatusEmail(order, status),
+            }),
+          });
+          emailed = r.ok;
+          if (!r.ok) {
+            const detail = await r.text().catch(() => '');
+            emailError = `Resend rejected the email (${r.status})`;
+            console.error(`[resend:status:${status}] ${r.status} ${detail}`);
+          }
+        } catch (e) {
+          emailError = 'Could not reach the email service';
+          console.error(`[resend:status:${status}] threw`, e);
+        }
       }
     }
 
-    return NextResponse.json({ success: true, order, emailed });
+    return NextResponse.json({ success: true, order, emailed, emailError });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }

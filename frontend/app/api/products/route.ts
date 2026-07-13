@@ -39,7 +39,13 @@ export async function GET(req: NextRequest) {
   const page       = parseInt(searchParams.get('page')  || '1');
   const collection = searchParams.get('collection');
 
-  let filtered = await getAllProducts();
+  const all = await getAllProducts();
+  // Distinct collections/categories across the whole catalog — used by shop filters + navbar
+  const facets = {
+    collections: Array.from(new Set(all.map((p: any) => p.collection).filter(Boolean))),
+    categories:  Array.from(new Set(all.map((p: any) => p.category).filter(Boolean))),
+  };
+  let filtered = all;
 
   if (collection && collection !== 'All') {
     filtered = filtered.filter(p => p.collection === collection);
@@ -66,5 +72,5 @@ export async function GET(req: NextRequest) {
   const start      = (page - 1) * limit;
   const products   = filtered.slice(start, start + limit);
 
-  return NextResponse.json({ products, total, page, totalPages });
+  return NextResponse.json({ products, total, page, totalPages, facets });
 }

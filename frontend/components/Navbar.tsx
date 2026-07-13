@@ -42,22 +42,47 @@ function useSiteLogo() {
   return logoUrl;
 }
 
-const COLLECTIONS = [
-  { name: 'Dark Cloud',   color: '#6b21a8' },
-  { name: 'Horizon',      color: '#c2410c' },
-  { name: 'Ocean',        color: '#0e7490' },
-  { name: 'Beach',        color: '#a16207' },
-  { name: 'Waves',        color: '#0369a1' },
-  { name: 'Pink Skies',   color: '#be185d' },
-  { name: 'Orange Vista', color: '#c2410c' },
-];
+const DEFAULT_COLLECTION_COLORS: Record<string, string> = {
+  'Dark Cloud': '#6b21a8', Horizon: '#c2410c', Ocean: '#0e7490', Beach: '#a16207',
+  Waves: '#0369a1', 'Pink Skies': '#be185d', 'Orange Vista': '#c2410c',
+};
+const DEFAULT_COLLECTION_NAMES = Object.keys(DEFAULT_COLLECTION_COLORS);
 
-const CATEGORIES = [
-  { name: 'Dresses', value: 'Dress' },
-  { name: 'Tops',    value: 'Top' },
-  { name: 'Skirts',  value: 'Skirt' },
-  { name: 'Pants',   value: 'Pants' },
-];
+const CATEGORY_LABELS: Record<string, string> = {
+  Dress: 'Dresses', Top: 'Tops', Skirt: 'Skirts', Pants: 'Pants',
+};
+const DEFAULT_CATEGORY_VALUES = Object.keys(CATEGORY_LABELS);
+
+// Merges admin-added collections/categories (from the products API) with the defaults
+function useCatalogFacets() {
+  const [collections, setCollections] = useState(
+    DEFAULT_COLLECTION_NAMES.map(name => ({ name, color: DEFAULT_COLLECTION_COLORS[name] }))
+  );
+  const [categories, setCategories] = useState(
+    DEFAULT_CATEGORY_VALUES.map(value => ({ name: CATEGORY_LABELS[value], value }))
+  );
+
+  useEffect(() => {
+    fetch('/api/products?limit=1')
+      .then(r => r.json())
+      .then(d => {
+        if (!d.facets) return;
+        const colNames: string[] = Array.from(new Set([
+          ...DEFAULT_COLLECTION_NAMES.filter(c => d.facets.collections.includes(c)),
+          ...d.facets.collections,
+        ]));
+        setCollections(colNames.map(name => ({ name, color: DEFAULT_COLLECTION_COLORS[name] || '#C5A059' })));
+        const catValues: string[] = Array.from(new Set([
+          ...DEFAULT_CATEGORY_VALUES.filter(c => d.facets.categories.includes(c)),
+          ...d.facets.categories,
+        ]));
+        setCategories(catValues.map(value => ({ name: CATEGORY_LABELS[value] || value, value })));
+      })
+      .catch(() => {});
+  }, []);
+
+  return { collections, categories };
+}
 
 export default function Navbar() {
   const [scrolled,        setScrolled]        = useState(false);
@@ -69,6 +94,7 @@ export default function Navbar() {
   const collectionsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const logoUrl = useSiteLogo();
+  const { collections: COLLECTIONS, categories: CATEGORIES } = useCatalogFacets();
 
   const cartCount     = useCartStore(s => s.items.reduce((a, i) => a + i.quantity, 0));
   const wishlistCount = useWishlistStore(s => s.items.length);
@@ -312,11 +338,8 @@ export default function Navbar() {
               <nav className="flex-1 px-6 py-6 flex flex-col overflow-y-auto">
                 {/* Shop by type */}
                 {[
-                  { href: '/shop',                label: 'Shop All' },
-                  { href: '/shop?category=Dress', label: 'Dresses' },
-                  { href: '/shop?category=Top',   label: 'Tops' },
-                  { href: '/shop?category=Skirt', label: 'Skirts' },
-                  { href: '/shop?category=Pants', label: 'Pants' },
+                  { href: '/shop', label: 'Shop All' },
+                  ...CATEGORIES.map(({ name, value }) => ({ href: `/shop?category=${encodeURIComponent(value)}`, label: name })),
                 ].map(({ href, label }, i) => (
                   <motion.div key={href}
                     initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}

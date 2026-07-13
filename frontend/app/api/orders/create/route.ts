@@ -4,6 +4,7 @@ import { list } from '@vercel/blob';
 import { localProducts } from '@/lib/localProducts';
 import { applyCoupon, getCoupon } from '@/lib/coupons';
 import { calcShipping } from '@/lib/shipping';
+import { calcTax } from '@/lib/tax';
 
 const ORDERS_BLOB = 'ara-orders.json';
 
@@ -80,7 +81,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const tax        = Math.round((subtotal - discount) * 0.05); // 5% GST
+    const tax        = calcTax(subtotal - discount);
     const grandTotal = Math.max(0, subtotal + shipping + tax - discount);
 
     if (!keyId || !keySecret) {

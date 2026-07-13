@@ -7,6 +7,7 @@ import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
 import { applyCoupon } from '@/lib/coupons';
 import { calcShipping, SHIPPING_COUNTRIES, SHIPPING_ZONES } from '@/lib/shipping';
+import { calcTax, GST_LABEL } from '@/lib/tax';
 
 declare global { interface Window { Razorpay: any } }
 
@@ -111,7 +112,7 @@ function CheckoutContent() {
   const shipping   = subtotal > 0 ? calcShipping(form.country, subtotal) : 0;
   const shippingZone = SHIPPING_ZONES[form.country] || SHIPPING_ZONES['Rest of World'];
   const { discount, percent } = applyCoupon(subtotal, couponCode);
-  const tax        = Math.round((subtotal - discount) * 0.05); // 5% GST
+  const tax        = calcTax(subtotal - discount);
   const grandTotal = Math.max(0, subtotal + shipping + tax - discount);
 
   const applyCouponCode = () => {
@@ -347,7 +348,7 @@ function CheckoutContent() {
               <div className="flex justify-between"><span>Subtotal</span><span>₹{subtotal.toLocaleString('en-IN')}</span></div>
               {discount > 0 && <div className="flex justify-between text-[#C5A059]"><span>Discount ({couponCode})</span><span>−₹{discount.toLocaleString('en-IN')}</span></div>}
               <div className="flex justify-between"><span>Shipping</span><span>{shipping === 0 ? 'Free' : `₹${shipping.toLocaleString('en-IN')}`}</span></div>
-              <div className="flex justify-between"><span>Estimated tax (5% GST)</span><span>₹{tax.toLocaleString('en-IN')}</span></div>
+              <div className="flex justify-between"><span>Estimated tax ({GST_LABEL})</span><span>₹{tax.toLocaleString('en-IN')}</span></div>
               <div className="flex justify-between pt-2 border-t border-[#f0f0f0] text-[#1a1c1c] font-medium text-[13px]">
                 <span>Total (INR)</span><span>₹{grandTotal.toLocaleString('en-IN')}</span>
               </div>
@@ -544,7 +545,7 @@ function CheckoutContent() {
                 </div>
                 <p className="text-[10px] text-[#bbb]">Estimated delivery: {shippingZone.days}</p>
                 <div className="flex justify-between text-[12px] text-[#999]">
-                  <span>Estimated tax (5% GST)</span>
+                  <span>Estimated tax ({GST_LABEL})</span>
                   <span>₹{tax.toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between pt-2.5 border-t border-[#f0f0f0] mt-2.5">

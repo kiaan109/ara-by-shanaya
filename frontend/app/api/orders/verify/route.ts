@@ -94,7 +94,7 @@ function buildEmailHtml(order: any): string {
         <p style="color:#767676;margin:3px 0">Subtotal: ₹${(order.subtotal || 0).toLocaleString('en-IN')}</p>
         ${order.discount > 0 ? `<p style="color:#C5A059;margin:3px 0">Discount (${order.couponCode}): −₹${order.discount.toLocaleString('en-IN')}</p>` : ''}
         <p style="color:#767676;margin:3px 0">Shipping: ${order.shipping === 0 ? 'Free' : '₹' + order.shipping}</p>
-        ${order.tax > 0 ? `<p style="color:#767676;margin:3px 0">Tax (5% GST): ₹${order.tax.toLocaleString('en-IN')}</p>` : ''}
+        ${order.tax > 0 ? `<p style="color:#767676;margin:3px 0">Tax (18% GST): ₹${order.tax.toLocaleString('en-IN')}</p>` : ''}
         <p style="font-size:15px;font-weight:700;margin:8px 0 0;color:#1a1c1c">Total: ₹${(order.total || 0).toLocaleString('en-IN')}</p>
       </div>
     </div>

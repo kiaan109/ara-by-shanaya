@@ -3,16 +3,14 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ProductCard, { Product } from '@/components/ProductCard';
 
-const COLLECTIONS = [
+const DEFAULT_COLLECTIONS = [
   'Dark Cloud', 'Horizon', 'Ocean', 'Beach', 'Waves', 'Pink Skies', 'Orange Vista',
 ];
 
-const TYPES = [
-  { value: 'Dress', label: 'Dresses' },
-  { value: 'Top',   label: 'Tops'    },
-  { value: 'Skirt', label: 'Skirts'  },
-  { value: 'Pants', label: 'Pants'   },
-];
+const TYPE_LABELS: Record<string, string> = {
+  Dress: 'Dresses', Top: 'Tops', Skirt: 'Skirts', Pants: 'Pants',
+};
+const DEFAULT_TYPES = Object.keys(TYPE_LABELS);
 
 const SORT_OPTIONS = [
   { value: '',           label: 'Newest' },
@@ -33,6 +31,8 @@ function ShopContent() {
   const [collection, setCollection] = useState(params.get('collection') || '');
   const [typeFilter, setTypeFilter] = useState(params.get('category')   || '');
   const [page,       setPage]       = useState(1);
+  const [collections, setCollections] = useState<string[]>(DEFAULT_COLLECTIONS);
+  const [types,       setTypes]       = useState<string[]>(DEFAULT_TYPES);
 
   // Sync when URL params change (e.g. navbar click)
   useEffect(() => {
@@ -53,7 +53,15 @@ function ShopContent() {
     if (typeFilter) q.set('category',   typeFilter);
     fetch(`/api/products?${q}`)
       .then(r => r.json())
-      .then(d => { setProducts(d.products || []); setTotal(d.total || 0); })
+      .then(d => {
+        setProducts(d.products || []);
+        setTotal(d.total || 0);
+        // Merge admin-added collections/types into the filter tabs (defaults keep their order)
+        if (d.facets) {
+          setCollections(Array.from(new Set([...DEFAULT_COLLECTIONS.filter(c => d.facets.collections.includes(c)), ...d.facets.collections])));
+          setTypes(Array.from(new Set([...DEFAULT_TYPES.filter(t => d.facets.categories.includes(t)), ...d.facets.categories])));
+        }
+      })
       .finally(() => setLoading(false));
   }, [sort, search, page, collection, typeFilter]);
 
@@ -64,7 +72,7 @@ function ShopContent() {
     router.replace('/shop');
   };
 
-  const typeLabel   = TYPES.find(t => t.value === typeFilter)?.label || '';
+  const typeLabel   = typeFilter ? (TYPE_LABELS[typeFilter] || typeFilter) : '';
   const activeLabel = collection || typeLabel || (search ? `"${search}"` : 'All Products');
 
   return (
@@ -86,7 +94,7 @@ function ShopContent() {
 
           {/* Collection tabs */}
           <span className="w-px h-3.5 bg-[#e5e5e5] mx-0.5 md:mx-1" />
-          {COLLECTIONS.map(c => (
+          {collections.map(c => (
             <button
               key={c}
               onClick={() => { setCollection(c === collection ? '' : c); setTypeFilter(''); setPage(1); }}
@@ -100,7 +108,7 @@ function ShopContent() {
 
           {/* Type tabs */}
           <span className="w-px h-3.5 bg-[#e5e5e5] mx-0.5 md:mx-1" />
-          {TYPES.map(({ value, label }) => (
+          {types.map(value => (
             <button
               key={value}
               onClick={() => { setTypeFilter(value === typeFilter ? '' : value); setPage(1); }}
@@ -108,7 +116,7 @@ function ShopContent() {
                 typeFilter === value ? 'border-black text-black' : 'border-transparent text-[#767676] hover:text-black'
               }`}
             >
-              {label}
+              {TYPE_LABELS[value] || value}
             </button>
           ))}
         </div>

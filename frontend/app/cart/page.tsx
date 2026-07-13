@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
 import { calcShipping, SHIPPING_ZONES } from '@/lib/shipping';
+import { calcTax, GST_LABEL } from '@/lib/tax';
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 function resolveImg(img: string) {
@@ -16,7 +17,7 @@ export default function CartPage() {
   const subtotal = total();
   const shipping = subtotal > 0 ? calcShipping('India', subtotal) : 0;
   const freeOver = SHIPPING_ZONES['India'].freeOver || 3000;
-  const tax = Math.round(subtotal * 0.05);
+  const tax = calcTax(subtotal);
   const grandTotal = subtotal + shipping + tax;
 
   if (items.length === 0) {
@@ -109,7 +110,7 @@ export default function CartPage() {
                 <span>{shipping === 0 ? 'Free' : `₹${shipping}`}</span>
               </div>
               <div className="flex justify-between text-[13px]">
-                <span className="text-[#767676]">Estimated tax (5% GST)</span>
+                <span className="text-[#767676]">Estimated tax ({GST_LABEL})</span>
                 <span>₹{tax.toLocaleString('en-IN')}</span>
               </div>
             </div>

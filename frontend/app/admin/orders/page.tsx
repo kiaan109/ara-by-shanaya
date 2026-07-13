@@ -45,7 +45,13 @@ export default function AdminOrdersPage() {
       });
       const data = await res.json();
       if (data.success) {
-        toast.success(data.emailed ? `Order updated — "${status.replace(/_/g, ' ')}" email sent to customer` : 'Order updated');
+        if (data.emailed) {
+          toast.success(`Order updated — "${status.replace(/_/g, ' ')}" email sent to customer`);
+        } else if (data.emailError) {
+          toast.error(`Order updated, but ${data.emailError}`, { duration: 8000 });
+        } else {
+          toast.success('Order updated');
+        }
       } else {
         toast.error(data.error || 'Update failed');
       }
