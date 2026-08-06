@@ -30,29 +30,38 @@ const greatVibes = Great_Vibes({
 export const metadata: Metadata = {
   metadataBase: new URL('https://arabyshanaya.com'),
   title: {
-    default: "ARA by Shanaya — Life's a Beach SS '26",
+    default: "ARA by Shanaya — Luxury Women's Fashion | Life's a Beach SS '26",
     template: '%s | ARA by Shanaya',
   },
-  description: "New SS '26 Collection. Dark Cloud, Horizon, Ocean, Beach, Waves, Pink Skies, Orange Vista.",
-  keywords: 'ARA by Shanaya, SS26, summer collection, luxury fashion, Indian fashion',
+  description:
+    "Shop ARA by Shanaya's SS '26 collection — luxury dresses, tops, skirts and co-ords designed in Ahmedabad, India. Free shipping over ₹3,000. Collections: Dark Cloud, Horizon, Ocean, Beach, Waves, Pink Skies, Orange Vista.",
+  keywords: [
+    'ARA by Shanaya', 'clothing store Ahmedabad', 'designer boutique Ahmedabad', 'luxury fashion Ahmedabad',
+    'designer dresses India', 'SS26 collection', 'summer dresses', 'resort wear India',
+    'women designer clothing Ahmedabad', 'Indian fashion brand', 'boutique Gujarat',
+  ],
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'ARA by Shanaya',
-    description: "Life's a Beach SS '26",
+    title: "ARA by Shanaya — Luxury Women's Fashion",
+    description: "Life's a Beach SS '26 — designer dresses, tops and co-ords. Free shipping in India over ₹3,000.",
     type: 'website',
     url: 'https://arabyshanaya.com',
     siteName: 'ARA by Shanaya',
+    locale: 'en_IN',
+    images: [{ url: '/logo.jpg', width: 512, height: 512, alt: 'ARA by Shanaya' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ARA by Shanaya',
-    description: "Life's a Beach SS '26",
+    title: "ARA by Shanaya — Luxury Women's Fashion",
+    description: "Life's a Beach SS '26 — designer dresses, tops and co-ords.",
+    images: ['/logo.jpg'],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
   },
 };
 
@@ -61,8 +70,24 @@ const ORG_JSON_LD = {
   '@type': 'ClothingStore',
   name: 'ARA by Shanaya',
   url: 'https://arabyshanaya.com',
-  description: "New SS '26 Collection. Dark Cloud, Horizon, Ocean, Beach, Waves, Pink Skies, Orange Vista.",
-  sameAs: [],
+  logo: 'https://arabyshanaya.com/logo.jpg',
+  image: 'https://arabyshanaya.com/logo.jpg',
+  description: "Luxury women's clothing brand from Ahmedabad, Gujarat. Designer dresses, tops, skirts and co-ords. SS '26 collections: Dark Cloud, Horizon, Ocean, Beach, Waves, Pink Skies, Orange Vista.",
+  telephone: '+91-89800-08826',
+  priceRange: '₹₹₹',
+  currenciesAccepted: 'INR',
+  paymentAccepted: 'UPI, Credit Card, Debit Card, Net Banking',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Ahmedabad',
+    addressRegion: 'Gujarat',
+    addressCountry: 'IN',
+  },
+  areaServed: [
+    { '@type': 'City', name: 'Ahmedabad' },
+    { '@type': 'Country', name: 'India' },
+  ],
+  sameAs: ['https://www.instagram.com/arabyshanaya'],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

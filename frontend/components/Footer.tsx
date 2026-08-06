@@ -116,7 +116,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-black/8 pt-8 flex flex-col md:flex-row items-center justify-between gap-5">
           <p className="font-sans text-[11px] text-[#aaa] tracking-[0.1em]">
-            © 2026 ARA BY SHANAYA. ALL RIGHTS RESERVED.
+            © 2026 ARA BY SHANAYA · AHMEDABAD, INDIA. ALL RIGHTS RESERVED.
           </p>
           <div className="flex items-center gap-8">
             {/* Social icons */}
