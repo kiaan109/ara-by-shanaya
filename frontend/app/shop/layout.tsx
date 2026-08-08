@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Shop All — Designer Dresses, Tops, Skirts & Pants",
+  title: "Shop All — Luxury Resort Wear, Evening Dresses & Co-ord Sets",
   description:
-    "Browse the full ARA by Shanaya SS '26 catalog — luxury dresses, tops, skirts and pants. Filter by collection: Dark Cloud, Horizon, Ocean, Beach, Waves, Pink Skies, Orange Vista.",
+    "Browse ARA by Shanaya's full catalog — luxury Indian resort wear, designer evening dresses, kaftans and co-ord sets with Marodi hand embroidery. Perfect for vacations, destination weddings and receptions.",
   alternates: { canonical: '/shop' },
 };
 

@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'About the Brand',
   description:
-    'The story of ARA by Shanaya — a luxury womenswear label from Ahmedabad, India, crafting elevated dresses and separates with a coastal soul.',
+    'The story of ARA by Shanaya — a contemporary luxury Indian fashion brand from Ahmedabad crafting resort wear, evening dresses and trousseau pieces with heritage Marodi hand embroidery in modern silhouettes.',
   alternates: { canonical: '/about' },
 };
 

@@ -34,11 +34,15 @@ export const metadata: Metadata = {
     template: '%s | ARA by Shanaya',
   },
   description:
-    "Shop ARA by Shanaya's SS '26 collection — luxury dresses, tops, skirts and co-ords designed in Ahmedabad, India. Free shipping over ₹3,000. Collections: Dark Cloud, Horizon, Ocean, Beach, Waves, Pink Skies, Orange Vista.",
+    "ARA by Shanaya — luxury Indian resort wear and evening dresses from Ahmedabad. Designer co-ord sets, kaftans, gowns and cocktail dresses with traditional Marodi hand embroidery. Destination wedding and vacation wear, shipped worldwide.",
   keywords: [
-    'ARA by Shanaya', 'clothing store Ahmedabad', 'designer boutique Ahmedabad', 'luxury fashion Ahmedabad',
-    'designer dresses India', 'SS26 collection', 'summer dresses', 'resort wear India',
-    'women designer clothing Ahmedabad', 'Indian fashion brand', 'boutique Gujarat',
+    'ARA by Shanaya', 'luxury Indian resort wear brand', 'designer resort wear for destination weddings',
+    'high-end designer kaftans and co-ord sets', 'modern Indian vacation wear designer', 'luxury holiday wear',
+    'Indian designer evening dresses for reception', 'contemporary Indian gown and dress designer',
+    'indo-western evening wear', 'designer cocktail dresses with hand embroidery',
+    'Marodi hand embroidery designer clothes', 'Marodi work luxury Indian wear', 'Marodi zardozi embellished outfits',
+    'heritage Indian embroidery modern silhouettes', 'contemporary luxury Indian fashion brand',
+    'boutique Indian designers for trousseau', 'clothing store Ahmedabad', 'designer boutique Ahmedabad',
   ],
   alternates: {
     canonical: '/',
@@ -72,7 +76,12 @@ const ORG_JSON_LD = {
   url: 'https://arabyshanaya.com',
   logo: 'https://arabyshanaya.com/logo.jpg',
   image: 'https://arabyshanaya.com/logo.jpg',
-  description: "Luxury women's clothing brand from Ahmedabad, Gujarat. Designer dresses, tops, skirts and co-ords. SS '26 collections: Dark Cloud, Horizon, Ocean, Beach, Waves, Pink Skies, Orange Vista.",
+  description: "Contemporary luxury Indian fashion brand from Ahmedabad, Gujarat. Designer resort wear, evening dresses, kaftans and co-ord sets featuring traditional Marodi hand embroidery — vacation wear, destination wedding and trousseau pieces in modern silhouettes.",
+  knowsAbout: [
+    'luxury Indian resort wear', 'destination wedding outfits', 'designer kaftans', 'co-ord sets',
+    'Indian evening dresses', 'indo-western evening wear', 'cocktail dresses',
+    'Marodi hand embroidery', 'zardozi embellishment', 'heritage Indian craftsmanship', 'trousseau wear',
+  ],
   telephone: '+91-89800-08826',
   priceRange: '₹₹₹',
   currenciesAccepted: 'INR',
@@ -87,7 +96,12 @@ const ORG_JSON_LD = {
     { '@type': 'City', name: 'Ahmedabad' },
     { '@type': 'Country', name: 'India' },
   ],
-  sameAs: ['https://www.instagram.com/arabyshanaya'],
+  sameAs: [
+    'https://www.instagram.com/arabyshanaya',
+    'https://www.facebook.com/ARA-by-Shanaya-1389809801344619',
+    'https://www.justdial.com/Ahmedabad/Ara-By-Shanaya-Thaltej/079PXX79-XX79-250425200144-M9N1_BZDET',
+  ],
+  hasMap: 'https://www.google.com/search?q=Ara+by+Shanaya+Ahmedabad',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

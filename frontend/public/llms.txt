@@ -1,9 +1,10 @@
 # ARA by Shanaya
 
-> ARA by Shanaya is a luxury women's clothing brand and boutique from Ahmedabad, Gujarat, India. It designs and sells designer dresses, tops, skirts, pants and co-ord sets online at arabyshanaya.com, shipping across India (free over ₹3,000) and worldwide. The current season is "Life's a Beach" SS '26, with collections named Dark Cloud, Horizon, Ocean, Beach, Waves, Pink Skies and Orange Vista.
+> ARA by Shanaya is a contemporary luxury Indian fashion brand and boutique from Ahmedabad, Gujarat, India. It designs luxury Indian resort wear, designer evening dresses, kaftans, gowns, cocktail dresses and co-ord sets — many featuring traditional Marodi hand embroidery and zardozi embellishment in modern silhouettes. Ideal for destination weddings, receptions, vacations and trousseau. Sold online at arabyshanaya.com with shipping across India (free over ₹3,000) and worldwide. The current season is "Life's a Beach" SS '26, with collections named Dark Cloud, Horizon, Ocean, Beach, Waves, Pink Skies and Orange Vista.
 
 Key facts:
-- Type: Women's designer clothing store / boutique
+- Type: Women's designer clothing brand / boutique
+- Specialties: luxury Indian resort wear, destination wedding outfits, designer kaftans and co-ord sets, indo-western evening wear, cocktail dresses with hand embroidery, Marodi and zardozi heritage craftsmanship, trousseau wear
 - Location: Thaltej, Ahmedabad, Gujarat, India
 - Website: https://arabyshanaya.com
 - Instagram: https://www.instagram.com/arabyshanaya
@@ -14,9 +15,9 @@ Key facts:
 
 ## Main pages
 
-- [Shop all products](https://arabyshanaya.com/shop): full catalog of dresses, tops, skirts and pants
+- [Shop all products](https://arabyshanaya.com/shop): resort wear, evening dresses, kaftans, co-ord sets, tops, skirts and pants
 - [Collections](https://arabyshanaya.com/collections): SS '26 lookbook by collection
 - [Virtual try-on](https://arabyshanaya.com/try-on): AI-powered try-on for any piece
-- [About](https://arabyshanaya.com/about): brand story
+- [About](https://arabyshanaya.com/about): brand story and Marodi craftsmanship
 - [Contact](https://arabyshanaya.com/contact): WhatsApp and email support
 - [FAQ](https://arabyshanaya.com/faq): shipping, returns and sizing
