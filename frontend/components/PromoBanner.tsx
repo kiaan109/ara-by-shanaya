@@ -7,7 +7,7 @@ const REPEATS = Array(8).fill(MESSAGE);
 export default function PromoBanner() {
   return (
     <div
-      className="h-8 md:h-9 bg-black overflow-hidden select-none border-t border-white/10"
+      className="h-8 md:h-9 bg-white overflow-hidden select-none border-t border-black/10"
       aria-label={`${MESSAGE} — site-wide sale`}
     >
       <div className="promo-track flex items-center h-full w-max">
@@ -16,7 +16,7 @@ export default function PromoBanner() {
             {REPEATS.map((msg, i) => (
               <span
                 key={`${copy}-${i}`}
-                className="flex items-center h-full px-6 font-sans text-[10px] md:text-[11px] tracking-[0.3em] uppercase text-white whitespace-nowrap"
+                className="flex items-center h-full px-6 font-sans text-[10px] md:text-[11px] tracking-[0.3em] uppercase text-black whitespace-nowrap"
               >
                 {msg}
                 <span className="mx-6 text-[#C5A059]">&#9670;</span>
