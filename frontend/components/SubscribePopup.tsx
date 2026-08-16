@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { PROMO_PERCENT } from '@/lib/promo';
 
 const SEEN_KEY = 'ara_subscribe_seen';
 
@@ -14,7 +15,7 @@ export default function SubscribePopup() {
   const [email,   setEmail]   = useState('');
   const [phone,   setPhone]   = useState('');
   const [loading, setLoading] = useState(false);
-  const [result,  setResult]  = useState<{ ok: boolean; message: string; code?: string } | null>(null);
+  const [result,  setResult]  = useState<{ ok: boolean; message: string } | null>(null);
 
   useEffect(() => {
     if (SUPPRESSED_PATHS.some(p => pathname?.startsWith(p))) return;
@@ -65,9 +66,8 @@ export default function SubscribePopup() {
         } catch { /* ignore */ }
         setResult({
           ok: true,
-          code: data.code,
           message: data.isNew
-            ? 'Check your email — your 20% off code is on its way!'
+            ? `You're in! ${PROMO_PERCENT}% off everything is already applied — no code needed.`
             : "You're already on the list!",
         });
       }
@@ -117,12 +117,6 @@ export default function SubscribePopup() {
                 </div>
                 <h2 className="font-display text-2xl sm:text-3xl font-light tracking-tight mb-3">Welcome!</h2>
                 <p className="text-[13px] text-[#767676] leading-relaxed mb-5">{result.message}</p>
-                {result.code && (
-                  <div className="inline-block border-2 border-dashed border-[#C5A059] px-7 py-3 text-[18px] tracking-[0.3em] font-semibold text-[#1a1c1c]">
-                    {result.code}
-                  </div>
-                )}
-                <p className="text-[10px] tracking-[0.2em] uppercase text-[#999] mt-6">Use this code at checkout</p>
               </div>
             ) : (
               <>
@@ -131,7 +125,7 @@ export default function SubscribePopup() {
                   Subscribe Now!
                 </h2>
                 <p className="text-[13px] text-center text-[#767676] leading-relaxed mb-7 px-1">
-                  Get 20% off your first purchase—plus early access to launches, events, and exclusive offers.
+                  Get {PROMO_PERCENT}% off — plus early access to launches, events, and exclusive offers.
                 </p>
 
                 <form onSubmit={submit} className="space-y-4">
