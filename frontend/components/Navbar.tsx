@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
+import PromoBanner from '@/components/PromoBanner';
 
 const LOGO_CACHE_KEY = 'ara_logo_url';
 const LOGO_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
@@ -292,6 +293,8 @@ export default function Navbar() {
             </Link>
           </div>
         </div>
+
+        <PromoBanner />
 
         {/* Search bar */}
         <AnimatePresence>

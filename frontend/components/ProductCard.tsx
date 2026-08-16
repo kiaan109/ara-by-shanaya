@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import toast from 'react-hot-toast';
+import { promoPrice, PROMO_PERCENT } from '@/lib/promo';
 
 export interface Product {
   _id: string;
@@ -252,7 +253,11 @@ export default function ProductCard({ product }: { product: Product }) {
       {/* ── Info ── */}
       <Link href={`/shop/${product._id}`} className="block mt-2">
         <p className="text-[11px] text-black leading-tight truncate">{product.name}</p>
-        <p className="text-[11px] text-[#C5A059] mt-0.5">₹{product.price.toLocaleString('en-IN')}</p>
+        <div className="flex items-center gap-1.5 mt-0.5">
+          <span className="text-[11px] text-[#C5A059] font-medium">₹{promoPrice(product.price).toLocaleString('en-IN')}</span>
+          <span className="text-[10px] text-[#aaa] line-through">₹{product.price.toLocaleString('en-IN')}</span>
+          <span className="text-[9px] text-[#1a1c1c] font-medium">{PROMO_PERCENT}% off</span>
+        </div>
       </Link>
     </div>
   );
