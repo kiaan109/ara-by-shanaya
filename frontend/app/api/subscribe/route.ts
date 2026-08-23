@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readBlob, writeBlob } from '@/lib/blobStore';
 import { sendEmail, brandEmailWrap } from '@/lib/notify';
-import { PROMO_PERCENT } from '@/lib/promo';
 
 const SUBSCRIBERS_BLOB = 'ara-subscribers.json';
 
@@ -29,21 +28,20 @@ export async function POST(req: NextRequest) {
     });
     await writeBlob(SUBSCRIBERS_BLOB, subscribers);
 
-    // Welcome email — points to the site-wide sale, no coupon code needed
+    // Welcome email
     const html = brandEmailWrap('Welcome to ARA', `
       <p style="font-size:14px;line-height:1.7;color:#1a1c1c;margin:0 0 16px">Hi ${name.trim()},</p>
       <p style="font-size:14px;line-height:1.7;color:#1a1c1c;margin:0 0 20px">
-        Thank you for subscribing! Right now, everything on the site is
-        <b>${PROMO_PERCENT}% off</b> — already applied, no code needed.
+        Thank you for subscribing! You'll be the first to hear about new arrivals, launches and events.
       </p>
       <div style="text-align:center;margin-top:28px">
         <a href="https://arabyshanaya.com/shop" style="display:inline-block;background:#C5A059;color:#1a1c1c;text-decoration:none;font-size:11px;letter-spacing:.2em;text-transform:uppercase;padding:14px 32px;font-weight:700">Shop Now</a>
       </div>
     `);
 
-    await sendEmail(cleanEmail, `${PROMO_PERCENT}% off everything ✦ ARA by Shanaya`, html);
+    await sendEmail(cleanEmail, 'Welcome to ARA by Shanaya', html);
 
-    return NextResponse.json({ success: true, isNew: true, message: `${PROMO_PERCENT}% off is already applied site-wide — check your email!` });
+    return NextResponse.json({ success: true, isNew: true, message: "You're on the list! Check your email." });
   } catch (e: any) {
     return NextResponse.json({ error: e.message || 'Something went wrong' }, { status: 500 });
   }

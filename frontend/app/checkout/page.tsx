@@ -8,7 +8,6 @@ import toast from 'react-hot-toast';
 import { applyCoupon } from '@/lib/coupons';
 import { calcShipping, SHIPPING_COUNTRIES, SHIPPING_ZONES } from '@/lib/shipping';
 import { calcTax, GST_LABEL } from '@/lib/tax';
-import { promoPrice, PROMO_PERCENT } from '@/lib/promo';
 
 declare global { interface Window { Razorpay: any } }
 
@@ -106,8 +105,8 @@ function CheckoutContent() {
 
   // ── Derived totals ────────────────────────────────────────────────────────
   const items: OrderItem[] = isSingle
-    ? (product ? [{ _id: product._id, name: product.name, price: promoPrice(product.price), quantity: qty, size: selSize, image: product.images?.[0] || '' }] : [])
-    : cartItems.map(i => ({ _id: i._id, name: i.name, price: promoPrice(i.price), quantity: i.quantity, size: i.size || '', image: i.image }));
+    ? (product ? [{ _id: product._id, name: product.name, price: product.price, quantity: qty, size: selSize, image: product.images?.[0] || '' }] : [])
+    : cartItems.map(i => ({ _id: i._id, name: i.name, price: i.price, quantity: i.quantity, size: i.size || '', image: i.image }));
 
   const subtotal   = items.reduce((s, i) => s + i.price * i.quantity, 0);
   const shipping   = subtotal > 0 ? calcShipping(form.country, subtotal) : 0;
@@ -346,7 +345,7 @@ function CheckoutContent() {
               ))}
             </div>
             <div className="border-t border-[#f0f0f0] pt-3 space-y-2 text-[12px] text-[#999]">
-              <div className="flex justify-between"><span>Subtotal ({PROMO_PERCENT}% off applied)</span><span>₹{subtotal.toLocaleString('en-IN')}</span></div>
+              <div className="flex justify-between"><span>Subtotal</span><span>₹{subtotal.toLocaleString('en-IN')}</span></div>
               {discount > 0 && <div className="flex justify-between text-[#C5A059]"><span>Discount ({couponCode})</span><span>−₹{discount.toLocaleString('en-IN')}</span></div>}
               <div className="flex justify-between"><span>Shipping</span><span>{shipping === 0 ? 'Free' : `₹${shipping.toLocaleString('en-IN')}`}</span></div>
               <div className="flex justify-between"><span>Estimated tax ({GST_LABEL})</span><span>₹{tax.toLocaleString('en-IN')}</span></div>
@@ -531,7 +530,7 @@ function CheckoutContent() {
               {/* Totals */}
               <div className="border-t border-[#f0f0f0] pt-4 space-y-2.5">
                 <div className="flex justify-between text-[12px] text-[#999]">
-                  <span>Subtotal ({PROMO_PERCENT}% off applied)</span>
+                  <span>Subtotal</span>
                   <span>₹{subtotal.toLocaleString('en-IN')}</span>
                 </div>
                 {discount > 0 && (

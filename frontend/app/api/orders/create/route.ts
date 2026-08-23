@@ -5,7 +5,6 @@ import { localProducts } from '@/lib/localProducts';
 import { applyCoupon, getCoupon } from '@/lib/coupons';
 import { calcShipping } from '@/lib/shipping';
 import { calcTax } from '@/lib/tax';
-import { promoPrice } from '@/lib/promo';
 
 const ORDERS_BLOB = 'ara-orders.json';
 
@@ -54,17 +53,15 @@ export async function POST(req: NextRequest) {
       if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
       if (!product.inStock) return NextResponse.json({ error: 'Product is out of stock' }, { status: 400 });
       const quantity = Math.max(1, Math.min(10, parseInt(qty)));
-      const unitPrice = promoPrice(product.price);
-      subtotal = unitPrice * quantity;
-      orderItems.push({ _id: product._id, name: product.name, price: unitPrice, quantity, size, image: product.images?.[0] || '', collection: product.collection || '' });
+      subtotal = product.price * quantity;
+      orderItems.push({ _id: product._id, name: product.name, price: product.price, quantity, size, image: product.images?.[0] || '', collection: product.collection || '' });
     } else {
       for (const item of body.items || []) {
         const product = await getProduct(item._id);
         if (!product) continue;
         const quantity = Math.max(1, Math.min(10, parseInt(item.qty || 1)));
-        const unitPrice = promoPrice(product.price);
-        subtotal += unitPrice * quantity;
-        orderItems.push({ _id: product._id, name: product.name, price: unitPrice, quantity, size: item.size, image: product.images?.[0] || '', collection: product.collection || '' });
+        subtotal += product.price * quantity;
+        orderItems.push({ _id: product._id, name: product.name, price: product.price, quantity, size: item.size, image: product.images?.[0] || '', collection: product.collection || '' });
       }
     }
 

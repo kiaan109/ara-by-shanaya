@@ -93,10 +93,10 @@ export default function ShopClient({
   const activeLabel = collection || typeLabel || (search ? `"${search}"` : 'All Products');
 
   return (
-    <div className="min-h-screen pt-[108px] md:pt-[124px]">
+    <div className="min-h-screen pt-[76px] md:pt-[88px]">
 
       {/* ── Collection filter bar ─────────────────────────────────── */}
-      <div className="border-b border-[#e5e5e5] overflow-x-auto bg-white sticky top-[108px] md:top-[124px] z-40 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="border-b border-[#e5e5e5] overflow-x-auto bg-white sticky top-[76px] md:top-[88px] z-40 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div className="max-w-[1440px] mx-auto px-3 md:px-10 flex items-center min-w-max md:min-w-0">
           <button
             onClick={() => { setCollection(''); setTypeFilter(''); setPage(1); router.replace('/shop'); }}

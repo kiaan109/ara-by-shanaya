@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PROMO_PERCENT } from '@/lib/promo';
 
 const SEEN_KEY = 'ara_subscribe_seen';
 
@@ -67,7 +66,7 @@ export default function SubscribePopup() {
         setResult({
           ok: true,
           message: data.isNew
-            ? `You're in! ${PROMO_PERCENT}% off everything is already applied — no code needed.`
+            ? "You're on the list!"
             : "You're already on the list!",
         });
       }
@@ -125,7 +124,7 @@ export default function SubscribePopup() {
                   Subscribe Now!
                 </h2>
                 <p className="text-[13px] text-center text-[#767676] leading-relaxed mb-7 px-1">
-                  Get {PROMO_PERCENT}% off — plus early access to launches, events, and exclusive offers.
+                  Get early access to launches, events, and exclusive offers.
                 </p>
 
                 <form onSubmit={submit} className="space-y-4">

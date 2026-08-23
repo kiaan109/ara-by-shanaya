@@ -7,7 +7,6 @@ import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import ProductCard, { Product } from '@/components/ProductCard';
 import toast from 'react-hot-toast';
-import { promoPrice, PROMO_PERCENT } from '@/lib/promo';
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 function resolveImg(img: string) {
@@ -201,11 +200,9 @@ export default function ProductPage() {
           <div className="mb-7 pb-7 border-b border-[#f0f0f0]">
             <p className="text-[10px] tracking-[0.3em] uppercase text-[#767676] mb-2">{product.category}</p>
             <h1 className="text-[26px] font-light tracking-[-0.015em] leading-tight mb-4">{product.name}</h1>
-            <div className="flex items-baseline gap-3 flex-wrap">
-              <p className="text-[20px] text-black">₹{promoPrice(product.price || 0).toLocaleString('en-IN')}</p>
-              <p className="text-[15px] text-[#aaa] line-through">₹{product.price?.toLocaleString('en-IN')}</p>
-              <p className="text-[12px] text-[#C5A059] font-medium">{PROMO_PERCENT}% off</p>
-              <p className="text-[11px] text-[#aaa] w-full">Incl. all taxes</p>
+            <div className="flex items-baseline gap-3">
+              <p className="text-[20px] text-black">₹{product.price?.toLocaleString('en-IN')}</p>
+              <p className="text-[11px] text-[#aaa]">Incl. all taxes</p>
             </div>
           </div>
 

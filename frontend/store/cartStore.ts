@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { promoPrice } from '@/lib/promo';
 
 export interface CartItem {
   _id: string;
@@ -54,7 +53,7 @@ export const useCartStore = create<CartStore>()(
 
       clearCart: () => set({ items: [] }),
 
-      total: () => get().items.reduce((sum, i) => sum + promoPrice(i.price) * i.quantity, 0),
+      total: () => get().items.reduce((sum, i) => sum + i.price * i.quantity, 0),
     }),
     { name: 'ara-cart' }
   )

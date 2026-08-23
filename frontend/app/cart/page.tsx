@@ -4,7 +4,6 @@ import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
 import { calcShipping, SHIPPING_ZONES } from '@/lib/shipping';
 import { calcTax, GST_LABEL } from '@/lib/tax';
-import { promoPrice, PROMO_PERCENT } from '@/lib/promo';
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 function resolveImg(img: string) {
@@ -64,10 +63,7 @@ export default function CartPage() {
                         {item.size && <p className="text-[11px] text-[#767676] mt-1">Size: {item.size}</p>}
                         {item.color && <p className="text-[11px] text-[#767676]">Colour: {item.color}</p>}
                       </div>
-                      <div className="flex-shrink-0 text-right">
-                        <p className="text-[13px]">₹{(promoPrice(item.price) * item.quantity).toLocaleString('en-IN')}</p>
-                        <p className="text-[11px] text-[#aaa] line-through">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
-                      </div>
+                      <p className="text-[13px] flex-shrink-0">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
                     </div>
                   </div>
 
@@ -106,7 +102,7 @@ export default function CartPage() {
 
             <div className="space-y-3 mb-6">
               <div className="flex justify-between text-[13px]">
-                <span className="text-[#767676]">Subtotal ({PROMO_PERCENT}% off applied)</span>
+                <span className="text-[#767676]">Subtotal</span>
                 <span>₹{subtotal.toLocaleString('en-IN')}</span>
               </div>
               <div className="flex justify-between text-[13px]">
